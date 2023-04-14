@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">Ardu_Security</string>
+    <string name="ip">http://192.168.1.71:5000</string>
+    <!--Strings de la vista de login-->
+    <string name="imgLogo">AppLogoImage</string>
+    <string name="txtEmail">Direccion de Correo:</string>
+    <string name="txtPass">Contraseña:</string>
+    <string name="chbPass">Mostrar Contraseña</string>
+    <string name="btnLogin">Acceder</string>
+    <string name="btnLstCPass">¿Olvido su Contraseña?</string>
+    <string name="btnRegister">Registrese aqui</string>
+    <string name="lblCopyright">Ardu Security 2023 Copyright © Todos los derechos reservados</string>
+    <!-- Strings de la vista de olvido su contraseña -->
+    <string name="headLblForPass">¿Como desea recuperar su contraseña?</string>
+    <string name="rbSendPass">Enviar contraseña a su correo electronico</string>
+    <string name="rbSelQues">Seleccionar pregunta clave</string>
+    <string name="txtIngreCorr">Ingrese su direccion de correo</string>
+    <string name="btnConfCorr">Confirmar direccion</string>
+    <string-array name="lstSavQues">
+        <item>Seleccione su pregunta clave</item>
+    </string-array>
+    <string name="lblResQuKey">Respuesta a su pregunta clave:</string>
+    <string name="txtRespKey">Ingrese su respuesta</string>
+    <string name="btnComproResp">Verificar Respuesta</string>
+    <!-- Strings de la vista dashboard -->
+    <string name="headDash">Dashboard</string>
+    <string name="btnEsta">Estaciones</string>
+    <string name="btnGenRepo">Generar Reportes</string>
+    <string name="btnPerfUser">Perfil de Usuario</string>
+    <string name="btnAjus">Ajustes</string>
+    <string name="btnManu">Manual de Usuario</string>
+    <string name="btnGesSis">Gestionar Sistema</string>
+    <string name="btnCloSes">Cerrar Sesion</string>
+    <!-- Strings de la vista de estaciones -->
+    <string name="headEsta">Estaciones</string>
+    <string name="btnSta1">Estacion 1</string>
+    <string name="btnSta2">Estacion 2</string>
+    <string name="btnSta3">Estacion 3</string>
+    <string name="btnSta4">Estacion 4</string>
+    <string name="btnSta5">Estacion 5</string>
+    <!-- Strings de la vista de registro -->
+    <string name="headRegi">Registro</string>
+    <string name="txtNam">Nombre Completo:</string>
+    <string name="txtUsername">Nombre de Usuario:</string>
+    <string name="txtQues">Pregunta Clave:</string>
+    <string name="txtRespQues">Respuesta pregunta clave:</string>
+    <string name="lblTipUser">Seleccione su tipo de usuario:</string>
+    <string name="rbUserGen">Cliente</string>
+    <string name="rbUserAdmin">Administrador</string>
+    <string name="txtPhone">Numero Telefonico:</string>
+    <string name="txtSysNam">Nombre del Sistema:</string>
+    <string name="btnReg">Registrar</string>
+    <!-- Strings de la vistas de estaciones-->
+    <string name="lblStaHead">Accesos de la</string>
+    <string name="btnCam">Camara</string>
+    <string name="btnSenGas">Sensor de Gas</string>
+    <string name="btnSenHum">Sensor de Humo</string>
+    <string name="btnSenMag">Sensor Magnetico</string>
+    <!-- Strings de la vistas de las camaras-->
+    <string name="lblCamView">Camara</string>
+    <!-- Strings de la vistas de los sensores-->
+    <string name="lblSensView">Sensor</string>
+</resources>

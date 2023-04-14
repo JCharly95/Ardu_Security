@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollForgPass"
+    android:background="#02035b"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="16dp"
+      tools:context=".ForgotPassActivity">
+
+    <TextView
+        android:id="@+id/lblFgtPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/headLblForPass"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RadioGroup
+        android:id="@+id/rbgSelForPass"
+        android:layout_width="307dp"
+        android:layout_height="113dp"
+        android:layout_marginTop="25dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblFgtPass">
+
+      <RadioButton
+          android:id="@+id/rbSelPassEma"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/rbSendPass"
+          android:textColor="@color/white"
+          android:textSize="16sp"
+          android:visibility="visible" />
+
+      <RadioButton
+          android:id="@+id/rbSelQuesSav"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/rbSelQues"
+          android:textColor="@color/white"
+          android:textSize="16sp"
+          android:visibility="visible" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/txtEmaForPass"
+        android:layout_width="307dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        android:autofillHints="name"
+        android:background="@color/white"
+        android:ems="10"
+        android:hint="@string/txtIngreCorr"
+        android:inputType="textPersonName"
+        android:textColor="@color/white"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rbgSelForPass" />
+
+    <Button
+        android:id="@+id/btnConfEma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/btnConfCorr"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtEmaForPass" />
+
+    <TextView
+        android:id="@+id/lblRespSel"
+        android:layout_width="307dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Respuesta Seleccion"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnConfEma" />
+
+    <Spinner
+        android:id="@+id/spSafQuKy"
+        android:layout_width="307dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/white"
+        android:dropDownWidth="wrap_content"
+        android:entries="@array/lstSavQues"
+        android:spinnerMode="dropdown"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblRespSel" />
+
+    <EditText
+        android:id="@+id/txtResPregKey"
+        android:layout_width="307dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:autofillHints="name"
+        android:background="@color/white"
+        android:ems="10"
+        android:hint="@string/txtRespKey"
+        android:inputType="textPersonName"
+        android:textColor="@color/white"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spSafQuKy" />
+
+    <Button
+        android:id="@+id/btnChResp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/btnComproResp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResPregKey" />
+
+      <TextView
+        android:id="@+id/lblRespVeri"
+        android:layout_width="307dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Respuesta Verificacion"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnChResp"
+        app:layout_constraintVertical_bias="0.0" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

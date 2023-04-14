@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#02035b"
+    tools:context=".StationsActivity">
+
+    <TextView
+        android:id="@+id/lblStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/headEsta"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnStat1"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/btnSta1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblStats" />
+
+    <Button
+        android:id="@+id/btnStat2"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="56dp"
+        android:text="@string/btnSta2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/btnStat1"
+        app:layout_constraintTop_toBottomOf="@+id/lblStats" />
+
+    <Button
+        android:id="@+id/btnStat3"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/btnSta3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnStat1" />
+
+    <Button
+        android:id="@+id/btnStat4"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="56dp"
+        android:text="@string/btnSta4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/btnStat3"
+        app:layout_constraintTop_toBottomOf="@+id/btnStat2" />
+
+    <Button
+        android:id="@+id/btnStat5"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/btnSta5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnStat3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
