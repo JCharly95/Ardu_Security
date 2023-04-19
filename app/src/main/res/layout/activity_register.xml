@@ -90,7 +90,7 @@
         <Spinner
             android:id="@+id/spSafQuKyReg"
             android:layout_width="256dp"
-            android:layout_height="48dp"
+            android:layout_height="48sp"
             android:layout_marginTop="10dp"
             android:background="@color/white"
             android:dropDownWidth="wrap_content"
@@ -155,6 +155,19 @@
                 android:visibility="visible" />
         </RadioGroup>
 
+        <Spinner
+            android:id="@+id/spSistema"
+            android:layout_width="256dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/white"
+            android:dropDownWidth="wrap_content"
+            android:entries="@array/lstSistems"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rbgSelTipUser" />
+
         <EditText
             android:id="@+id/txtTel"
             android:layout_width="256dp"
@@ -169,23 +182,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rbgSelTipUser" />
-
-        <EditText
-            android:id="@+id/txtSisNam"
-            android:layout_width="256dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="15dp"
-            android:autofillHints="name"
-            android:background="@color/white"
-            android:ems="10"
-            android:hint="@string/txtSysNam"
-            android:inputType="text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtTel" />
+            app:layout_constraintTop_toBottomOf="@+id/spSistema" />
 
         <Button
             android:id="@+id/btnRegister"
@@ -197,7 +194,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtSisNam" />
+            app:layout_constraintTop_toBottomOf="@+id/txtTel" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -17,77 +17,141 @@ import androidx.core.view.isGone
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
+import java.util.Objects
+import kotlin.reflect.typeOf
 
 class RegisterActivity : AppCompatActivity() {
+    // Estableciendo los elementos de interaccion
+    private lateinit var txtName: EditText
+    private lateinit var txtEmail: EditText
+    private lateinit var txtPass: EditText
+    private lateinit var chbVerContra: CheckBox
+    private lateinit var spSafQuKyReg: Spinner
+    private lateinit var txtRespQues: EditText
+    private lateinit var rbSelCli: RadioButton
+    private lateinit var rbSelAdmin: RadioButton
+    private lateinit var txtAdminTel: EditText
+    private lateinit var spSisRel: Spinner
+    private lateinit var btnReg: Button
+    // Instancias de Firebase; Autenticacion, Database y ReferenciaDB
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
+    private lateinit var ref: DatabaseReference
+    // Banderas de validacion
+    private var valiNam = false
+    private var valiCorr = false
+    private var valiCon = false
+    private var valiPreg = false
+    private var valiResp = false
+    private var valiSis = false
+    private var valiTel = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Constante para la obtencion de la IP establecida desde los strings
-        val dirIP = getString(R.string.ip)
-        // Creacion de constante para peticiones Volley
-        val queue = Volley.newRequestQueue(this)
+        // Inicializando los elementos
+        txtName = findViewById(R.id.txtName)
+        txtEmail = findViewById(R.id.txtEmailReg)
+        txtPass = findViewById(R.id.txtPassReg)
+        chbVerContra = findViewById(R.id.chbPassReg)
+        spSafQuKyReg = findViewById(R.id.spSafQuKyReg)
+        txtRespQues = findViewById(R.id.txtRespQues)
+        rbSelCli = findViewById(R.id.rbTipUsCli)
+        rbSelAdmin = findViewById(R.id.rbTipUsAdmin)
+        txtAdminTel = findViewById(R.id.txtTel)
+        spSisRel = findViewById(R.id.spSistema)
+        btnReg = findViewById(R.id.btnRegister)
+        // Inicializando la autenticacion y creando la instancia de la BD
+        auth = Firebase.auth
+        database = Firebase.database
 
         // Mensaje de bienvenida para decirle al usuario que debe hacer
         Toast.makeText(applicationContext,"Ingrese los datos que se solicitan",Toast.LENGTH_LONG).show()
 
-        // Obtencion de los elementos editables de la vista
-        val txtName: EditText = findViewById(R.id.txtName)
-        val txtEmail: EditText = findViewById(R.id.txtEmailReg)
-        val txtPass: EditText = findViewById(R.id.txtPassReg)
-        val chbVerContra: CheckBox = findViewById(R.id.chbPassReg)
-        val spSafQuKyReg: Spinner = findViewById(R.id.spSafQuKyReg)
-        val txtRespQues: EditText = findViewById(R.id.txtRespQues)
-        val rbSelCli: RadioButton = findViewById(R.id.rbTipUsCli)
-        val rbSelAdmin: RadioButton = findViewById(R.id.rbTipUsAdmin)
-        val txtAdminTel: EditText = findViewById(R.id.txtTel)
-        val txtNamSis: EditText = findViewById(R.id.txtSisNam)
-        val btnReg: Button = findViewById(R.id.btnRegister)
-        // Banderas de validacion
-        var valiNam: Boolean; var valiCorr: Boolean; var valiCon: Boolean
-        var valiPreg: Boolean; var valiResp: Boolean;
-        // Los admin seran 1 y los clientes 2
-        var tipUser: Int = 0; var valiTel: Boolean; var valiNomSis: Boolean
-
-        //----------------------Rellenar los valores del Spinner------------------------------------
-        val opcs = resources.getStringArray(R.array.lstSavQues)
+        //-------------------Rellenar los valores del Spinner de preguntas--------------------------
+        // Creando un objeto Gson para su uso tanto de algo a JSON como de JSON a objeto
+        val gson = Gson()
+        // Obtener el arreglo de strings establecido para las preguntas
+        val preguntas = resources.getStringArray(R.array.lstSavQues)
+        // Crear y establecer un ArrayList de strings para agregar las nuevas preguntas extraidas de firebase
         var arreglo = ArrayList<String>()
-        arreglo.addAll(opcs)
-        // Variables y constantes para Volley
-        val urlPregs = "$dirIP/consultaInfoFull?tabla=Pregunta"
-        val stringRequest = StringRequest(Request.Method.GET, urlPregs,
-            { response ->
-                val jsonArray = JSONTokener(response).nextValue() as JSONArray
-                // Obteniendo los datos del JSON regresado de la BD
-                for (cont in 0 until jsonArray.length())
-                    arreglo.add(jsonArray.getJSONObject(cont).getString("Val_Pregunta"))
-                val adaptador = ArrayAdapter(this, android.R.layout.simple_spinner_item, arreglo)
-                adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spSafQuKyReg.adapter = adaptador
-            },
-            { error -> Toast.makeText(this, "Se rompio esta cosa porque $error", Toast.LENGTH_SHORT).show() }
-        )
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest)
+        arreglo.addAll(preguntas)
+        // Creando la referencia de la coleccion de preguntas en la BD
+        ref = database.getReference("Pregunta")
+        // Obteniendo los valores de la coleccion de preguntas y ordenados por el valor del ID de Firebase
+        ref.orderByKey().get().addOnSuccessListener {
+            // Creando una data class (es como una clase virtual de kotlin)
+            data class Pregunta(val ID_Pregunta: String, val Val_Pregunta: String)
+            // Creando un HashMap que contendra los valores retornados de firebase (clave, objeto)
+            val coleccion = it.value as HashMap<String, Pregunta>
+            // Recorrer el HasMap para buscar los elementos contenidos en el
+            for(key in coleccion){
+                // Transformacion a JSON del objeto obtenido con la informacion
+                val pregJSON = gson.toJson(key.value)
+                // Transformacion de JSON un objeto de tipo Pregunta para su iteracion
+                val res = gson.fromJson(pregJSON, Pregunta::class.java)
+                arreglo.add(res.Val_Pregunta)
+            }
+            // Estableciendo el adaptador para el rellenado del spinner
+            val adaptador = ArrayAdapter(this, android.R.layout.simple_spinner_item, arreglo)
+            adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spSafQuKyReg.adapter = adaptador
+        }.addOnFailureListener{
+            Toast.makeText(this,"Error: Preguntas no obtenidas", Toast.LENGTH_SHORT).show()
+        }
+        //------------------------------------------------------------------------------------------
+        //-------------------Rellenar los valores del Spinner de sistemas---------------------------
+        // Obtener el arreglo de strings establecido para las preguntas
+        val sistemas = resources.getStringArray(R.array.lstSistems)
+        // Crear y establecer un ArrayList de strings para agregar las nuevas preguntas extraidas de firebase
+        var arreglo2 = ArrayList<String>()
+        arreglo2.addAll(sistemas)
+        // Creando la referencia de la coleccion de preguntas en la BD
+        ref = database.getReference("Sistema")
+        // Obteniendo los valores de la coleccion de preguntas y ordenados por el valor del ID de Firebase
+        ref.orderByKey().get().addOnSuccessListener {
+            // Creando una data class (es como una clase virtual de kotlin)
+            data class Sistema(val ID_Sistema: String, val Nombre_Sis: String, val Ulti_Cam_Nom: String)
+            // Creando un HashMap que contendra los valores retornados de firebase (clave, objeto)
+            val coleccion = it.value as HashMap<String, Sistema>
+            // Recorrer el HasMap para buscar los elementos contenidos en el
+            for(key in coleccion){
+                // Transformacion a JSON del objeto obtenido con la informacion
+                val pregJSON = gson.toJson(key.value)
+                // Transformacion de JSON un objeto de tipo Sistema para su iteracion
+                val res = gson.fromJson(pregJSON, Sistema::class.java)
+                arreglo2.add(res.Nombre_Sis)
+            }
+            // Estableciendo el adaptador para el rellenado del spinner
+            val adaptador = ArrayAdapter(this, android.R.layout.simple_spinner_item, arreglo2)
+            adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spSisRel.adapter = adaptador
+        }.addOnFailureListener{
+            Toast.makeText(this,"Error: Sistemas no encontrados", Toast.LENGTH_SHORT).show()
+        }
         //------------------------------------------------------------------------------------------
         //Agregar los listener
         rbSelCli.setOnClickListener {
             if(rbSelCli.isChecked){
                 txtAdminTel.isGone = true
-                txtNamSis.isGone = true
-                // Estableciendo el tipo de usuario cliente
-                tipUser = 2
             }
         }
         rbSelAdmin.setOnClickListener {
             if(rbSelAdmin.isChecked){
                 txtAdminTel.isGone = false
-                txtNamSis.isGone = false
-                tipUser = 1
             }
         }
         chbVerContra.setOnClickListener{
@@ -109,15 +173,15 @@ class RegisterActivity : AppCompatActivity() {
             // Registrar si las validaciones coincidieron
             if(valiNam && valiCorr && valiCon && valiPreg && valiResp){
                 // Si se va a registrar un admin, el proceso sera un poco diferente ya que tambien sera necesario validar los datos que se ingresen de su parte adicional
-                if(tipUser == 1){
+                if(rbSelAdmin.isChecked){
                     valiTel = Validacion.validarTel(txtAdminTel.text, this)
-                    valiNomSis = Validacion.validarNomSis(txtNamSis.text, this)
+                    valiSis = Validacion.validarSelSis(spSisRel, this)
                     // Si las validaciones correspondientes pasaron se procede con el registro del admin
-                    if(valiTel && valiNomSis) {
+                    if(valiTel && valiSis) {
                         // URL de peticion Volley hacia Flask
-                        val urlRegi = "$dirIP/registrarAdmin"
+                        //val urlRegi = "$dirIP/registrarAdmin"
                         // Peticion String Request
-                        val stringRequest = object : StringRequest(Request.Method.POST, urlRegi,
+                        /*val stringRequest = object : StringRequest(Request.Method.POST, urlRegi,
                             { response ->
                                 try {
                                     Toast.makeText(this,"El administrador fue registrado!", Toast.LENGTH_SHORT).show()
@@ -156,11 +220,11 @@ class RegisterActivity : AppCompatActivity() {
                                 return params
                             }
                         }
-                        queue.add(stringRequest)
+                        queue.add(stringRequest)*/
                     }
                 }else{
                     // URL de peticion Volley hacia Flask
-                    val urlRegi = "$dirIP/registrarCliente"
+                    /*val urlRegi = "$dirIP/registrarCliente"
                     // Peticion String Request
                     val stringRequest = object : StringRequest(Request.Method.POST, urlRegi,
                         { response ->
@@ -196,7 +260,7 @@ class RegisterActivity : AppCompatActivity() {
                             return params
                         }
                     }
-                    queue.add(stringRequest)
+                    queue.add(stringRequest)*/
                 }
             }
         }
@@ -283,6 +347,13 @@ class RegisterActivity : AppCompatActivity() {
         fun validarResp(respuesta: Editable, contexto: Context): Boolean {
             if(TextUtils.isEmpty(respuesta)){
                 Toast.makeText(contexto, "Error: Favor de introducir una respuesta para su pregunta", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            return true
+        }
+        fun validarSelSis(lista: Spinner, contexto: Context): Boolean {
+            if(lista.selectedItemPosition == 0){
+                Toast.makeText(contexto, "Error: Favor de seleccionar un sistema", Toast.LENGTH_SHORT).show()
                 return false
             }
             return true

@@ -3,8 +3,8 @@
     <string name="ip">http://192.168.1.71:5000</string>
     <!--Strings de la vista de login-->
     <string name="imgLogo">AppLogoImage</string>
-    <string name="txtEmail">Direccion de Correo:</string>
-    <string name="txtPass">Contraseña:</string>
+    <string name="txtEmail">Correo</string>
+    <string name="txtPass">Contraseña</string>
     <string name="chbPass">Mostrar Contraseña</string>
     <string name="btnLogin">Acceder</string>
     <string name="btnLstCPass">¿Olvido su Contraseña?</string>
@@ -19,7 +19,7 @@
     <string-array name="lstSavQues">
         <item>Seleccione su pregunta clave</item>
     </string-array>
-    <string name="lblResQuKey">Respuesta a su pregunta clave:</string>
+    <string name="lblResQuKey">Respuesta a su pregunta clave</string>
     <string name="txtRespKey">Ingrese su respuesta</string>
     <string name="btnComproResp">Verificar Respuesta</string>
     <!-- Strings de la vista dashboard -->
@@ -40,15 +40,15 @@
     <string name="btnSta5">Estacion 5</string>
     <!-- Strings de la vista de registro -->
     <string name="headRegi">Registro</string>
-    <string name="txtNam">Nombre Completo:</string>
-    <string name="txtUsername">Nombre de Usuario:</string>
-    <string name="txtQues">Pregunta Clave:</string>
-    <string name="txtRespQues">Respuesta pregunta clave:</string>
+    <string name="txtNam">Nombre Completo</string>
+    <string name="txtRespQues">Respuesta pregunta clave</string>
     <string name="lblTipUser">Seleccione su tipo de usuario:</string>
     <string name="rbUserGen">Cliente</string>
     <string name="rbUserAdmin">Administrador</string>
-    <string name="txtPhone">Numero Telefonico:</string>
-    <string name="txtSysNam">Nombre del Sistema:</string>
+    <string name="txtPhone">Numero Telefonico</string>
+    <string-array name="lstSistems">
+        <item>Seleccione su Sistema</item>
+    </string-array>
     <string name="btnReg">Registrar</string>
     <!-- Strings de la vistas de estaciones-->
     <string name="lblStaHead">Accesos de la</string>

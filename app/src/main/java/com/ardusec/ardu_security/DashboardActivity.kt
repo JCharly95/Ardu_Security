@@ -60,15 +60,4 @@ class DashboardActivity : AppCompatActivity() {
         android:id="@+id/btnGesSis"
         * */
     }
-
-    fun bdSQLite(contexto: Context){
-        val admin = ArduSecurityLite(this,"ardu_security", null, 1)
-        val bd = admin.writableDatabase
-        val registro = ContentValues()
-        //registro.put("codigo", et1.getText().toString())
-        //registro.put("descripcion", et2.getText().toString())
-        //registro.put("precio", et3.getText().toString())
-        //bd.insert("Usuarios", null, registro)
-        //bd.close()
-    }
 }

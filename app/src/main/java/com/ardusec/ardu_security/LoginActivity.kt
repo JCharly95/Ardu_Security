@@ -12,30 +12,36 @@ import androidx.core.content.ContextCompat.startActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
 
 class LoginActivity : AppCompatActivity() {
+    // Estableciendo los elementos de interaccion
+    private lateinit var txtEmail: EditText
+    private lateinit var txtContra: EditText
+    private lateinit var chbVerContra: CheckBox
+    private lateinit var btnLostPass: Button
+    private lateinit var btnAcc: Button
+    private lateinit var btnRegister: Button
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Constante para la obtencion de la IP establecida desde los strings
-        val dirIP = getString(R.string.ip)
-        // Obtener los campos de texto
-        val txtEmail: EditText = findViewById(R.id.txtEmail)
-        val txtContra: EditText = findViewById(R.id.txtPass)
-        //val txtCopy: TextView = findViewById(R.id.txtCopyright)
-        // Obtener los botones de interaccion en la interfaz
-        val chbVerContra: CheckBox = findViewById(R.id.chbPass)
-        val btnLostPass: Button = findViewById(R.id.btnLstContra)
-        val btnAcceder: Button = findViewById(R.id.btnLogin)
-        val btnRegister: Button = findViewById(R.id.btnRegView)
-        // Variables y constantes de validacion: Banderas
-        var valiCorr: Boolean
-        var valiContra: Boolean
+        // Relacionando los elementos con su objeto de la interfaz
+        txtEmail = findViewById(R.id.txtEmail)
+        txtContra = findViewById(R.id.txtPass)
+        chbVerContra = findViewById(R.id.chbPass)
+        btnLostPass = findViewById(R.id.btnLstContra)
+        btnAcc = findViewById(R.id.btnLogin)
+        btnRegister = findViewById(R.id.btnRegView)
+        // Inicializando la autenticacion
+        auth = Firebase.auth
 
         // Agregar los listener de los botones
         btnLostPass.setOnClickListener{
@@ -49,90 +55,52 @@ class LoginActivity : AppCompatActivity() {
                 txtContra.transformationMethod = HideReturnsTransformationMethod.getInstance()
             }
         }
-        btnAcceder.setOnClickListener{
-            // Validacion de correo
-            valiCorr = Validacion.validarCorreo(txtEmail, applicationContext)
-            // Validacion de contraseña
-            valiContra = Validacion.validarContra(txtContra, applicationContext)
-            // Si todas las validaciones coincidieron se busca al usuario en la base de datos
-            if(valiCorr && valiContra){
-                ProcesoVolley.peticionVolley(dirIP,txtEmail, txtContra, applicationContext)
-            }
-        }
         btnRegister.setOnClickListener{
             val intentRegister = Intent(applicationContext,RegisterActivity::class.java)
             startActivity(intentRegister)
         }
-    }
+        btnAcc.setOnClickListener{
+            val correo = txtEmail.text.toString()
+            val contra = txtContra.text.toString()
 
-    object Validacion {
-        fun validarCorreo(correo: EditText, contexto: Context): Boolean{
-            // Switch de condiciones para el correo
-            when {
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correo.text) -> Toast.makeText(contexto, "Favor de introducir un correo", Toast.LENGTH_SHORT).show()
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo.text).matches() -> Toast.makeText(contexto, "Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                else -> return true
+            when{
+                correo.isEmpty() -> Toast.makeText(this, "Favor de ingresar su correo", Toast.LENGTH_SHORT).show()
+                contra.isEmpty() -> Toast.makeText(this, "Favor de ingresar su contraseña", Toast.LENGTH_SHORT).show()
+                correo.isEmpty() && contra.isEmpty()-> Toast.makeText(this, "Favor de ingresar sus datos", Toast.LENGTH_SHORT).show()
+                else -> acceder(correo, contra)
             }
-            return false
-        }
-        fun validarContra(contra: EditText, contexto: Context): Boolean{
-            // Switch de condiciones para la contraseña
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(contra.text) -> Toast.makeText(contexto, "Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
-                // Extension minima de 8 caracteres
-                (contra.text.length < 8) -> Toast.makeText(contexto, "Error: la contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contra.text)) -> Toast.makeText(contexto, "Error: la contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contra.text)) -> Toast.makeText(contexto, "Error: la contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos un caracter especial
-                (!Regex("[^A-Za-z0-9]+").containsMatchIn(contra.text)) -> Toast.makeText(contexto, "Error: favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
-                else -> return true
-            }
-            return false
         }
     }
 
-    object ProcesoVolley {
-        // Si las validaciones coincidieron se crea la instancia de un objeto que genera la peticion volley y lanza la peticion
-        fun peticionVolley(ip: String, correo: EditText, contra: EditText, contexto: Context){
-            // Variables y constantes para Volley
-            val url = "$ip/consultaInfoFull?tabla=Usuarios"
-            val queue = Volley.newRequestQueue(contexto)
-            val userData = JSONObject()
+    override fun onStart() {
+        super.onStart()
+        // Comprobar si el usuario ha iniciado sesión (no es nulo) cuando se inicia la Activity
+        val userActual = auth.currentUser
+        if(userActual != null){
+            // Si el usuario ya ha iniciado sesion pero no la cerro, se ira directamente al dashboard
+            val intentoDash = Intent(this, DashboardActivity::class.java)
+            this.startActivity(intentoDash)
+        }
+    }
 
-            val stringRequest = StringRequest(Request.Method.GET, url,
-                { response ->
-                    val jsonArray  = JSONTokener(response).nextValue() as JSONArray
-                    // Obteniendo los datos del JSON regresado de la BD
-                    for (cont in 0 until jsonArray.length()){
-                        // Cuando el usuario sea encontrado por su correo y contraseña, se hara un JSON con sus datos
-                        if(correo.text.toString() == jsonArray.getJSONObject(cont).getString("Correo") && contra.text.toString() == jsonArray.getJSONObject(cont).getString("Contrasenia")){
-                            userData.put("nombre",jsonArray.getJSONObject(cont).getString("Nombre"))
-                            userData.put("correo",correo.text)
-                            // Aqui se debe hacer una subconsulta para saber el tipo de usuario, por lo pronto igual se jalara
-                            userData.put("tipoUs",jsonArray.getJSONObject(cont).getString("UserTip_ID"))
-                            // Aqui se debe hacer una subconsulta para saber la pregunta del usuario, por lo pronto igual se jalara
-                            userData.put("ipPregSel",jsonArray.getJSONObject(cont).getString("Pregunta_ID"))
-                            userData.put("respPreg",jsonArray.getJSONObject(cont).getString("Resp_Preg_Seg"))
-                            userData.put("pinPass",jsonArray.getJSONObject(cont).getString("Pin_Pass"))
-                            // Ya que el usuario fue encontrado procede a lanzarse la actividad de login mandando los datos serializados del JSON obtenido con los datos del usuario
-                            val intentLogin = Intent(contexto,DashboardActivity::class.java)
-                            intentLogin.putExtra("UserData", userData.toString())
-                            startActivity(contexto, intentLogin, null)
-                            break
-                        }
+    private fun acceder(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard
+                    val user = Firebase.auth.currentUser
+                    user?.let {
+                        val nombre = it.displayName
+                        Toast.makeText(this, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
+                        val intentoDash = Intent(this, DashboardActivity::class.java)
+                        this.startActivity(intentoDash)
                     }
-                },
-                { error ->
-                    Toast.makeText(contexto, "Se rompio esta cosa porque $error", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                    Toast.makeText(this, "No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                    txtEmail.text.clear()
+                    txtContra.text.clear()
                 }
-            )
-            // Add the request to the RequestQueue.
-            queue.add(stringRequest)
-        }
+            }
     }
 }
