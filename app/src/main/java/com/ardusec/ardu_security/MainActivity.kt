@@ -14,9 +14,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // Arranque de la app
+        setUp()
+    }
 
+    private fun setUp(){
+        // Mensaje de bienvenida a la App
         Toast.makeText(this, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
 
+        // Retardo de 2 segundos para mostrar la ventana de login
         Timer().schedule(2000){
             val intentLogin = Intent(applicationContext, LoginActivity::class.java)
             startActivity(intentLogin)

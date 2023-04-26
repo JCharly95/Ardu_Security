@@ -132,7 +132,6 @@ class ForgotPassActivity : AppCompatActivity() {
                     for (cont in 0 until jsonArray.length()){
                         // Cuando el usuario sea encontrado por su correo y contraseña, se hara un JSON con sus datos
                         if(correo.text.toString() == jsonArray.getJSONObject(cont).getString("Correo")){
-
                             userData.put("correo",correo.text)
                             // Aqui se debe hacer una subconsulta para saber el tipo de usuario, por lo pronto igual se jalara
                             userData.put("tipoUs",jsonArray.getJSONObject(cont).getString("UserTip_ID"))

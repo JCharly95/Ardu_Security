@@ -45,6 +45,10 @@
     <string name="lblTipUser">Seleccione su tipo de usuario:</string>
     <string name="rbUserGen">Cliente</string>
     <string name="rbUserAdmin">Administrador</string>
+    <string name="lblIngrePin">¿Desea ingresar un PIN?</string>
+    <string name="rbIngrePinSi">Si, deseo ingresar un pin</string>
+    <string name="rbIngrePinNo">No deseo ingresar un pin</string>
+    <string name="txtPin">Pin de Acceso Numerico</string>
     <string name="txtPhone">Numero Telefonico</string>
     <string-array name="lstSistems">
         <item>Seleccione su Sistema</item>

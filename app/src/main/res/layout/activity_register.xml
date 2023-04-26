@@ -26,6 +26,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <Button
+            android:id="@+id/btnInfoReg"
+            android:layout_width="51dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="¿?"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <EditText
             android:id="@+id/txtName"
             android:layout_width="256dp"
@@ -168,6 +178,61 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rbgSelTipUser" />
 
+        <RadioGroup
+            android:id="@+id/rbgSelIngrePin"
+            android:layout_width="307dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spSistema">
+
+            <TextView
+                android:id="@+id/lblQuesPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblIngrePin"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498" />
+
+            <RadioButton
+                android:id="@+id/rbIngrePin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rbIngrePinSi"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:visibility="visible" />
+
+            <RadioButton
+                android:id="@+id/rbNoIngrePin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rbIngrePinNo"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:visibility="visible" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/txtPin"
+            android:layout_width="256dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:autofillHints="phone"
+            android:background="@color/white"
+            android:ems="10"
+            android:hint="@string/txtPin"
+            android:inputType="numberPassword"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rbgSelIngrePin" />
+
         <EditText
             android:id="@+id/txtTel"
             android:layout_width="256dp"
@@ -182,7 +247,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spSistema" />
+            app:layout_constraintTop_toBottomOf="@+id/txtPin" />
 
         <Button
             android:id="@+id/btnRegister"
