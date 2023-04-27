@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -132,6 +131,7 @@ class ForgotPassActivity : AppCompatActivity() {
                     for (cont in 0 until jsonArray.length()){
                         // Cuando el usuario sea encontrado por su correo y contraseña, se hara un JSON con sus datos
                         if(correo.text.toString() == jsonArray.getJSONObject(cont).getString("Correo")){
+
                             userData.put("correo",correo.text)
                             // Aqui se debe hacer una subconsulta para saber el tipo de usuario, por lo pronto igual se jalara
                             userData.put("tipoUs",jsonArray.getJSONObject(cont).getString("UserTip_ID"))
@@ -154,9 +154,5 @@ class ForgotPassActivity : AppCompatActivity() {
             // Add the request to the RequestQueue.
             queue.add(stringRequest)
         }
-    }
-
-    fun restartPasEma(){
-
     }
 }

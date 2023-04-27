@@ -1,12 +1,9 @@
 package com.ardusec.ardu_security
 
-import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.core.view.isGone
 import com.google.firebase.auth.FirebaseAuth
@@ -16,8 +13,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import org.json.JSONArray
-import org.json.JSONObject
 
 class DashboardActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
@@ -87,7 +82,6 @@ class DashboardActivity : AppCompatActivity() {
                 for (objUs in dataSnapshot.children){
                     val userJSON = gson.toJson(objUs.value)
                     val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    Log.i("FirebaseJSON", resUser.toString())
                     if(resUser.correo == correo && resUser.contra == contra){
                         if(resUser.tipo_Usuario == "Administrador"){
                             btnManSis.isGone = false

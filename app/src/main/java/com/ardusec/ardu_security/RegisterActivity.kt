@@ -2,10 +2,8 @@ package com.ardusec.ardu_security
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore.Audio.Radio
 import android.text.Editable
 import android.text.TextUtils
 import android.text.method.HideReturnsTransformationMethod
@@ -13,25 +11,12 @@ import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.reflect.TypeToken
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-import org.json.JSONTokener
-import java.util.Objects
-import kotlin.reflect.typeOf
 
 class RegisterActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
@@ -172,14 +157,14 @@ class RegisterActivity : AppCompatActivity() {
         arrSists.addAll(lstSists)
         // Creando la referencia de la coleccion de preguntas en la BD
         ref = database.getReference("Sistema")
-        data class Sistema(val ID_Sistema: String, val Nombre_Sis: String, val Fech_Ulti_Cam: String) // Creando una data class (es como una clase virtual de kotlin)
+        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String) // Creando una data class (es como una clase virtual de kotlin)
         // Agregando un ValueEventListener para operar con las instancias de pregunta
         ref.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 for (objSis in dataSnapshot.children){
                     val sisJSON = gson.toJson(objSis.value)
                     val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                    arrSists.add(resSis.Nombre_Sis)
+                    arrSists.add(resSis.nombre_Sis)
                 }
                 // Estableciendo el adaptador para el rellenado del spinner
                 val adapSis = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrSists)
@@ -219,6 +204,7 @@ class RegisterActivity : AppCompatActivity() {
         // Creacion de autenticacion como usuario en firebase
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(txtEmail.text.toString().trim(), txtPass.text.toString().trim()).addOnCompleteListener {
             if(it.isSuccessful){
+                Toast.makeText(this, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
                 // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                 val intentDash = Intent(this, DashboardActivity::class.java).apply {
                     putExtra("correo", txtEmail.text.toString())

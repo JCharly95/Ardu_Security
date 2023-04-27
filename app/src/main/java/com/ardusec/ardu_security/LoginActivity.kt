@@ -3,16 +3,21 @@ package com.ardusec.ardu_security
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.text.TextUtils
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 
 class LoginActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
@@ -172,18 +177,33 @@ class LoginActivity : AppCompatActivity() {
         // Se crea una instancia de FirebaseAuth (Autenticacion y se inicia sesion/loguea)
         FirebaseAuth.getInstance()
             .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener{
-                    if (it.isSuccessful) {
+                .addOnCompleteListener{task ->
+                    if(task.isSuccessful){
                         // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard
                         val user = Firebase.auth.currentUser
                         user?.let {
-                            val nombre = it.displayName
-                            Toast.makeText(this, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
-                            val intentoDash = Intent(this, DashboardActivity::class.java).apply {
-                                putExtra("correo", email)
-                                putExtra("contra", password)
-                            }
-                            this.startActivity(intentoDash)
+                            // Creando la referencia de la coleccion de preguntas en la BD
+                            val refDB = Firebase.database.getReference("Usuarios")
+                            data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val contra: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+                            refDB.addValueEventListener(object: ValueEventListener{
+                                override fun onDataChange(dataSnapshot: DataSnapshot){
+                                    for (objUs in dataSnapshot.children){
+                                        val gson = Gson()
+                                        val userJSON = gson.toJson(objUs.value)
+                                        val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                                        val nombre = resUser.nombre
+                                        Toast.makeText(applicationContext, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
+                                        val intentoDash = Intent(applicationContext, DashboardActivity::class.java).apply {
+                                            putExtra("correo", email)
+                                            putExtra("contra", password)
+                                        }
+                                        startActivity(intentoDash)
+                                    }
+                                }
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                                }
+                            })
                         }
                     }else{
                         // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
