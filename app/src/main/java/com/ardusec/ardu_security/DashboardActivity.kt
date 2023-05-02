@@ -23,6 +23,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var btnManual: Button
     private lateinit var btnManSis: Button
     private lateinit var btnCerSes: Button
+    private lateinit var bundle: Bundle
     // Creando el objeto GSON
     private var gson = Gson()
 
@@ -35,12 +36,11 @@ class DashboardActivity : AppCompatActivity() {
         // Agregar los listeners
         addListeners()
         // Crear un bundle para los extras
-        val bundle = intent.extras
+        bundle = intent.extras!!
         // Saber si el usuario vera el boton de gestion o no
-        val corrAcc = bundle?.getString("correo")
-        val contraAcc = bundle?.getString("contra")
+        val corrAcc = bundle.getString("correo")
         // Kotlin se protege en caso de que no haya extras por eso se necesita establecer el ?
-        btnGestSis(corrAcc?: "",contraAcc?: "")
+        btnGestSis(corrAcc?: "")
     }
 
     private fun setUp(){
@@ -62,7 +62,12 @@ class DashboardActivity : AppCompatActivity() {
             val statsActi = Intent(applicationContext,StationsActivity::class.java)
             startActivity(statsActi)
         }
-
+        btnEdiPerf.setOnClickListener {
+            val intentPerf = Intent(this, PerfilUserActivity::class.java).apply {
+                putExtra("correo", bundle.getString("correo"))
+            }
+            startActivity(intentPerf)
+        }
         btnCerSes.setOnClickListener {
             // Cerrar Sesion en Firebase
             FirebaseAuth.getInstance().signOut()
@@ -73,16 +78,16 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun btnGestSis(correo: String, contra: String){
+    private fun btnGestSis(correo: String){
         // Creando la referencia de la coleccion de preguntas en la BD
         val refDB = Firebase.database.getReference("Usuarios")
-        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val contra: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
         refDB.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 for (objUs in dataSnapshot.children){
                     val userJSON = gson.toJson(objUs.value)
                     val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo && resUser.contra == contra){
+                    if(resUser.correo == correo){
                         if(resUser.tipo_Usuario == "Administrador"){
                             btnManSis.isGone = false
                         }

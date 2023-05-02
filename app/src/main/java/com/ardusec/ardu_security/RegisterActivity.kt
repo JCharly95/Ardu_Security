@@ -36,8 +36,9 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var btnReg: Button
     private lateinit var btnAyuda: Button
     // Instancias de Firebase; Database y ReferenciaDB
-    private lateinit var database: FirebaseDatabase
+    private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
+    private lateinit var database: FirebaseDatabase
     // Creando el objeto GSON
     private var gson = Gson()
     // Banderas de validacion
@@ -46,9 +47,11 @@ class RegisterActivity : AppCompatActivity() {
     private var valiCon = false
     private var valiPreg = false
     private var valiResp = false
+    private var selPin = false  // Por defecto, se espera que el usuario no ingrese pin al registro
     private var valiPin = false
     private var valiSis = false
     private var valiTel = false
+    private var valiTipUser = false // Po defecto, se establecera a todos como clientes
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +59,6 @@ class RegisterActivity : AppCompatActivity() {
 
         // Preparacion de los elementos
         setUp()
-
         // Agregando los listener
         addListeners()
     }
@@ -79,8 +81,9 @@ class RegisterActivity : AppCompatActivity() {
         spSisRel = findViewById(R.id.spSistema)
         btnReg = findViewById(R.id.btnRegister)
         btnAyuda = findViewById(R.id.btnInfoReg)
-        // Inicializando instancia hacia el nodo raiz de la BD
+        // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
         database = Firebase.database
+        auth = FirebaseAuth.getInstance()
 
         // Mensaje de bienvenida para decirle al usuario que debe hacer
         Toast.makeText(this,"Ingrese los datos que se solicitan",Toast.LENGTH_LONG).show()
@@ -88,39 +91,6 @@ class RegisterActivity : AppCompatActivity() {
         rellSpinPregs()
         // Invocacion a la funcion para rellenar el spinner de los sistemas registrados
         rellSpinSis()
-    }
-
-    private fun addListeners(){
-        //Agregar los listener
-        rbSelCli.setOnClickListener {
-            if(rbSelCli.isChecked){
-                txtAdminTel.isGone = true
-            }
-        }
-        rbSelAdmin.setOnClickListener {
-            if(rbSelAdmin.isChecked){
-                txtAdminTel.isGone = false
-            }
-        }
-        chbVerContra.setOnClickListener{
-            if(!chbVerContra.isChecked){
-                txtPass.transformationMethod = PasswordTransformationMethod.getInstance()
-            }else{
-                txtPass.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            }
-        }
-        btnAyuda.setOnClickListener {
-            avisoReg()
-        }
-        rbPinSi.setOnClickListener {
-            txtPin.isGone = false
-        }
-        rbPinNo.setOnClickListener {
-            txtPin.isGone = true
-        }
-        btnReg.setOnClickListener {
-            validaciones()
-        }
     }
 
     private fun rellSpinPregs(){
@@ -200,25 +170,45 @@ class RegisterActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun logIn(){
-        // Creacion de autenticacion como usuario en firebase
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(txtEmail.text.toString().trim(), txtPass.text.toString().trim()).addOnCompleteListener {
-            if(it.isSuccessful){
-                Toast.makeText(this, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
-                // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                val intentDash = Intent(this, DashboardActivity::class.java).apply {
-                    putExtra("correo", txtEmail.text.toString())
-                    putExtra("contra", txtPass.text.toString())
-                }
-                startActivity(intentDash)
-            }else{
-                Toast.makeText(this, "Error: No se ha podido autenticar al usuario", Toast.LENGTH_SHORT).show()
+    private fun addListeners(){
+        //Agregar los listener
+        rbSelCli.setOnClickListener {
+            if(rbSelCli.isChecked){
+                txtAdminTel.isGone = true
+                valiTipUser = false
             }
+        }
+        rbSelAdmin.setOnClickListener {
+            if(rbSelAdmin.isChecked){
+                txtAdminTel.isGone = false
+                valiTipUser = true
+            }
+        }
+        chbVerContra.setOnClickListener{
+            if(!chbVerContra.isChecked){
+                txtPass.transformationMethod = PasswordTransformationMethod.getInstance()
+            }else{
+                txtPass.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            }
+        }
+        btnAyuda.setOnClickListener {
+            avisoReg()
+        }
+        rbPinSi.setOnClickListener {
+            txtPin.isGone = false
+            selPin = true
+        }
+        rbPinNo.setOnClickListener {
+            txtPin.isGone = true
+            selPin = false
+        }
+        btnReg.setOnClickListener {
+            validaciones()
         }
     }
 
     private fun validaciones(){
-        // Validacion de los campos para todos los usuarios
+        // Validacion individual de todos los campos
         valiNam = ValiCampos.validarNombre(txtName.text, this)
         valiCorr = ValiCampos.validarCorreo(txtEmail.text, this)
         valiCon = ValiCampos.validarContra(txtPass.text, this)
@@ -226,26 +216,33 @@ class RegisterActivity : AppCompatActivity() {
         valiResp = ValiCampos.validarResp(txtRespQues.text, this)
         valiSis = ValiCampos.validarSelSis(spSisRel, this)
 
-        // Registrar si las validaciones coincidieron
-        if(valiNam && valiCorr && valiCon && valiPreg && valiResp && valiSis){
-            data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val contra: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
-            data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String)
-            data class UserSistem(val id_User_Sis:String, val sistema_ID: String, val user_ID: String)
-            // Por si el usuario tambien ingreso un pin
-            if(rbPinSi.isChecked){
-                valiPin = ValiCampos.validarPin(txtPin.text, this)
-                if(rbSelAdmin.isChecked){
-                    valiTel = ValiCampos.validarTel(txtAdminTel.text, this)
-                    if(valiPin && valiTel){
-                        // Usuario administrador; con PIN
-                        // Creando la referencia de la coleccion de preguntas en la BD
-                        ref = database.getReference("Usuarios")
+        // Clases de datos virtuales para implementar el guardado
+        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String)
+        data class UserSistem(val id_User_Sis:String, val sistema_ID: String, val user_ID: String)
+
+        // Preparar los campos limpios sin espacios para su guardado
+        val emaLimp = txtEmail.text.toString().trim()
+        val pasLimp = txtPass.text.toString().trim()
+        // Verificar que tipo de usuario se va a registrar; Primero sera cliente, si no, es porque es administrador
+        if(!valiTipUser){
+            if(valiNam && valiCorr && valiCon && valiPreg && valiResp && valiSis){
+                // Usuario cliente
+                auth.createUserWithEmailAndPassword(emaLimp, pasLimp).addOnCompleteListener{ task ->
+                    if(task.isSuccessful){
+                        // Obteniendo el ID generada por el objeto de autenticacion
+                        val idAuthUs = auth.currentUser?.uid
                         // Obteniendo el valor de la pregunta seleccionada
                         val pregSel = spSafQuKyReg.selectedItem.toString()
-                        // Preparando la informacion del registro para que se guarde con una key generada por firebase
-                        val addUserDB = ref.push()
-                        val nUser = Usuario(id_Usuario=addUserDB.key.toString(),nombre=txtName.text.toString(),correo=txtEmail.text.toString(),contra=txtPass.text.toString(),tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
-                        addUserDB.setValue(nUser)
+                        // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
+                        val nUser = if(selPin){    // Si se trae pin, aqui es donde sera agregado para su almacenado
+                            valiPin = ValiCampos.validarPin(txtPin.text, this)
+                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
+                        }else{
+                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
+                        }
+                        // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
+                        database.reference.child("Usuarios").child(idAuthUs).setValue(nUser)
                         // Creando los elementos para relacionar el usuario con el sistema
                         val sisRef = Firebase.database.getReference("Sistema")
                         sisRef.addValueEventListener(object: ValueEventListener{
@@ -257,70 +254,46 @@ class RegisterActivity : AppCompatActivity() {
                                     if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
                                         val sisUsRef = Firebase.database.getReference("User_Sistems")
                                         val addUserSisDB = sisUsRef.push()
-                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=addUserDB.key.toString())
+                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=idAuthUs)
                                         addUserSisDB.setValue(nRelSisUs)
-                                        // Para este punto se entiende que el usuario fue almacenado en la BD, por lo que procede a autenticarse y lanzarse dentro de la app
-                                        logIn()
                                     }
+                                    // Se procede a lanzar al usuario a la activity de dashboard
+                                    Toast.makeText(applicationContext, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
+                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                    val intentDash = Intent(applicationContext, DashboardActivity::class.java).apply {
+                                        putExtra("correo", txtEmail.text.toString())
+                                    }
+                                    startActivity(intentDash)
                                 }
                             }
                             override fun onCancelled(databaseError: DatabaseError) {
                                 Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
                             }
                         })
-                    }else{
-                        Toast.makeText(this, "Error: Favor de revisar la informacion ingresada", Toast.LENGTH_SHORT).show()
-                    }
-                }else{
-                    if(valiPin){
-                        // Usuario regular; con PIN
-                        // Creando la referencia de la coleccion de preguntas en la BD
-                        ref = database.getReference("Usuarios")
-                        // Obteniendo el valor de la pregunta seleccionada
-                        val pregSel = spSafQuKyReg.selectedItem.toString()
-                        // Preparando la informacion del registro para que se guarde con una key generada por firebase
-                        val addUserDB = ref.push()
-                        val nUser = Usuario(id_Usuario=addUserDB.key.toString(),nombre=txtName.text.toString(),correo=txtEmail.text.toString(),contra=txtPass.text.toString(),tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
-                        addUserDB.setValue(nUser)
-                        // Creando los elementos para relacionar el usuario con el sistema
-                        val sisRef = Firebase.database.getReference("Sistema")
-                        sisRef.addValueEventListener(object: ValueEventListener{
-                            override fun onDataChange(dataSnapshot: DataSnapshot){
-                                for (objSis in dataSnapshot.children){
-                                    val sisJSON = gson.toJson(objSis.value)
-                                    val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                                    // Si el sistema selecionado corresponde con el registro de firebase se extraera el valor para ingresarlo en user_sistems
-                                    if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
-                                        val sisUsRef = Firebase.database.getReference("User_Sistems")
-                                        val addUserSisDB = sisUsRef.push()
-                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=addUserDB.key.toString())
-                                        addUserSisDB.setValue(nRelSisUs)
-                                        // Para este punto se entiende que el usuario fue almacenado en la BD, por lo que procede a autenticarse y lanzarse dentro de la app
-                                        logIn()
-                                    }
-                                }
-                            }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                            }
-                        })
-                    }else{
-                        Toast.makeText(this, "Error: Favor de revisar la informacion ingresada", Toast.LENGTH_SHORT).show()
                     }
                 }
             }else{
-                if(rbSelAdmin.isChecked){
-                    valiTel = ValiCampos.validarTel(txtAdminTel.text, this)
-                    if(valiTel){
-                        // Usuario administrador; sin PIN
-                        // Creando la referencia de la coleccion de preguntas en la BD
-                        ref = database.getReference("Usuarios")
+                Toast.makeText(this, "Error: No se ha podido autenticar al cliente", Toast.LENGTH_SHORT).show()
+            }
+        }else{
+            valiTel = ValiCampos.validarTel(txtAdminTel.text, this)
+            if(valiNam && valiCorr && valiCon && valiPreg && valiResp && valiSis && valiTel){
+                // Usuario administrador
+                auth.createUserWithEmailAndPassword(emaLimp,pasLimp).addOnCompleteListener { task ->
+                    if(task.isSuccessful){
+                        // Obteniendo el ID generada por el objeto de autenticacion
+                        val idAuthUs = auth.currentUser?.uid
                         // Obteniendo el valor de la pregunta seleccionada
                         val pregSel = spSafQuKyReg.selectedItem.toString()
-                        // Preparando la informacion del registro para que se guarde con una key generada por firebase
-                        val addUserDB = ref.push()
-                        val nUser = Usuario(id_Usuario=addUserDB.key.toString(),nombre=txtName.text.toString(),correo=txtEmail.text.toString(),contra=txtPass.text.toString(),tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
-                        addUserDB.setValue(nUser)
+                        // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
+                        val nUser = if(selPin){    // Si se trae pin, aqui es donde sera agregado para su almacenado
+                            valiPin = ValiCampos.validarPin(txtPin.text, this)
+                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
+                        }else{
+                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
+                        }
+                        // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
+                        database.reference.child("Usuarios").child(idAuthUs).setValue(nUser)
                         // Creando los elementos para relacionar el usuario con el sistema
                         val sisRef = Firebase.database.getReference("Sistema")
                         sisRef.addValueEventListener(object: ValueEventListener{
@@ -332,11 +305,17 @@ class RegisterActivity : AppCompatActivity() {
                                     if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
                                         val sisUsRef = Firebase.database.getReference("User_Sistems")
                                         val addUserSisDB = sisUsRef.push()
-                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=addUserDB.key.toString())
+                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=idAuthUs)
                                         addUserSisDB.setValue(nRelSisUs)
-                                        // Para este punto se entiende que el usuario fue almacenado en la BD, por lo que procede a autenticarse y lanzarse dentro de la app
-                                        logIn()
                                     }
+                                    // Se procede a lanzar al usuario a la activity de dashboard
+                                    Toast.makeText(applicationContext, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
+                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                    val intentDash = Intent(applicationContext, DashboardActivity::class.java).apply {
+                                        putExtra("correo", txtEmail.text.toString())
+                                        putExtra("contra", txtPass.text.toString())
+                                    }
+                                    startActivity(intentDash)
                                 }
                             }
                             override fun onCancelled(databaseError: DatabaseError) {
@@ -344,39 +323,9 @@ class RegisterActivity : AppCompatActivity() {
                             }
                         })
                     }
-                }else{
-                    // Usuario regular; sin PIN
-                    // Creando la referencia de la coleccion de preguntas en la BD
-                    ref = database.getReference("Usuarios")
-                    // Obteniendo el valor de la pregunta seleccionada
-                    val pregSel = spSafQuKyReg.selectedItem.toString()
-                    // Preparando la informacion del registro para que se guarde con una key generada por firebase
-                    val addUserDB = ref.push()
-                    val nUser = Usuario(id_Usuario=addUserDB.key.toString(),nombre=txtName.text.toString(),correo=txtEmail.text.toString(),contra=txtPass.text.toString(),tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
-                    addUserDB.setValue(nUser)
-                    // Creando los elementos para relacionar el usuario con el sistema
-                    val sisRef = Firebase.database.getReference("Sistema")
-                    sisRef.addValueEventListener(object: ValueEventListener{
-                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                            for (objSis in dataSnapshot.children){
-                                val sisJSON = gson.toJson(objSis.value)
-                                val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                                // Si el sistema selecionado corresponde con el registro de firebase se extraera el valor para ingresarlo en user_sistems
-                                if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
-                                    val sisUsRef = Firebase.database.getReference("User_Sistems")
-                                    val addUserSisDB = sisUsRef.push()
-                                    val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=addUserDB.key.toString())
-                                    addUserSisDB.setValue(nRelSisUs)
-                                    // Para este punto se entiende que el usuario fue almacenado en la BD, por lo que procede a autenticarse y lanzarse dentro de la app
-                                    logIn()
-                                }
-                            }
-                        }
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                        }
-                    })
                 }
+            }else{
+                Toast.makeText(this, "Error: No se ha podido autenticar al administrador", Toast.LENGTH_SHORT).show()
             }
         }
     }

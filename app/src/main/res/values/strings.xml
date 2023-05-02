@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Ardu_Security</string>
-    <string name="ip">http://192.168.1.71:5000</string>
     <!--Strings de la vista de login-->
     <string name="imgLogo">AppLogoImage</string>
     <string name="txtEmail">Correo</string>
@@ -11,17 +10,16 @@
     <string name="btnRegister">Registrese aqui</string>
     <string name="lblCopyright">Ardu Security 2023 Copyright © Todos los derechos reservados</string>
     <!-- Strings de la vista de olvido su contraseña -->
-    <string name="headLblForPass">¿Como desea recuperar su contraseña?</string>
-    <string name="rbSendPass">Enviar contraseña a su correo electronico</string>
-    <string name="rbSelQues">Seleccionar pregunta clave</string>
-    <string name="txtIngreCorr">Ingrese su direccion de correo</string>
-    <string name="btnConfCorr">Confirmar direccion</string>
+    <string name="headLblForPass">Ingrese los datos solicitados</string>
+    <string name="txtNombre">Nombre Completo</string>
+    <string name="txtIngreCorr">Direccion de correo</string>
+    <string name="lblPreg">Pregunta Clave</string>
     <string-array name="lstSavQues">
         <item>Seleccione su pregunta clave</item>
     </string-array>
-    <string name="lblResQuKey">Respuesta a su pregunta clave</string>
-    <string name="txtRespKey">Ingrese su respuesta</string>
-    <string name="btnComproResp">Verificar Respuesta</string>
+    <string name="txtRespKey">Respuesta a su pregunta</string>
+    <string name="btnComproResp">Enviar Correo</string>
+    <string name="msgRecEma">Procesando Solicitud…</string>
     <!-- Strings de la vista dashboard -->
     <string name="headDash">Dashboard</string>
     <string name="btnEsta">Estaciones</string>
@@ -64,4 +62,19 @@
     <string name="lblCamView">Camara</string>
     <!-- Strings de la vistas de los sensores-->
     <string name="lblSensView">Sensor</string>
+    <!-- Strings de la vista del perfil-->
+    <string name="headPerfi">Perfil de Usuario</string>
+    <string name="lblName">Nombre: </string>
+    <string name="lblCorr">Correo: </string>
+    <string name="btnEditNombre">Editar Nombre</string>
+    <string name="btnEditCorreo">Editar Correo</string>
+    <string name="btnEditContra">Editar Contraseña</string>
+    <string name="btnEditPregun">Editar Pregunta</string>
+    <string name="btnEditRespu">Editar Respuesta</string>
+    <string name="btnEditPin">Editar Pin</string>
+    <string name="btnEditTele">Editar Telefono</string>
+    <!-- Strings de la vistas de edicion de campos-->
+    <string name="headEdit">Editar </string>
+    <string name="lblOldVal">Valor Previo: </string>
+    <string name="lblNewVal">Nuevo Valor: </string>
 </resources>

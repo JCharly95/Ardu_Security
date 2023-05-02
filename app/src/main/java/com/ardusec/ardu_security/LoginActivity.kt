@@ -54,10 +54,27 @@ class LoginActivity : AppCompatActivity() {
         btnAyuda = findViewById(R.id.btnInfo)
     }
 
+    private fun aviso(){
+        val mensaje = "Consideraciones de campos: \n\n" +
+                "Correo; Formato Aceptado:\n" +
+                "* usuario@dominio.com(.mx)\n\n" +
+                "Contraseña:\n" +
+                "* Extension minima de 8 caracteres\n" +
+                "* Por lo menos una mayuscula\n" +
+                "* Por lo menos un numero\n" +
+                "* Por lo menos  un caracter especial"
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Aviso")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
     private fun addListeners(){
         // Agregar los listener de los botones
         btnLostPass.setOnClickListener{
-            val intentLost = Intent(applicationContext,ForgotPassActivity::class.java)
+            val intentLost = Intent(applicationContext,ResetPassSelActivity::class.java)
             startActivity(intentLost)
         }
         chbVerContra.setOnClickListener{
@@ -96,23 +113,6 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error: Favor de ingresar datos", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun aviso(){
-        val mensaje = "Consideraciones de campos: \n\n" +
-                "Correo; Formato Aceptado:\n" +
-                "* usuario@dominio.com(.mx)\n\n" +
-                "Contraseña:\n" +
-                "* Extension minima de 8 caracteres\n" +
-                "* Por lo menos una mayuscula\n" +
-                "* Por lo menos un numero\n" +
-                "* Por lo menos  un caracter especial"
-        val aviso = AlertDialog.Builder(this)
-        aviso.setTitle("Aviso")
-        aviso.setMessage(mensaje)
-        aviso.setPositiveButton("Aceptar", null)
-        val dialog: AlertDialog = aviso.create()
-        dialog.show()
     }
 
     private fun validarCorreo(correo: String, contexto: Context): Boolean{
@@ -177,34 +177,29 @@ class LoginActivity : AppCompatActivity() {
         // Se crea una instancia de FirebaseAuth (Autenticacion y se inicia sesion/loguea)
         FirebaseAuth.getInstance()
             .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener{task ->
+                .addOnCompleteListener{ task ->
                     if(task.isSuccessful){
-                        // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard
-                        val user = Firebase.auth.currentUser
-                        user?.let {
-                            // Creando la referencia de la coleccion de preguntas en la BD
-                            val refDB = Firebase.database.getReference("Usuarios")
-                            data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val contra: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
-                            refDB.addValueEventListener(object: ValueEventListener{
-                                override fun onDataChange(dataSnapshot: DataSnapshot){
-                                    for (objUs in dataSnapshot.children){
-                                        val gson = Gson()
-                                        val userJSON = gson.toJson(objUs.value)
-                                        val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                                        val nombre = resUser.nombre
-                                        Toast.makeText(applicationContext, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
-                                        val intentoDash = Intent(applicationContext, DashboardActivity::class.java).apply {
-                                            putExtra("correo", email)
-                                            putExtra("contra", password)
-                                        }
-                                        startActivity(intentoDash)
+                        // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard y se accede a firebase para mostrar su nombre
+                        val refDB = Firebase.database.getReference("Usuarios")
+                        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+                        refDB.addValueEventListener(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot){
+                                for (objUs in dataSnapshot.children){
+                                    val gson = Gson()
+                                    val userJSON = gson.toJson(objUs.value)
+                                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                                    val nombre = resUser.nombre
+                                    Toast.makeText(applicationContext, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
+                                    val intentoDash = Intent(applicationContext, DashboardActivity::class.java).apply {
+                                        putExtra("correo", email)
                                     }
+                                    startActivity(intentoDash)
                                 }
-                                override fun onCancelled(databaseError: DatabaseError) {
-                                    Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                                }
-                            })
-                        }
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                            }
+                        })
                     }else{
                         // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
                         Toast.makeText(this, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
