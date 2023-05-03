@@ -21,7 +21,7 @@
     <string name="btnComproResp">Enviar Correo</string>
     <string name="msgRecEma">Procesando Solicitud…</string>
     <!-- Strings de la vista dashboard -->
-    <string name="headDash">Dashboard</string>
+    <string name="headDash">Menú Principal</string>
     <string name="btnEsta">Estaciones</string>
     <string name="btnGenRepo">Generar Reportes</string>
     <string name="btnPerfUser">Perfil de Usuario</string>
@@ -66,15 +66,19 @@
     <string name="headPerfi">Perfil de Usuario</string>
     <string name="lblName">Nombre: </string>
     <string name="lblCorr">Correo: </string>
-    <string name="btnEditNombre">Editar Nombre</string>
-    <string name="btnEditCorreo">Editar Correo</string>
-    <string name="btnEditContra">Editar Contraseña</string>
-    <string name="btnEditPregun">Editar Pregunta</string>
-    <string name="btnEditRespu">Editar Respuesta</string>
-    <string name="btnEditPin">Editar Pin</string>
-    <string name="btnEditTele">Editar Telefono</string>
+    <string name="btnEditNombre">Cambiar Nombre</string>
+    <string name="btnEditCorreo">Cambiar Correo</string>
+    <string name="btnEditContra">Cambiar Contraseña</string>
+    <string name="btnEditPregun">Cambiar Pregunta</string>
+    <string name="btnEditRespu">Cambiar Respuesta</string>
+    <string name="btnEditSisRel">Cambiar Sistema</string>
+    <string name="btnEditPin">Cambiar Pin</string>
+    <string name="btnEditTele">Cambiar Telefono</string>
     <!-- Strings de la vistas de edicion de campos-->
     <string name="headEdit">Editar </string>
     <string name="lblOldVal">Valor Previo: </string>
+    <string name="txtViejo">Valor Guardado</string>
     <string name="lblNewVal">Nuevo Valor: </string>
+    <string name="txtNuevo">Ingrese su nuevo valor</string>
+    <string name="btnConfEdit">Actualizar </string>
 </resources>

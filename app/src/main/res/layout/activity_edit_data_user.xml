@@ -15,132 +15,131 @@
         tools:context=".EditDataUserActivity">
 
         <TextView
-            android:id="@+id/lblDash"
+            android:id="@+id/lblHeadEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/headEdit"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="30sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.209"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/lblNombre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/lblName"
-            android:textColor="@color/cardview_light_background"
-            android:textSize="14sp"
+        <Button
+            android:id="@+id/btnInfoActu"
+            android:layout_width="51dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="25dp"
+            android:text="¿?"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.22"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblDash" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/lblCorreo"
+            android:id="@+id/lblOldDat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/lblCorr"
+            android:layout_marginTop="20dp"
+            android:text="@string/lblOldVal"
             android:textColor="@color/cardview_light_background"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.216"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblNombre" />
-
-        <Button
-            android:id="@+id/btnEditNam"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="@string/btnEditNombre"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblCorreo" />
-
-        <Button
-            android:id="@+id/btnEditCorr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="@string/btnEditCorreo"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditNam" />
-
-        <Button
-            android:id="@+id/btnEditContra"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="@string/btnEditContra"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.242"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditCorr" />
+            app:layout_constraintTop_toBottomOf="@+id/lblHeadEdit" />
 
-        <Button
-            android:id="@+id/btnEditPreg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="@string/btnEditPregun"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditContra" />
-
-        <Button
-            android:id="@+id/btnEditResp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="@string/btnEditRespu"
-            android:textSize="20sp"
+        <EditText
+            android:id="@+id/txtOldEditDat"
+            android:layout_width="256dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:autofillHints="emailAddress"
+            android:background="@color/white"
+            android:ems="10"
+            android:hint="@string/txtViejo"
+            android:inputType="textEmailAddress"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditPreg" />
+            app:layout_constraintTop_toBottomOf="@+id/lblOldDat" />
 
-        <Button
-            android:id="@+id/btnEditPin"
+        <TextView
+            android:id="@+id/lblNewDat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="@string/btnEditPin"
-            android:textSize="20sp"
+            android:layout_marginTop="30dp"
+            android:text="@string/lblNewVal"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.242"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtOldEditDat" />
+
+        <EditText
+            android:id="@+id/txtNewEditDat"
+            android:layout_width="256dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:autofillHints="emailAddress"
+            android:background="@color/white"
+            android:ems="10"
+            android:hint="@string/txtNuevo"
+            android:inputType="textEmailAddress"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblNewDat" />
+
+        <Spinner
+            android:id="@+id/spNewPregKey"
+            android:layout_width="256dp"
+            android:layout_height="48sp"
+            android:layout_marginTop="10dp"
+            android:background="@color/white"
+            android:dropDownWidth="wrap_content"
+            android:entries="@array/lstSavQues"
+            android:spinnerMode="dropdown"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditResp"
+            app:layout_constraintTop_toBottomOf="@+id/txtNewEditDat"
+            tools:visibility="visible" />
+
+        <Spinner
+            android:id="@+id/spNewSis"
+            android:layout_width="256dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/white"
+            android:dropDownWidth="wrap_content"
+            android:entries="@array/lstSistems"
+            android:spinnerMode="dropdown"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spNewPregKey"
             tools:visibility="visible" />
 
         <Button
-            android:id="@+id/btnEditTele"
+            android:id="@+id/btnConfEditData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="@string/btnEditTele"
+            android:text="@string/btnConfEdit"
             android:textSize="20sp"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditPin" />
+            app:layout_constraintTop_toBottomOf="@+id/spNewSis" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

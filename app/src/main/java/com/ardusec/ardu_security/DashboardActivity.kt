@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -16,6 +19,7 @@ import com.google.gson.Gson
 
 class DashboardActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
+    private lateinit var btnAyuda: Button
     private lateinit var btnEstas: Button
     private lateinit var btnGenRep: Button
     private lateinit var btnEdiPerf: Button
@@ -23,7 +27,6 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var btnManual: Button
     private lateinit var btnMenSis: Button
     private lateinit var btnCerSes: Button
-    private lateinit var bundle: Bundle
     // Creando el objeto GSON
     private var gson = Gson()
 
@@ -35,12 +38,21 @@ class DashboardActivity : AppCompatActivity() {
         setUp()
         // Agregar los listeners
         addListeners()
+        // Configurando el backPressed
+        onBackPressedDispatcher.addCallback(this, presAtrasCallback)
+    }
+
+    private val presAtrasCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            cerSes()
+        }
     }
 
     private fun setUp(){
         // Titulo de la pantalla
         title = "Dashboard"
         // Relacionando los elementos con su objeto de la interfaz
+        btnAyuda = findViewById(R.id.btnInfoDash)
         btnEstas = findViewById(R.id.btnStats)
         btnGenRep = findViewById(R.id.btnGenRep)
         btnEdiPerf = findViewById(R.id.btnPerfUs)
@@ -48,27 +60,26 @@ class DashboardActivity : AppCompatActivity() {
         btnManual = findViewById(R.id.btnManUs)
         btnMenSis = findViewById(R.id.btnGesSis)
         btnCerSes = findViewById(R.id.btnCerrSes)
-        // Crear un bundle para los extras
-        bundle = intent.extras!!
-        // Saber si el usuario vera el boton de gestion o no
-        val corrAcc = bundle.getString("correo")
-        // Kotlin se protege en caso de que no haya extras por eso se necesita establecer el ?
-        btnGestSis(corrAcc?: "")
+
+        // Obtener el correo del usuario desde Firebase auth y enviarlo a la funcion de la vista del boton
+        val corrAcc = getEmail()
+        btnGestSis(corrAcc)
     }
 
     private fun addListeners(){
         // Agregar los listener
+        btnAyuda.setOnClickListener {
+            avisoDash()
+        }
         btnEstas.setOnClickListener {
-            val statsActi = Intent(applicationContext,StationsActivity::class.java)
+            val statsActi = Intent(this, StationsActivity::class.java)
             startActivity(statsActi)
         }
         btnGenRep.setOnClickListener {
 
         }
         btnEdiPerf.setOnClickListener {
-            val intentPerf = Intent(this, PerfilUserActivity::class.java).apply {
-                putExtra("correo", bundle.getString("correo"))
-            }
+            val intentPerf = Intent(this, PerfilUserActivity::class.java)
             startActivity(intentPerf)
         }
         btnMenAj.setOnClickListener {
@@ -81,13 +92,37 @@ class DashboardActivity : AppCompatActivity() {
 
         }
         btnCerSes.setOnClickListener {
-            // Cerrar Sesion en Firebase
-            FirebaseAuth.getInstance().signOut()
-            // Lanzar la app hacia la primera ventana
-            val endActi = Intent(this,MainActivity::class.java)
-            startActivity(endActi)
-            finish()
+            cerSes()
         }
+    }
+
+    private fun avisoDash(){
+        val mensaje = "Si presiona el boton de atras, tambien se cerrara su sesion " +
+                "y sera dirigido al inicio de la App."
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Aviso")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
+    private fun cerSes(){
+        // Cerrar Sesion en Firebase
+        FirebaseAuth.getInstance().signOut()
+        // Lanzar la app hacia la primera ventana
+        val endActi = Intent(this, MainActivity::class.java)
+        startActivity(endActi)
+        finish()
+    }
+
+    private fun getEmail(): String {
+        val user = Firebase.auth.currentUser
+        var email = ""
+        user?.let {task ->
+            email = task.email.toString()
+        }
+        return email
     }
 
     private fun btnGestSis(correo: String){

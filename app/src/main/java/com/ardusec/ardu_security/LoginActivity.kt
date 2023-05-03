@@ -11,7 +11,6 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -190,9 +189,7 @@ class LoginActivity : AppCompatActivity() {
                                     val resUser = gson.fromJson(userJSON, Usuario::class.java)
                                     val nombre = resUser.nombre
                                     Toast.makeText(applicationContext, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
-                                    val intentoDash = Intent(applicationContext, DashboardActivity::class.java).apply {
-                                        putExtra("correo", email)
-                                    }
+                                    val intentoDash = Intent(applicationContext, DashboardActivity::class.java)
                                     startActivity(intentoDash)
                                 }
                             }

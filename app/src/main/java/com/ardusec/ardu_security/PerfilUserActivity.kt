@@ -8,7 +8,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isGone
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 
 class PerfilUserActivity : AppCompatActivity() {
@@ -20,9 +23,9 @@ class PerfilUserActivity : AppCompatActivity() {
     private lateinit var btnEditPass: Button
     private lateinit var btnEditPreg: Button
     private lateinit var btnEditResp: Button
+    private lateinit var btnEditSis: Button
     private lateinit var btnEditPin: Button
     private lateinit var btnEditTel: Button
-    private lateinit var bundle: Bundle
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
@@ -50,14 +53,24 @@ class PerfilUserActivity : AppCompatActivity() {
         btnEditPass = findViewById(R.id.btnEditContra)
         btnEditPreg = findViewById(R.id.btnEditPreg)
         btnEditResp = findViewById(R.id.btnEditResp)
+        btnEditSis = findViewById(R.id.btnEditSisRel)
         btnEditPin = findViewById(R.id.btnEditPin)
         btnEditTel = findViewById(R.id.btnEditTele)
-        // Crear un bundle para los extras
-        bundle = intent.extras!!
-        // Saber si el usuario vera el boton de gestion o no
-        val corrAcc = bundle.getString("correo")
-        // Kotlin se protege en caso de que no haya extras por eso se necesita establecer el ?
-        rellDatPerf(corrAcc?: "")
+        // Inicializando instancia hacia el nodo raiz de la BD
+        database = Firebase.database
+
+        // Obtener el correo del usuario desde Firebase auth y enviarlo a la funcion de la vista del boton
+        val corrAcc = getEmail()
+        rellDatPerf(corrAcc)
+    }
+
+    private fun getEmail(): String {
+        val user = Firebase.auth.currentUser
+        var email = ""
+        user?.let {task ->
+            email = task.email.toString()
+        }
+        return email
     }
 
     private fun rellDatPerf(correo: String){
@@ -69,8 +82,8 @@ class PerfilUserActivity : AppCompatActivity() {
                     val userJSON = gson.toJson(objUs.value)
                     val resUser = gson.fromJson(userJSON, Usuario::class.java)
                     if(resUser.correo == correo){
-                        lblNom.text = resUser.nombre
-                        lblCor.text = resUser.correo
+                        lblNom.text = lblNom.text.toString() +"  "+ resUser.nombre
+                        lblCor.text = lblCor.text.toString() +"  "+ resUser.correo
                         if(resUser.tipo_Usuario == "Administrador"){
                             btnEditTel.isGone = false
                         }
@@ -84,26 +97,55 @@ class PerfilUserActivity : AppCompatActivity() {
     }
 
     private fun addListeners(){
+        // Toda la edicion de campos se lanzara hacia la misma actividad,
+        // solo que dependera del campo a editar, los valores que seran mostrados
         btnEditNom.setOnClickListener {
-
+            val intentChgNom = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Nombre")
+            }
+            startActivity(intentChgNom)
         }
         btnEditEma.setOnClickListener{
-
+            val intentChgEma = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Correo")
+            }
+            startActivity(intentChgEma)
         }
         btnEditPass.setOnClickListener {
-
+            val intentChgPass = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Contraseña")
+            }
+            startActivity(intentChgPass)
         }
         btnEditPreg.setOnClickListener {
-
+            val intentChgPreg = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Pregunta")
+            }
+            startActivity(intentChgPreg)
         }
         btnEditResp.setOnClickListener {
-
+            val intentChgResp = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Respuesta")
+            }
+            startActivity(intentChgResp)
+        }
+        btnEditSis.setOnClickListener {
+            val intentChgSis = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Sistema")
+            }
+            startActivity(intentChgSis)
         }
         btnEditPin.setOnClickListener {
-
+            val intentChgPin = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Pin")
+            }
+            startActivity(intentChgPin)
         }
         btnEditTel.setOnClickListener {
-
+            val intentChgTel = Intent(this, EditDataUserActivity::class.java).apply {
+                putExtra("campo", "Telefono")
+            }
+            startActivity(intentChgTel)
         }
     }
 }
