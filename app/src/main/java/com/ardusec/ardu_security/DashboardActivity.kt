@@ -21,7 +21,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var btnEdiPerf: Button
     private lateinit var btnMenAj: Button
     private lateinit var btnManual: Button
-    private lateinit var btnManSis: Button
+    private lateinit var btnMenSis: Button
     private lateinit var btnCerSes: Button
     private lateinit var bundle: Bundle
     // Creando el objeto GSON
@@ -35,12 +35,6 @@ class DashboardActivity : AppCompatActivity() {
         setUp()
         // Agregar los listeners
         addListeners()
-        // Crear un bundle para los extras
-        bundle = intent.extras!!
-        // Saber si el usuario vera el boton de gestion o no
-        val corrAcc = bundle.getString("correo")
-        // Kotlin se protege en caso de que no haya extras por eso se necesita establecer el ?
-        btnGestSis(corrAcc?: "")
     }
 
     private fun setUp(){
@@ -52,8 +46,14 @@ class DashboardActivity : AppCompatActivity() {
         btnEdiPerf = findViewById(R.id.btnPerfUs)
         btnMenAj = findViewById(R.id.btnAjuste)
         btnManual = findViewById(R.id.btnManUs)
-        btnManSis = findViewById(R.id.btnGesSis)
+        btnMenSis = findViewById(R.id.btnGesSis)
         btnCerSes = findViewById(R.id.btnCerrSes)
+        // Crear un bundle para los extras
+        bundle = intent.extras!!
+        // Saber si el usuario vera el boton de gestion o no
+        val corrAcc = bundle.getString("correo")
+        // Kotlin se protege en caso de que no haya extras por eso se necesita establecer el ?
+        btnGestSis(corrAcc?: "")
     }
 
     private fun addListeners(){
@@ -62,11 +62,23 @@ class DashboardActivity : AppCompatActivity() {
             val statsActi = Intent(applicationContext,StationsActivity::class.java)
             startActivity(statsActi)
         }
+        btnGenRep.setOnClickListener {
+
+        }
         btnEdiPerf.setOnClickListener {
             val intentPerf = Intent(this, PerfilUserActivity::class.java).apply {
                 putExtra("correo", bundle.getString("correo"))
             }
             startActivity(intentPerf)
+        }
+        btnMenAj.setOnClickListener {
+
+        }
+        btnManual.setOnClickListener {
+
+        }
+        btnMenSis.setOnClickListener {
+
         }
         btnCerSes.setOnClickListener {
             // Cerrar Sesion en Firebase
@@ -89,7 +101,7 @@ class DashboardActivity : AppCompatActivity() {
                     val resUser = gson.fromJson(userJSON, Usuario::class.java)
                     if(resUser.correo == correo){
                         if(resUser.tipo_Usuario == "Administrador"){
-                            btnManSis.isGone = false
+                            btnMenSis.isGone = false
                         }
                     }
                 }
