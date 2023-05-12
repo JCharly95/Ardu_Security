@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -219,7 +220,7 @@ class RegisterActivity : AppCompatActivity() {
         // Clases de datos virtuales para implementar el guardado
         data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
         data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String)
-        data class UserSistem(val id_User_Sis:String, val sistema_ID: String, val user_ID: String)
+        data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
 
         // Preparar los campos limpios sin espacios para su guardado
         val emaLimp = txtEmail.text.toString().trim()
@@ -230,19 +231,22 @@ class RegisterActivity : AppCompatActivity() {
                 // Usuario cliente
                 auth.createUserWithEmailAndPassword(emaLimp, pasLimp).addOnCompleteListener{ task ->
                     if(task.isSuccessful){
-                        // Obteniendo el ID generada por el objeto de autenticacion
-                        val idAuthUs = auth.currentUser?.uid
-                        // Obteniendo el valor de la pregunta seleccionada
+                        // Obteniendo la referencia del usuario generada por el objeto de autenticacion
+                        val authUs = auth.currentUser
+                        // Ingresar el nombre del usuario en el perfil de autenticacion de firebase
+                        val actPerfil = userProfileChangeRequest { displayName = txtName.text.toString() }
+                        authUs?.updateProfile(actPerfil)
+                        // Preparando el sistema para ingresar el usuario en la BD; Parte 1: Obteniendo el valor de la pregunta seleccionada
                         val pregSel = spSafQuKyReg.selectedItem.toString()
                         // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
                         val nUser = if(selPin){    // Si se trae pin, aqui es donde sera agregado para su almacenado
                             valiPin = ValiCampos.validarPin(txtPin.text, this)
-                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
+                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
                         }else{
-                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
+                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
                         }
                         // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
-                        database.reference.child("Usuarios").child(idAuthUs).setValue(nUser)
+                        database.reference.child("Usuarios").child(authUs.uid).setValue(nUser)
                         // Creando los elementos para relacionar el usuario con el sistema
                         val sisRef = Firebase.database.getReference("Sistema")
                         sisRef.addValueEventListener(object: ValueEventListener{
@@ -254,7 +258,7 @@ class RegisterActivity : AppCompatActivity() {
                                     if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
                                         val sisUsRef = Firebase.database.getReference("User_Sistems")
                                         val addUserSisDB = sisUsRef.push()
-                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=idAuthUs)
+                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_Nom=resSis.nombre_Sis,user_Email=emaLimp)
                                         addUserSisDB.setValue(nRelSisUs)
                                     }
                                     // Se procede a lanzar al usuario a la activity de dashboard
@@ -282,18 +286,18 @@ class RegisterActivity : AppCompatActivity() {
                 auth.createUserWithEmailAndPassword(emaLimp,pasLimp).addOnCompleteListener { task ->
                     if(task.isSuccessful){
                         // Obteniendo el ID generada por el objeto de autenticacion
-                        val idAuthUs = auth.currentUser?.uid
+                        val authUs = auth.currentUser
                         // Obteniendo el valor de la pregunta seleccionada
                         val pregSel = spSafQuKyReg.selectedItem.toString()
                         // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
                         val nUser = if(selPin){    // Si se trae pin, aqui es donde sera agregado para su almacenado
                             valiPin = ValiCampos.validarPin(txtPin.text, this)
-                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
+                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
                         }else{
-                            Usuario(id_Usuario=idAuthUs!!,nombre=txtName.text.toString(),correo=txtEmail.text.toString(),tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
+                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
                         }
                         // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
-                        database.reference.child("Usuarios").child(idAuthUs).setValue(nUser)
+                        database.reference.child("Usuarios").child(authUs.uid).setValue(nUser)
                         // Creando los elementos para relacionar el usuario con el sistema
                         val sisRef = Firebase.database.getReference("Sistema")
                         sisRef.addValueEventListener(object: ValueEventListener{
@@ -305,7 +309,7 @@ class RegisterActivity : AppCompatActivity() {
                                     if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
                                         val sisUsRef = Firebase.database.getReference("User_Sistems")
                                         val addUserSisDB = sisUsRef.push()
-                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_ID=resSis.id_Sistema,user_ID=idAuthUs)
+                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_Nom=resSis.nombre_Sis,user_Email=authUs.email!!)
                                         addUserSisDB.setValue(nRelSisUs)
                                     }
                                     // Se procede a lanzar al usuario a la activity de dashboard

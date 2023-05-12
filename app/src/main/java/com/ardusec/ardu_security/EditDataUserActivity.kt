@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -31,6 +32,8 @@ class EditDataUserActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     // Creando el objeto GSON
     private var gson = Gson()
+    // Variable del correo para la busqueda del usuario en firebase auth
+    private lateinit var email: String
     // Bundle para extras y saber que campo sera actualizado
     private lateinit var bundle: Bundle
     private lateinit var campo: String
@@ -60,7 +63,8 @@ class EditDataUserActivity : AppCompatActivity() {
         user = Firebase.auth.currentUser!!
         database = Firebase.database
         ref = database.reference
-
+        // Estableciendo la variable de correo
+        email = ""
         // Obteniendo el extra enviado para saber que campo actualizar
         bundle = intent.extras!!
         campo = bundle.getString("campo").toString()
@@ -72,28 +76,72 @@ class EditDataUserActivity : AppCompatActivity() {
         // Establecer el encabezado y el boton, acorde al campo a actualizar
         lblHeadSec.text = lblHeadSec.text.toString()+" "+campo
         btnConfCamb.text = btnConfCamb.text.toString()+" "+campo
-
-        // Si es el sistema o las preguntas a actualizar, se ocultara el campo de texto y se mostrara el Spinner
-        if(campo == "Pregunta"){
-            txtValNue.isGone = true
-            spNPreg.isGone = false
-            rellSpinPregs()
-        }
-        if(campo == "Sistema"){
-            txtValNue.isGone = true
-            spNSis.isGone = false
-            rellSpinSis()
+        // Extraccion del correo del usuario desde Firebase Auth
+        user.let { task ->
+            email = task.email.toString()
+            data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+            // Creando la referencia de la coleccion de preguntas en la BD
+            val refDB = ref.child("Usuarios")
+            refDB.addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(dataSnapshot: DataSnapshot){
+                    for (objUs in dataSnapshot.children){
+                        val userJSON = gson.toJson(objUs.value)
+                        val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                        if(resUser.correo == email){
+                            when (campo){
+                                "Nombre" -> { txtValVie.setText(resUser.nombre) }
+                                "Correo" -> { txtValVie.setText(resUser.correo) }
+                                "Contraseña" -> { txtValVie.setText("Por seguridad, no es posible mostrar la contraseña previa") }
+                                "Pregunta" -> {
+                                    // Si es el sistema o las preguntas a actualizar, se ocultara el campo de texto y se mostrara el Spinner
+                                    txtValVie.setText(resUser.preg_Seguri)
+                                    txtValNue.isGone = true
+                                    spNPreg.isGone = false
+                                    rellSpinPregs()
+                                }
+                                "Respuesta" -> { txtValVie.setText(resUser.resp_Seguri) }
+                                "Sistema" -> {
+                                    txtValNue.isGone = true
+                                    spNSis.isGone = false
+                                    rellSpinSis()
+                                    // Obtener el correo del usuario en la relacion user_sistems y mostrarlo en el campo de valor viejo
+                                    ref = database.getReference("User_Sistems")
+                                    data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
+                                    ref.addValueEventListener(object: ValueEventListener {
+                                        override fun onDataChange(dataSnapshot: DataSnapshot){
+                                            for (objSisUs in dataSnapshot.children){
+                                                val sisUSJSON = gson.toJson(objSisUs.value)
+                                                val resSisUs = gson.fromJson(sisUSJSON, UserSistem::class.java)
+                                                if(resSisUs.user_Email == email)
+                                                    txtValVie.setText(resSisUs.sistema_Nom)
+                                            }
+                                        }
+                                        override fun onCancelled(databaseError: DatabaseError) {
+                                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                                        }
+                                    })
+                                }
+                                "Pin" -> { txtValVie.setText(resUser.pin_Pass) }
+                                "Telefono" -> { txtValVie.setText(resUser.num_Tel.toString()) }
+                            }
+                        }
+                    }
+                }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                }
+            })
         }
     }
 
     private fun rellSpinPregs(){
+        data class Pregunta(val ID_Pregunta: String, val Val_Pregunta: String) // Creando una data class (es como una clase virtual de kotlin)
         // Obtener el arreglo de strings establecido para las preguntas
         val lstPregs = resources.getStringArray(R.array.lstSavQues)
         var arrPregs = ArrayList<String>()
         arrPregs.addAll(lstPregs)
         // Creando la referencia de la coleccion de preguntas en la BD
         ref = database.getReference("Pregunta")
-        data class Pregunta(val ID_Pregunta: String, val Val_Pregunta: String) // Creando una data class (es como una clase virtual de kotlin)
         // Agregando un ValueEventListener para operar con las instancias de pregunta
         ref.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
@@ -114,13 +162,13 @@ class EditDataUserActivity : AppCompatActivity() {
     }
 
     private fun rellSpinSis(){
+        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String) // Creando una data class (es como una clase virtual de kotlin)
         // Obtener el arreglo de strings establecido para los sistemas
         val lstSists = resources.getStringArray(R.array.lstSistems)
         var arrSists = ArrayList<String>()
         arrSists.addAll(lstSists)
         // Creando la referencia de la coleccion de preguntas en la BD
         ref = database.getReference("Sistema")
-        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String) // Creando una data class (es como una clase virtual de kotlin)
         // Agregando un ValueEventListener para operar con las instancias de pregunta
         ref.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
@@ -164,8 +212,6 @@ class EditDataUserActivity : AppCompatActivity() {
     }
 
     private fun addListeners(){
-        var email = ""
-
         btnAyuda.setOnClickListener {
             avisoActu()
         }
@@ -175,44 +221,36 @@ class EditDataUserActivity : AppCompatActivity() {
                 email = task.email.toString()
                 when (campo){
                     "Nombre" -> {
-                        if(ValiCampos.validarNombre(txtValNue.text, this)){
-                            ActCampos.actNombre(txtValNue.text.toString(), email, ref, gson, this)
-                        }
+                        if(ValiCampos.validarNombre(txtValNue.text, this))
+                            ActCampos.actNombre(txtValNue.text.toString(), email, user, ref, gson, this)
                     }
                     "Correo" -> {
-                        if(ValiCampos.validarCorreo(txtValNue.text, this)){
+                        if(ValiCampos.validarCorreo(txtValNue.text, this))
                             ActCampos.actCorreo(txtValNue.text.toString(), email, user, ref, gson, this)
-                        }
                     }
                     "Contraseña" -> {
-                        if(ValiCampos.validarContra(txtValNue.text, this)){
+                        if(ValiCampos.validarContra(txtValNue.text, this))
                             ActCampos.actContra(txtValNue.text.toString(), user, this)
-                        }
                     }
                     "Pregunta" -> {
-                        if(ValiCampos.validarSelPreg(spNPreg, this)){
+                        if(ValiCampos.validarSelPreg(spNPreg, this))
                             ActCampos.actPreg(spNPreg.selectedItem.toString(), email, ref, gson, this)
-                        }
                     }
                     "Respuesta" -> {
-                        if(ValiCampos.validarResp(txtValNue.text, this)){
+                        if(ValiCampos.validarResp(txtValNue.text, this))
                             ActCampos.actResp(txtValNue.text.toString(), email, ref, gson, this)
-                        }
                     }
                     "Sistema" -> {
-                        if(ValiCampos.validarSelSis(spNSis, this)){
+                        if(ValiCampos.validarSelSis(spNSis, this))
                             ActCampos.actSis(spNSis.selectedItem.toString(), email, ref, gson, this)
-                        }
                     }
                     "Pin" -> {
-                        if(ValiCampos.validarPin(txtValNue.text, this)){
+                        if(ValiCampos.validarPin(txtValNue.text, this))
                             ActCampos.actPin(txtValNue.text.toString(), email, ref, gson, this)
-                        }
                     }
                     "Telefono" -> {
-                        if(ValiCampos.validarTel(txtValNue.text, this)) {
+                        if(ValiCampos.validarTel(txtValNue.text, this))
                             ActCampos.actTel(txtValNue.text.toString(), email, ref, gson, this)
-                        }
                     }
                 }
             }
@@ -336,9 +374,13 @@ class EditDataUserActivity : AppCompatActivity() {
 
     object ActCampos{
         data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
-        fun actNombre(nombre: String, correo: String, ref: DatabaseReference, gson: Gson, contexto: Context){
-            // Creando la referencia de la coleccion de preguntas en la BD
-            val refDB = ref.child("Usuarios")
+
+        fun actNombre(nombre: String, correo: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson, contexto: Context){
+            // Actualizar el nombre del usuario visible en la lista de Firebase Auth
+            val actPerfil = userProfileChangeRequest { displayName = nombre }
+            user.updateProfile(actPerfil)
+            //Actualizar el nombre del usuario en la BD; Paso 1: Creando la referencia de la coleccion de usuarios en la BD
+            val refDB = genRef.child("Usuarios")
             refDB.addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot){
                     for (objUs in dataSnapshot.children){
@@ -359,13 +401,12 @@ class EditDataUserActivity : AppCompatActivity() {
                 }
             })
         }
-
-        fun actCorreo(nCorreo: String, correo: String, user: FirebaseUser, ref: DatabaseReference, gson: Gson, contexto: Context){
+        fun actCorreo(nCorreo: String, correo: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson, contexto: Context){
             // Primero se actualizara el correo en la autenticacion
             user.updateEmail(nCorreo).addOnCompleteListener { task ->
                 if(task.isSuccessful){
                     // Y luego se actualizara el valor en la base de datos para tener el dato sincronizado
-                    val refDB = ref.child("Usuarios")
+                    val refDB = genRef.child("Usuarios")
                     refDB.addValueEventListener(object: ValueEventListener{
                         override fun onDataChange(dataSnapshot: DataSnapshot){
                             for (objUs in dataSnapshot.children){
@@ -385,26 +426,22 @@ class EditDataUserActivity : AppCompatActivity() {
                             Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
                         }
                     })
-                }else{
+                }else
                     Toast.makeText(contexto, "Error: Su correo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                }
             }
         }
-
         fun actContra(contra: String, user: FirebaseUser, contexto: Context){
             // Ya que la contraseña solo la guarda Firebase Auth y no se guarda en la BD, solo se ejecuta el metodo de auth
             user.updatePassword(contra).addOnCompleteListener { task ->
-                if(task.isSuccessful){
+                if(task.isSuccessful)
                     Toast.makeText(contexto, "Su contraseña fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
-                }else{
+                else
                     Toast.makeText(contexto, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
-                }
             }
         }
-
-        fun actPreg(selPreg: String, correo: String, ref: DatabaseReference, gson: Gson, contexto: Context){
-            // Creando la referencia de la coleccion de preguntas en la BD
-            val refDB = ref.child("Usuarios")
+        fun actPreg(selPreg: String, correo: String, genRef: DatabaseReference, gson: Gson, contexto: Context){
+            // Creando la referencia de la coleccion de usuarios en la BD
+            val refDB = genRef.child("Usuarios")
             refDB.addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot){
                     for (objUs in dataSnapshot.children){
@@ -425,10 +462,9 @@ class EditDataUserActivity : AppCompatActivity() {
                 }
             })
         }
-
-        fun actResp(resp: String, correo: String, ref: DatabaseReference, gson: Gson, contexto: Context){
-            // Creando la referencia de la coleccion de preguntas en la BD
-            val refDB = ref.child("Usuarios")
+        fun actResp(resp: String, correo: String, genRef: DatabaseReference, gson: Gson, contexto: Context){
+            // Creando la referencia de la coleccion de usuarios en la BD
+            val refDB = genRef.child("Usuarios")
             refDB.addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot){
                     for (objUs in dataSnapshot.children){
@@ -449,21 +485,21 @@ class EditDataUserActivity : AppCompatActivity() {
                 }
             })
         }
-
-        fun actSis(selSis: String, correo: String, ref: DatabaseReference, gson: Gson, contexto: Context){
-            /* Creando la referencia de la coleccion de preguntas en la BD
-            val refDB = ref.child("Usuarios")
+        fun actSis(selSis: String, correo: String, genRef: DatabaseReference, gson: Gson, contexto: Context){
+            data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
+            // Creando la referencia de la coleccion de usuarios_sistemas en la BD
+            val refDB = genRef.child("User_Sistems")
             refDB.addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot){
-                    for (objUs in dataSnapshot.children){
-                        val userJSON = gson.toJson(objUs.value)
-                        val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                        if(resUser.correo == correo){
-                            refDB.child(resUser.id_Usuario).child("preg_Seguri").setValue(selPreg).addOnCompleteListener { task ->
+                    for (objSisUs in dataSnapshot.children){
+                        val sisUsJSON = gson.toJson(objSisUs.value)
+                        val resSisUs = gson.fromJson(sisUsJSON, UserSistem::class.java)
+                        if(resSisUs.user_Email == correo){
+                            refDB.child(resSisUs.id_User_Sis).child("sistema_Nom").setValue(selSis).addOnCompleteListener { task ->
                                 if(task.isSuccessful)
-                                    Toast.makeText(contexto, "Su pregunta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(contexto, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                 else
-                                    Toast.makeText(contexto, "Error: Su pregunta no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(contexto, "Error: Su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -471,12 +507,11 @@ class EditDataUserActivity : AppCompatActivity() {
                 override fun onCancelled(databaseError: DatabaseError) {
                     Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
                 }
-            })*/
+            })
         }
-
-        fun actPin(pin: String, correo: String, ref: DatabaseReference, gson: Gson, contexto: Context){
-            // Creando la referencia de la coleccion de preguntas en la BD
-            val refDB = ref.child("Usuarios")
+        fun actPin(pin: String, correo: String, genRef: DatabaseReference, gson: Gson, contexto: Context){
+            // Creando la referencia de la coleccion de usuarios en la BD
+            val refDB = genRef.child("Usuarios")
             refDB.addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot){
                     for (objUs in dataSnapshot.children){
@@ -497,10 +532,9 @@ class EditDataUserActivity : AppCompatActivity() {
                 }
             })
         }
-
-        fun actTel(tel: String, correo: String, ref: DatabaseReference, gson: Gson, contexto: Context){
+        fun actTel(tel: String, correo: String, genRef: DatabaseReference, gson: Gson, contexto: Context){
             // Creando la referencia de la coleccion de preguntas en la BD
-            val refDB = ref.child("Usuarios")
+            val refDB = genRef.child("Usuarios")
             refDB.addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot){
                     for (objUs in dataSnapshot.children){

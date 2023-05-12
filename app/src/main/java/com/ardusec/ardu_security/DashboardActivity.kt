@@ -44,7 +44,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private val presAtrasCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            cerSes()
+            avisoDash()
         }
     }
 
@@ -52,7 +52,6 @@ class DashboardActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Dashboard"
         // Relacionando los elementos con su objeto de la interfaz
-        btnAyuda = findViewById(R.id.btnInfoDash)
         btnEstas = findViewById(R.id.btnStats)
         btnGenRep = findViewById(R.id.btnGenRep)
         btnEdiPerf = findViewById(R.id.btnPerfUs)
@@ -68,9 +67,6 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun addListeners(){
         // Agregar los listener
-        btnAyuda.setOnClickListener {
-            avisoDash()
-        }
         btnEstas.setOnClickListener {
             val statsActi = Intent(this, StationsActivity::class.java)
             startActivity(statsActi)
@@ -92,28 +88,24 @@ class DashboardActivity : AppCompatActivity() {
 
         }
         btnCerSes.setOnClickListener {
-            cerSes()
+            // Cerrar Sesion en Firebase
+            FirebaseAuth.getInstance().signOut()
+            // Lanzar la app hacia la primera ventana
+            val endActi = Intent(this, MainActivity::class.java)
+            startActivity(endActi)
+            finish()
         }
     }
 
     private fun avisoDash(){
-        val mensaje = "Si presiona el boton de atras, tambien se cerrara su sesion " +
-                "y sera dirigido al inicio de la App."
+        val mensaje = "Boton deshabilitado.\n" +
+                "Si desea regresar al inicio o iniciar sesion, favor de cerrar su sesión antes."
         val aviso = AlertDialog.Builder(this)
         aviso.setTitle("Aviso")
         aviso.setMessage(mensaje)
         aviso.setPositiveButton("Aceptar", null)
         val dialog: AlertDialog = aviso.create()
         dialog.show()
-    }
-
-    private fun cerSes(){
-        // Cerrar Sesion en Firebase
-        FirebaseAuth.getInstance().signOut()
-        // Lanzar la app hacia la primera ventana
-        val endActi = Intent(this, MainActivity::class.java)
-        startActivity(endActi)
-        finish()
     }
 
     private fun getEmail(): String {
