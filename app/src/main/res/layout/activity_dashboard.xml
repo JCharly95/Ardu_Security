@@ -53,19 +53,6 @@
         app:layout_constraintTop_toBottomOf="@+id/btnStats" />
 
     <Button
-        android:id="@+id/btnPerfUs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/btnPerfUser"
-        android:textSize="20sp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnGenRep" />
-
-    <Button
         android:id="@+id/btnAjuste"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -75,7 +62,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPerfUs" />
+        app:layout_constraintTop_toBottomOf="@+id/btnGenRep" />
 
     <Button
         android:id="@+id/btnManUs"

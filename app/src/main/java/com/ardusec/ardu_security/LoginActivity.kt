@@ -73,7 +73,7 @@ class LoginActivity : AppCompatActivity() {
     private fun addListeners(){
         // Agregar los listener de los botones
         btnLostPass.setOnClickListener{
-            val intentLost = Intent(applicationContext,ResetPassSelActivity::class.java)
+            val intentLost = Intent(applicationContext,ResetPassActivity::class.java)
             startActivity(intentLost)
         }
         chbVerContra.setOnClickListener{

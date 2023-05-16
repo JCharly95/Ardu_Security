@@ -11,7 +11,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:padding="16dp"
-      tools:context=".ResetPassSelActivity">
+      tools:context=".ResetPassActivity">
 
     <TextView
         android:id="@+id/lblFgtPass"
@@ -33,7 +33,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="5dp"
-        android:text="¿?"
+        android:text="@string/btnHelp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

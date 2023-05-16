@@ -9,6 +9,8 @@
     <string name="btnLstCPass">¿Olvido su Contraseña?</string>
     <string name="btnRegister">Registrese aqui</string>
     <string name="lblCopyright">Ardu Security 2023 Copyright © Todos los derechos reservados</string>
+    <!-- Botones de ayuda -->
+    <string name="btnHelp">¿?</string>
     <!-- Strings de la vista de olvido su contraseña -->
     <string name="headLblForPass">Ingrese los datos solicitados</string>
     <string name="txtNombre">Nombre Completo</string>
@@ -24,18 +26,18 @@
     <string name="headDash">Menú Principal</string>
     <string name="btnEsta">Estaciones</string>
     <string name="btnGenRepo">Generar Reportes</string>
-    <string name="btnPerfUser">Perfil de Usuario</string>
     <string name="btnAjus">Ajustes</string>
     <string name="btnManu">Manual de Usuario</string>
     <string name="btnGesSis">Gestionar Sistema</string>
     <string name="btnCloSes">Cerrar Sesion</string>
-    <!-- Strings de la vista de estaciones -->
+    <!-- Strings de cada vista de estacion -->
     <string name="headEsta">Estaciones</string>
     <string name="btnSta1">Estacion 1</string>
     <string name="btnSta2">Estacion 2</string>
     <string name="btnSta3">Estacion 3</string>
     <string name="btnSta4">Estacion 4</string>
     <string name="btnSta5">Estacion 5</string>
+    <string name="btnAlarma">Gestionar alarma</string>
     <!-- Strings de la vista de registro -->
     <string name="headRegi">Registro</string>
     <string name="txtNam">Nombre Completo</string>
@@ -63,7 +65,7 @@
     <!-- Strings de la vistas de los sensores-->
     <string name="lblSensView">Sensor</string>
     <!-- Strings de la vista del perfil-->
-    <string name="headPerfi">Perfil de Usuario</string>
+    <string name="headPerfi">Datos del7 Usuario</string>
     <string name="lblName">Nombre: </string>
     <string name="lblCorr">Correo: </string>
     <string name="btnEditNombre">Cambiar Nombre</string>
@@ -74,6 +76,13 @@
     <string name="btnEditSisRel">Cambiar Sistema</string>
     <string name="btnEditPin">Cambiar Pin</string>
     <string name="btnEditTele">Cambiar Telefono</string>
+    <!-- Strings de la vista de ajustes-->
+    <string name="headAjus">Ajustes</string>
+    <string name="btnTema">Seleccionar Tema App</string>
+    <string name="btnEdit">Editar Información</string>
+    <string name="btnNoti">Notificaciones</string>
+    <string name="btnCommSis">Opiniones de Sistema</string>
+    <string name="btnAbout">Acerca de…</string>
     <!-- Strings de la vistas de edicion de campos-->
     <string name="headEdit">Editar </string>
     <string name="lblOldVal">Valor Previo: </string>
@@ -81,4 +90,10 @@
     <string name="lblNewVal">Nuevo Valor: </string>
     <string name="txtNuevo">Ingrese su nuevo valor</string>
     <string name="btnConfEdit">Actualizar </string>
+    <!-- Strings de la vista de alarma-->
+    <string name="headAlarma">Activar ó Desactivar Alarma</string>
+    <string name="lblEsta">Estado Actual:</string>
+    <string name="lblEstaVal">Cargando estado…</string>
+    <string name="alEstaAct">Encendida</string>
+    <string name="alEstaDesa">Apagada</string>
 </resources>

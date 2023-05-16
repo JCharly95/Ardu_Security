@@ -9,19 +9,14 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
-import androidx.core.view.isVisible
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 
-class ResetPassSelActivity : AppCompatActivity(){
+class ResetPassActivity : AppCompatActivity(){
     // Estableciendo los elementos de interaccion
     private lateinit var txtNombre: EditText
     private lateinit var btnHelp: Button
@@ -45,7 +40,7 @@ class ResetPassSelActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?){
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reset_pass_sel)
+        setContentView(R.layout.activity_reset_pass)
 
         // Configurar el arranque de la interfaz
         setUp()

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isGone
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -14,7 +13,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 
-class PerfilUserActivity : AppCompatActivity() {
+class UserActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblNom: TextView
     private lateinit var lblCor: TextView
@@ -34,7 +33,7 @@ class PerfilUserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_perfil_user)
+        setContentView(R.layout.activity_user)
 
         // Configurar el arranque de la interfaz
         setUp()

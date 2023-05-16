@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:background="#02035b"
-        tools:context=".PerfilUserActivity">
+        tools:context=".UserActivity">
 
         <TextView
             android:id="@+id/lblDash"

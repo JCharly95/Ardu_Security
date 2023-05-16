@@ -19,10 +19,8 @@ import com.google.gson.Gson
 
 class DashboardActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
-    private lateinit var btnAyuda: Button
     private lateinit var btnEstas: Button
     private lateinit var btnGenRep: Button
-    private lateinit var btnEdiPerf: Button
     private lateinit var btnMenAj: Button
     private lateinit var btnManual: Button
     private lateinit var btnMenSis: Button
@@ -54,7 +52,6 @@ class DashboardActivity : AppCompatActivity() {
         // Relacionando los elementos con su objeto de la interfaz
         btnEstas = findViewById(R.id.btnStats)
         btnGenRep = findViewById(R.id.btnGenRep)
-        btnEdiPerf = findViewById(R.id.btnPerfUs)
         btnMenAj = findViewById(R.id.btnAjuste)
         btnManual = findViewById(R.id.btnManUs)
         btnMenSis = findViewById(R.id.btnGesSis)
@@ -74,12 +71,9 @@ class DashboardActivity : AppCompatActivity() {
         btnGenRep.setOnClickListener {
 
         }
-        btnEdiPerf.setOnClickListener {
-            val intentPerf = Intent(this, PerfilUserActivity::class.java)
-            startActivity(intentPerf)
-        }
         btnMenAj.setOnClickListener {
-
+            val settingActi = Intent(this, SettingsActivity::class.java)
+            startActivity(settingActi)
         }
         btnManual.setOnClickListener {
 

@@ -14,10 +14,16 @@
         android:theme="@style/Theme.Ardu_Security"
         tools:targetApi="31">
         <activity
+            android:name=".AlarmActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditDataUserActivity"
             android:exported="false" />
         <activity
-            android:name=".PerfilUserActivity"
+            android:name=".UserActivity"
             android:exported="false" />
         <activity
             android:name=".SensorGenActivity"
@@ -38,7 +44,7 @@
             android:name=".DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".ResetPassSelActivity"
+            android:name=".ResetPassActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
