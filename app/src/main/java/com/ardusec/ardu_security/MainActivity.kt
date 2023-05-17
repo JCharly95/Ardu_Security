@@ -16,6 +16,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // Arranque de la app
         setUp()
+        /* Agregando elementos a la BD
+        addValores()*/
     }
 
     private fun setUp(){
@@ -35,4 +37,36 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    /*private fun addValores(){
+        // Agregar estaciones
+        data class Estacion(val id_Estacion: String, val nombre: String, val sistema_Nom: String)
+        val estaRef = Firebase.database.getReference("Estacion")
+        val addEstaDB = estaRef.push()
+        val nEsta = Estacion(id_Estacion=addEstaDB.key.toString(),nombre="EstGen5",sistema_Nom="SistemaGen1")
+        addEstaDB.setValue(nEsta)
+        // Agregar camaras
+        data class Camara(val id_Camara: String, val nom_Cam: String, val ip_Transmi: String, val estacion_Nom: String)
+        val camRef = Firebase.database.getReference("Camara")
+        var host = 68
+        for (conta in 2..5){
+            val addCamDB = camRef.push()
+            val nCam = Camara(id_Camara=addCamDB.key.toString(),nom_Cam="CamEsta$conta",ip_Transmi="192.168.1.$host",estacion_Nom="EstGen$conta")
+            addCamDB.setValue(nCam)
+            host ++
+        }
+        // Agregar sensores
+        data class Sensor(val id_Sensor: String, val nom_Sen: String, val tipo: String, val estacion_Nom: String)
+        val senRef = Firebase.database.getReference("Sensor")
+        val tipo2 = "Humo/Gas"
+        for (conta in 2..5){
+            val addSenDB = senRef.push()
+            val nSen = if(conta % 2 == 0){
+                Sensor(id_Sensor=addSenDB.key.toString(),nom_Sen="SenGen$conta",tipo=tipo2,estacion_Nom="EstGen$conta")
+            }else{
+                Sensor(id_Sensor=addSenDB.key.toString(),nom_Sen="SenGen$conta",tipo="Magnetico",estacion_Nom="EstGen$conta")
+            }
+            addSenDB.setValue(nSen)
+        }
+    }*/
 }

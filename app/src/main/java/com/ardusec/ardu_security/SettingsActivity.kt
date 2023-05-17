@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var btnSelTem: Button
@@ -33,6 +34,22 @@ class SettingsActivity : AppCompatActivity() {
         btnAcerca = findViewById(R.id.btnAbout)
     }
 
+    private fun acerca(){
+        val mensaje = "- Version: \n" +
+                "* 1.0 \n\n" +
+                "- Fecha de Lanzamiento: \n" +
+                "* 25/05/2023 \n\n" +
+                "- Equipo Desarrollador: \n" +
+                "* Manuel Deniry Santana Ayala\n" +
+                "* Juan Carlos Hernandez Lopez\n\n"
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Acerca de...")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
     private fun addListeners(){
         // Agregar los listener
         btnSelTem.setOnClickListener {
@@ -49,7 +66,7 @@ class SettingsActivity : AppCompatActivity() {
 
         }
         btnAcerca.setOnClickListener {
-
+            acerca()
         }
     }
 }
