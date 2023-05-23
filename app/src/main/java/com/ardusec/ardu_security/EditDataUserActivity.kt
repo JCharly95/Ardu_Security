@@ -162,7 +162,7 @@ class EditDataUserActivity : AppCompatActivity() {
     }
 
     private fun rellSpinSis(){
-        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String) // Creando una data class (es como una clase virtual de kotlin)
+        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val tipo: String, val ulti_Cam_Nom: String) // Creando una data class (es como una clase virtual de kotlin)
         // Obtener el arreglo de strings establecido para los sistemas
         val lstSists = resources.getStringArray(R.array.lstSistems)
         var arrSists = ArrayList<String>()
@@ -495,7 +495,7 @@ class EditDataUserActivity : AppCompatActivity() {
                         val sisUsJSON = gson.toJson(objSisUs.value)
                         val resSisUs = gson.fromJson(sisUsJSON, UserSistem::class.java)
                         if(resSisUs.user_Email == correo){
-                            refDB.child(resSisUs.id_User_Sis).child("sistema_Nom").setValue(selSis).addOnCompleteListener { task ->
+                            refDB.child(resSisUs.id_User_Sis).child("sistema_Nom").setValue(selSis.trim()).addOnCompleteListener { task ->
                                 if(task.isSuccessful)
                                     Toast.makeText(contexto, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                 else

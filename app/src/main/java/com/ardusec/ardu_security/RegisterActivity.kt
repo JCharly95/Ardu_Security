@@ -219,7 +219,7 @@ class RegisterActivity : AppCompatActivity() {
 
         // Clases de datos virtuales para implementar el guardado
         data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
-        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String)
+        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val tipo: String, val ulti_Cam_Nom: String)
         data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
 
         // Preparar los campos limpios sin espacios para su guardado

@@ -32,13 +32,13 @@
             android:name=".CameraGenActivity"
             android:exported="false" />
         <activity
-            android:name=".StationGenActivity"
+            android:name=".StationActivity"
             android:exported="false" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".StationsActivity"
+            android:name=".MenuStationsActivity"
             android:exported="false" />
         <activity
             android:name=".DashboardActivity"

@@ -65,7 +65,7 @@ class DashboardActivity : AppCompatActivity() {
     private fun addListeners(){
         // Agregar los listener
         btnEstas.setOnClickListener {
-            val statsActi = Intent(this, StationsActivity::class.java)
+            val statsActi = Intent(this, MenuStationsActivity::class.java)
             startActivity(statsActi)
         }
         btnGenRep.setOnClickListener {
