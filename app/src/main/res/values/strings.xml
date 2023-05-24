@@ -65,7 +65,7 @@
     <!-- Strings de la vistas de los sensores-->
     <string name="lblSensView">Sensor</string>
     <!-- Strings de la vista del perfil-->
-    <string name="headPerfi">Datos del7 Usuario</string>
+    <string name="headPerfi">Datos del Usuario</string>
     <string name="lblName">Nombre: </string>
     <string name="lblCorr">Correo: </string>
     <string name="btnEditNombre">Cambiar Nombre</string>
@@ -88,7 +88,9 @@
     <string name="lblOldVal">Valor Previo: </string>
     <string name="txtViejo">Valor Guardado</string>
     <string name="lblNewVal">Nuevo Valor: </string>
+    <string name="lblConfCamb">Confirmar Cambio: </string>
     <string name="txtNuevo">Ingrese su nuevo valor</string>
+    <string name="txtConfCamb">Ingrese su contraseña</string>
     <string name="btnConfEdit">Actualizar </string>
     <!-- Strings de la vista de alarma-->
     <string name="headAlarma">Activar ó Desactivar Alarma</string>
