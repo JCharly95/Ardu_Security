@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollForgPass"
-    android:background="#02035b"
+    android:background="@color/azulRey"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,6 +11,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:padding="16dp"
+      android:background="@color/azulRey"
       tools:context=".ResetPassActivity">
 
     <TextView
@@ -34,6 +35,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="5dp"
         android:text="@string/btnHelp"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -44,8 +46,10 @@
         android:layout_marginTop="20dp"
         android:autofillHints="name"
         android:background="@color/white"
+        android:textColor="@color/black"
         android:ems="10"
         android:hint="@string/txtNombre"
+        android:textColorHint="@color/darkgray"
         android:inputType="textPersonName"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,8 +64,10 @@
         android:layout_marginTop="15dp"
         android:autofillHints="name"
         android:background="@color/white"
+        android:textColor="@color/black"
         android:ems="10"
         android:hint="@string/txtIngreCorr"
+        android:textColorHint="@color/darkgray"
         android:inputType="textPersonName"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,6 +94,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="15dp"
         android:background="@color/white"
+        android:textColor="@color/black"
         android:dropDownWidth="wrap_content"
         android:entries="@array/lstSavQues"
         android:spinnerMode="dropdown"
@@ -103,8 +110,10 @@
         android:layout_marginTop="20dp"
         android:autofillHints="name"
         android:background="@color/white"
+        android:textColor="@color/black"
         android:ems="10"
         android:hint="@string/txtRespKey"
+        android:textColorHint="@color/darkgray"
         android:inputType="textPersonName"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -118,6 +127,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/btnComproResp"
+        android:textColor="@color/white"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

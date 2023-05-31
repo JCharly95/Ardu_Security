@@ -11,12 +11,10 @@ import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isGone
-import com.google.firebase.auth.AuthCredential
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
@@ -24,8 +22,15 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
-class EditDataUserActivity : AppCompatActivity(){
+class EditDataUserActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblHeadSec: TextView
     private lateinit var btnAyuda: Button
@@ -48,8 +53,6 @@ class EditDataUserActivity : AppCompatActivity(){
     // Bundle para extras y saber que campo sera actualizado
     private lateinit var bundle: Bundle
     private lateinit var campo: String
-    // Contexto
-    private lateinit var contexto: Context
     // Dataclases
     data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
     data class Sistema(val id_Sistema: String, val nombre_Sis: String, val tipo: String, val ulti_Cam_Nom: String)
@@ -84,7 +87,6 @@ class EditDataUserActivity : AppCompatActivity(){
         user = Firebase.auth.currentUser!!
         database = Firebase.database
         ref = database.reference
-        contexto = applicationContext
         // Estableciendo la variable de correo
         email = ""
         // Obteniendo el extra enviado para saber que campo actualizar
@@ -92,75 +94,6 @@ class EditDataUserActivity : AppCompatActivity(){
         campo = bundle.getString("campo").toString()
         // Actualizar los elementos del formulario acorde al cambio solicitado
         setFormulario()
-    }
-
-    private fun setFormulario(){
-        // Establecer el encabezado y el boton, acorde al campo a actualizar
-        lblHeadSec.text = lblHeadSec.text.toString()+" "+campo
-        btnConfCamb.text = btnConfCamb.text.toString()+" "+campo
-        // Extraccion del correo del usuario desde Firebase Auth
-        user.let { task ->
-            email = task.email.toString()
-            // Creando la referencia de la coleccion de usuarios en la BD
-            val refDB = ref.child("Usuarios")
-            refDB.addValueEventListener(object: ValueEventListener{
-                override fun onDataChange(dataSnapshot: DataSnapshot){
-                    for (objUs in dataSnapshot.children){
-                        val userJSON = gson.toJson(objUs.value)
-                        val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                        if(resUser.correo == email){
-                            when (campo){
-                                "Nombre" -> { txtValVie.setText(resUser.nombre) }
-                                "Correo" -> {
-                                    lblConfChg.isGone = false
-                                    txtConfChg.isGone = false
-                                    chbConfChg.isGone = false
-                                    txtValVie.setText(resUser.correo)
-                                }
-                                "Contraseña" -> {
-                                    lblConfChg.isGone = false
-                                    txtConfChg.isGone = false
-                                    chbConfChg.isGone = false
-                                    txtValVie.setText("Por seguridad, no es posible mostrar la contraseña previa")
-                                }
-                                "Pregunta" -> {
-                                    // Si es el sistema o las preguntas a actualizar, se ocultara el campo de texto y se mostrara el Spinner
-                                    txtValVie.setText(resUser.preg_Seguri)
-                                    txtValNue.isGone = true
-                                    spNPreg.isGone = false
-                                    rellSpinPregs()
-                                }
-                                "Respuesta" -> { txtValVie.setText(resUser.resp_Seguri) }
-                                "Sistema" -> {
-                                    txtValNue.isGone = true
-                                    spNSis.isGone = false
-                                    rellSpinSis()
-                                    ref = database.getReference("User_Sistems")
-                                    ref.addValueEventListener(object: ValueEventListener{
-                                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                                            for (objSisUs in dataSnapshot.children){
-                                                val sisUSJSON = gson.toJson(objSisUs.value)
-                                                val resSisUs = gson.fromJson(sisUSJSON, UserSistem::class.java)
-                                                if(resSisUs.user_Email == email)
-                                                    txtValVie.setText(resSisUs.sistema_Nom)
-                                            }
-                                        }
-                                        override fun onCancelled(databaseError: DatabaseError){
-                                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                                        }
-                                    })
-                                }
-                                "Pin" -> { txtValVie.setText(resUser.pin_Pass.toString()) }
-                                "Telefono" -> { txtValVie.setText(resUser.num_Tel.toString()) }
-                            }
-                        }
-                    }
-                }
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                }
-            })
-        }
     }
 
     private fun rellSpinPregs(){
@@ -179,7 +112,7 @@ class EditDataUserActivity : AppCompatActivity(){
                     arrPregs.add(resPreg.Val_Pregunta)
                 }
                 // Estableciendo el adaptador para el rellenado del spinner
-                val adapPregs = ArrayAdapter(contexto, android.R.layout.simple_spinner_item, arrPregs)
+                val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
                 adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spNPreg.adapter = adapPregs
             }
@@ -205,7 +138,7 @@ class EditDataUserActivity : AppCompatActivity(){
                     arrSists.add(resSis.nombre_Sis)
                 }
                 // Estableciendo el adaptador para el rellenado del spinner
-                val adapSis = ArrayAdapter(contexto, android.R.layout.simple_spinner_item, arrSists)
+                val adapSis = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrSists)
                 adapSis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spNSis.adapter = adapSis
             }
@@ -240,6 +173,80 @@ class EditDataUserActivity : AppCompatActivity(){
         dialog.show()
     }
 
+    private fun setFormulario(){
+        // Establecer el encabezado y el boton, acorde al campo a actualizar
+        lblHeadSec.text = lblHeadSec.text.toString()+" "+campo
+        btnConfCamb.text = btnConfCamb.text.toString()+" "+campo
+        lifecycleScope.launch(Dispatchers.IO) {
+            val getUs = async {
+                // Extraccion del correo del usuario desde Firebase Auth
+                user.let { task ->
+                    email = task.email.toString()
+                    // Creando la referencia de la coleccion de usuarios en la BD
+                    val refDB = ref.child("Usuarios")
+                    refDB.addValueEventListener(object: ValueEventListener{
+                        override fun onDataChange(dataSnapshot: DataSnapshot){
+                            for (objUs in dataSnapshot.children){
+                                val userJSON = gson.toJson(objUs.value)
+                                val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                                if(resUser.correo == email){
+                                    when (campo){
+                                        "Nombre" -> { txtValVie.setText(resUser.nombre) }
+                                        "Correo" -> {
+                                            lblConfChg.isGone = false
+                                            txtConfChg.isGone = false
+                                            chbConfChg.isGone = false
+                                            txtValVie.setText(resUser.correo)
+                                        }
+                                        "Contraseña" -> {
+                                            lblConfChg.isGone = false
+                                            txtConfChg.isGone = false
+                                            chbConfChg.isGone = false
+                                            txtValVie.setText("Por seguridad, no es posible mostrar la contraseña previa")
+                                        }
+                                        "Pregunta" -> {
+                                            // Si es el sistema o las preguntas a actualizar, se ocultara el campo de texto y se mostrara el Spinner
+                                            txtValVie.setText(resUser.preg_Seguri)
+                                            txtValNue.isGone = true
+                                            spNPreg.isGone = false
+                                            rellSpinPregs()
+                                        }
+                                        "Respuesta" -> { txtValVie.setText(resUser.resp_Seguri) }
+                                        "Sistema" -> {
+                                            txtValNue.isGone = true
+                                            spNSis.isGone = false
+                                            rellSpinSis()
+                                            ref = database.getReference("User_Sistems")
+                                            ref.addValueEventListener(object: ValueEventListener{
+                                                override fun onDataChange(dataSnapshot: DataSnapshot){
+                                                    for (objSisUs in dataSnapshot.children){
+                                                        val sisUSJSON = gson.toJson(objSisUs.value)
+                                                        val resSisUs = gson.fromJson(sisUSJSON, UserSistem::class.java)
+                                                        if(resSisUs.user_Email == email)
+                                                            txtValVie.setText(resSisUs.sistema_Nom)
+                                                    }
+                                                }
+                                                override fun onCancelled(databaseError: DatabaseError){
+                                                    Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                                                }
+                                            })
+                                        }
+                                        "Pin" -> { txtValVie.setText(resUser.pin_Pass.toString()) }
+                                        "Telefono" -> { txtValVie.setText(resUser.num_Tel.toString()) }
+                                    }
+                                }
+                            }
+                        }
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                        }
+                    })
+                }
+            }
+            getUs.await()
+        }
+    }
+
     private fun addListeners(){
         btnAyuda.setOnClickListener {
             avisoActu()
@@ -252,58 +259,79 @@ class EditDataUserActivity : AppCompatActivity(){
             }
         }
         btnConfCamb.setOnClickListener{
-            // Extraccion del correo del usuario desde Firebase Auth
-            user.let { task ->
-                email = task.email.toString()
-                when (campo){
-                    "Nombre" -> {
-                        if(validarNombre(txtValNue.text))
-                            actNombre(txtValNue.text.toString(), email, user, ref, gson)
-                    }
-                    "Correo" -> {
-                        if(validarCorreo(txtValNue.text) && validarContra(txtConfChg.text))
-                            actCorreo(txtValNue.text.toString(), email, txtConfChg.text.toString(), user, ref, gson)
-                    }
-                    "Contraseña" -> {
-                        if(validarContra(txtValNue.text) && validarContra(txtConfChg.text))
-                            actContra(txtValNue.text.toString(), email, txtConfChg.text.toString(), user)
-                    }
-                    "Pregunta" -> {
-                        if(validarSelPreg(spNPreg))
-                            actPreg(spNPreg.selectedItem.toString(), email, ref, gson)
-                    }
-                    "Respuesta" -> {
-                        if(validarResp(txtValNue.text))
-                            actResp(txtValNue.text.toString(), email, ref, gson)
-                    }
-                    "Sistema" -> {
-                        if(validarSelSis(spNSis))
-                            actSis(spNSis.selectedItem.toString(), email, ref, gson)
-                    }
-                    "Pin" -> {
-                        if(validarPin(txtValNue.text))
-                            actPin(txtValNue.text.toString(), email, ref, gson)
-                    }
-                    "Telefono" -> {
-                        if(validarTel(txtValNue.text))
-                            actTel(txtValNue.text.toString(), email, ref, gson)
+            lifecycleScope.launch(Dispatchers.IO) {
+                val confChg = async {
+                    // Extraccion del correo del usuario desde Firebase Auth
+                    user.let { task ->
+                        email = task.email.toString()
+                        when (campo){
+                            "Nombre" -> {
+                                if(validarNombre(txtValNue.text))
+                                    actNombre(txtValNue.text.toString(), email, user, ref, gson)
+                            }
+                            "Correo" -> {
+                                if(validarCorreo(txtValNue.text) && validarContra(txtConfChg.text))
+                                    actCorreo(txtValNue.text.toString(), email, txtConfChg.text.toString(), user, ref, gson)
+                            }
+                            "Contraseña" -> {
+                                if(validarContra(txtValNue.text) && validarContra(txtConfChg.text))
+                                    actContra(txtValNue.text.toString(), email, txtConfChg.text.toString(), user)
+                            }
+                            "Pregunta" -> {
+                                if(validarSelPreg(spNPreg))
+                                    actPreg(spNPreg.selectedItem.toString(), email, ref, gson)
+                            }
+                            "Respuesta" -> {
+                                if(validarResp(txtValNue.text))
+                                    actResp(txtValNue.text.toString(), email, ref, gson)
+                            }
+                            "Sistema" -> {
+                                if(validarSelSis(spNSis))
+                                    actSis(spNSis.selectedItem.toString(), email, ref, gson)
+                            }
+                            "Pin" -> {
+                                if(validarPin(txtValNue.text))
+                                    actPin(txtValNue.text.toString(), email, ref, gson)
+                            }
+                            "Telefono" -> {
+                                if(validarTel(txtValNue.text))
+                                    actTel(txtValNue.text.toString(), email, ref, gson)
+                            }
+                        }
                     }
                 }
+                confChg.await()
             }
         }
     }
 
     // Validaciones de campos
-    private fun validarNombre(nombre: Editable): Boolean{
+    suspend fun validarNombre(nombre: Editable): Boolean{
         when{
             // Si el nombre esta vacio
-            TextUtils.isEmpty(nombre) -> Toast.makeText(contexto, "Error: Favor de introducir un nombre", Toast.LENGTH_SHORT).show()
+            TextUtils.isEmpty(nombre) -> {
+                withContext(Dispatchers.Main){
+                    Toast.makeText(applicationContext, "Error: Favor de introducir un nombre", Toast.LENGTH_SHORT).show()
+                }
+            }
             // Si se encuentra algun numero
-            (Regex("""\d+""").containsMatchIn(nombre)) -> Toast.makeText(contexto, "Error: Su nombre no puede contener numeros", Toast.LENGTH_SHORT).show()
+            (Regex("""\d+""").containsMatchIn(nombre)) -> {
+                withContext(Dispatchers.Main){
+                    Toast.makeText(applicationContext, "Error: Su nombre no puede contener numeros", Toast.LENGTH_SHORT).show()
+                }
+            }
             // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
-            (nombre.length < 10) -> Toast.makeText(contexto, "Error: Su nombre es muy corto, favor de agregar su nombre completo", Toast.LENGTH_SHORT).show()
+            (nombre.length < 10) -> {
+                withContext(Dispatchers.Main){
+                    Toast.makeText(applicationContext, "Error: Su nombre es muy corto, favor de agregar su nombre completo", Toast.LENGTH_SHORT).show()
+                }
+            }
             // Si se encuentran caracteres especiales
-            (Regex("""[^A-Za-z ]+""").containsMatchIn(nombre)) -> Toast.makeText(contexto, "Error: Su nombre no puede contener caracteres especiales", Toast.LENGTH_SHORT).show()
+            (Regex("""[^A-Za-z ]+""").containsMatchIn(nombre)) -> {
+                withContext(Dispatchers.Main){
+                    Toast.makeText(applicationContext, "Error: Su nombre no puede contener caracteres especiales", Toast.LENGTH_SHORT).show()
+                }
+            }
             else -> return true
         }
         return false
@@ -314,17 +342,17 @@ class EditDataUserActivity : AppCompatActivity(){
             val correoFil = correo.replace("\\s".toRegex(), "")
             when{
                 // Si el correo esta vacio
-                TextUtils.isEmpty(correoFil) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(correoFil) -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
                 // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
                 else -> return true
             }
         }else{
             when{
                 // Si el correo esta vacio
-                TextUtils.isEmpty(correo) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(correo) -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
                 // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
                 else -> return true
             }
         }
@@ -336,29 +364,29 @@ class EditDataUserActivity : AppCompatActivity(){
             val contraFil = contra.replace("\\s".toRegex(), "")
             when {
                 // Si la contraseña esta vacia
-                TextUtils.isEmpty(contraFil) -> Toast.makeText(contexto, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(contraFil) -> Toast.makeText(applicationContext, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
                 // Extension minima de 8 caracteres
-                (contraFil.length < 8) -> Toast.makeText(contexto, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                (contraFil.length < 8) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
                 // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
                 // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                (!Regex("""\d""").containsMatchIn(contraFil)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
                 // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> Toast.makeText(applicationContext, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
                 else -> return true
             }
         }else{
             when {
                 // Si la contraseña esta vacia
-                TextUtils.isEmpty(contra) -> Toast.makeText(contexto, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(contra) -> Toast.makeText(applicationContext, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
                 // Extension minima de 8 caracteres
-                (contra.length < 8) -> Toast.makeText(contexto, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                (contra.length < 8) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
                 // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                (!Regex("[A-Z]+").containsMatchIn(contra)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
                 // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                (!Regex("""\d""").containsMatchIn(contra)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
                 // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> Toast.makeText(applicationContext, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
                 else -> return true
             }
         }
@@ -366,30 +394,30 @@ class EditDataUserActivity : AppCompatActivity(){
     }
     private fun validarSelPreg(lista: Spinner): Boolean {
         if(lista.selectedItemPosition == 0){
-            Toast.makeText(contexto, "Error: Favor de seleccionar una pregunta", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Error: Favor de seleccionar una pregunta", Toast.LENGTH_SHORT).show()
             return false
         }
         return true
     }
     private fun validarResp(respuesta: Editable): Boolean {
         if(TextUtils.isEmpty(respuesta)){
-            Toast.makeText(contexto, "Error: Favor de introducir una respuesta para su pregunta", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Error: Favor de introducir una respuesta para su pregunta", Toast.LENGTH_SHORT).show()
             return false
         }
         return true
     }
     private fun validarSelSis(lista: Spinner): Boolean {
         if(lista.selectedItemPosition == 0){
-            Toast.makeText(contexto, "Error: Favor de seleccionar un sistema", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Error: Favor de seleccionar un sistema", Toast.LENGTH_SHORT).show()
             return false
         }
         return true
     }
     private fun validarPin(Pin: Editable): Boolean {
         when {
-            TextUtils.isEmpty(Pin) -> Toast.makeText(contexto, "Error: Favor de introducir un pin", Toast.LENGTH_SHORT).show()
-            (Regex("""\D""").containsMatchIn(Pin)) -> Toast.makeText(contexto, "Error: El pin de acceso solo puede contener digitos", Toast.LENGTH_SHORT).show()
-            (Pin.length < 4) -> Toast.makeText(contexto, "Advertencia: Se recomienda un pin numerico de al menos 4 digitos", Toast.LENGTH_SHORT).show()
+            TextUtils.isEmpty(Pin) -> Toast.makeText(applicationContext, "Error: Favor de introducir un pin", Toast.LENGTH_SHORT).show()
+            (Regex("""\D""").containsMatchIn(Pin)) -> Toast.makeText(applicationContext, "Error: El pin de acceso solo puede contener digitos", Toast.LENGTH_SHORT).show()
+            (Pin.length < 4) -> Toast.makeText(applicationContext, "Advertencia: Se recomienda un pin numerico de al menos 4 digitos", Toast.LENGTH_SHORT).show()
             else -> return true
         }
         return false
@@ -397,11 +425,11 @@ class EditDataUserActivity : AppCompatActivity(){
     private fun validarTel(numTel: Editable): Boolean {
         when {
             // Si el telefono esta vacio
-            TextUtils.isEmpty(numTel) -> Toast.makeText(contexto, "Error: Favor de introducir un numero telefonico", Toast.LENGTH_SHORT).show()
+            TextUtils.isEmpty(numTel) -> Toast.makeText(applicationContext, "Error: Favor de introducir un numero telefonico", Toast.LENGTH_SHORT).show()
             // Si se encuentra algun caracter ademas de numeros
-            (Regex("""\D""").containsMatchIn(numTel)) -> Toast.makeText(contexto, "Error: El numero de telefono solo puede contener digitos", Toast.LENGTH_SHORT).show()
+            (Regex("""\D""").containsMatchIn(numTel)) -> Toast.makeText(applicationContext, "Error: El numero de telefono solo puede contener digitos", Toast.LENGTH_SHORT).show()
             // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
-            (numTel.length < 10) -> Toast.makeText(contexto, "Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular", Toast.LENGTH_SHORT).show()
+            (numTel.length < 10) -> Toast.makeText(applicationContext, "Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular", Toast.LENGTH_SHORT).show()
             else -> return true
         }
         return false
@@ -409,261 +437,318 @@ class EditDataUserActivity : AppCompatActivity(){
 
     //Actualizacion de campos
     private fun actNombre(nombre: String, correo: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson){
-        // Actualizar el nombre del usuario visible en la lista de Firebase Auth
-        val actPerfil = userProfileChangeRequest { displayName = nombre }
-        user.updateProfile(actPerfil)
-        //Actualizar el nombre del usuario en la BD; Paso 1: Creando la referencia de la coleccion de usuarios en la BD
-        val refDB = genRef.child("Usuarios")
-        refDB.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objUs in dataSnapshot.children){
-                    val userJSON = gson.toJson(objUs.value)
-                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo){
-                        refDB.child(resUser.id_Usuario).child("nombre").setValue(nombre).addOnCompleteListener { task ->
-                            if(task.isSuccessful){
-                                Toast.makeText(contexto,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                val endEdit = Intent(contexto, UserActivity::class.java)
-                                finish()
-                                startActivity(contexto, endEdit, null)
-                            }else {
-                                Toast.makeText(contexto,"Error: Su nombre no pudo ser actualizado",Toast.LENGTH_SHORT).show()
-                                Log.w("UpdateFirebaseError:", task.exception.toString())
-                            }
-                        }
-                    }
-                }
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Nombre", databaseError.toException())
-            }
-        })
-    }
-    private fun actCorreo(nCorreo: String, correo: String, contra: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson){
-        val refDB = genRef.child("Usuarios")
-        val refDB2 = genRef.child("User_Sistems")
-
-        // Para poder actualizar el correo, es necesario renovar las credenciales de acceso
-        val credential = EmailAuthProvider.getCredential(correo, contra)
-        user.reauthenticate(credential).addOnCompleteListener { taskReAuth ->
-            if(taskReAuth.isSuccessful){
-                // Primero se actualizara el correo en la autenticacion
-                user.updateEmail(nCorreo).addOnCompleteListener { task ->
-                    if(task.isSuccessful){
-                        // Y luego se actualizara el valor en la base de datos en la entidad de usuarios
-                        refDB.addValueEventListener(object: ValueEventListener{
-                            override fun onDataChange(dataSnapshot: DataSnapshot){
-                                for (objUs in dataSnapshot.children){
-                                    val userJSON = gson.toJson(objUs.value)
-                                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                                    if(resUser.correo == correo){
-                                        refDB.child(resUser.id_Usuario).child("correo").setValue(nCorreo.trim()).addOnCompleteListener { task2 ->
-                                            if(task2.isSuccessful){
-                                                // Y finalmente en la entidad intermedia de User_Sistems se actualizara el valor del correo
-                                                refDB2.addValueEventListener(object: ValueEventListener{
-                                                    override fun onDataChange(dataSnapshot: DataSnapshot){
-                                                        for (objSisUs in dataSnapshot.children){
-                                                            val sisUsJSON = gson.toJson(objSisUs.value)
-                                                            val resSisUs = gson.fromJson(sisUsJSON, UserSistem::class.java)
-                                                            if(resSisUs.user_Email == correo){
-                                                                refDB2.child(resSisUs.id_User_Sis).child("user_Email").setValue(nCorreo.trim()).addOnCompleteListener { task3 ->
-                                                                    if(task3.isSuccessful){
-                                                                        Toast.makeText(contexto, "Su correo fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                                                        FirebaseAuth.getInstance().signOut()
-                                                                        val endEditAcc = Intent(contexto, MainActivity::class.java)
-                                                                        finish()
-                                                                        startActivity(contexto, endEditAcc, null)
-                                                                    }else{
-                                                                        Toast.makeText(contexto, "Error: Su correo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                                                                        Log.w("UpdateFirebaseError:", task3.exception.toString())
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    override fun onCancelled(databaseError: DatabaseError) {
-                                                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Correo: UserSis", databaseError.toException())
-                                                    }
-                                                })
-                                            }else {
-                                                Toast.makeText(contexto,"Error: Su correo no pudo ser actualizado en la BD",Toast.LENGTH_SHORT).show()
-                                                Log.w("UpdateFirebaseErrorDB:", task2.exception.toString())
-                                            }
+        lifecycleScope.launch(Dispatchers.Default) {
+            val updNombre = async {
+                // Actualizar el nombre del usuario visible en la lista de Firebase Auth
+                val actPerfil = userProfileChangeRequest { displayName = nombre }
+                user.updateProfile(actPerfil)
+                //Actualizar el nombre del usuario en la BD; Paso 1: Creando la referencia de la coleccion de usuarios en la BD
+                val refDB = genRef.child("Usuarios")
+                refDB.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objUs in dataSnapshot.children){
+                            val userJSON = gson.toJson(objUs.value)
+                            val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                            if(resUser.correo == correo){
+                                Log.w("ReferenciaNombre", refDB.child(resUser.id_Usuario).child("nombre").toString())
+                                refDB.child(resUser.id_Usuario).child("nombre").setValue(nombre).addOnCompleteListener { task ->
+                                    if(task.isSuccessful){
+                                        Toast.makeText(applicationContext,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(2000) {
+                                            val endEdit = Intent(applicationContext, UserActivity::class.java)
+                                            startActivity(endEdit)
+                                            finish()
                                         }
+                                    }else{
+                                        Toast.makeText(applicationContext,"Error: Su nombre no pudo ser actualizado",Toast.LENGTH_SHORT).show()
+                                        Log.w("UpdateFirebaseError:", task.exception.toString())
                                     }
                                 }
                             }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Correo", databaseError.toException())
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Nombre", databaseError.toException())
+                    }
+                })
+            }
+            updNombre.await()
+        }
+    }
+    private fun actCorreo(nCorreo: String, correo: String, contra: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson){
+        lifecycleScope.launch(Dispatchers.Default) {
+            val updCorreo = async {
+                val refDB = genRef.child("Usuarios")
+                val refDB2 = genRef.child("User_Sistems")
+                // Para poder actualizar el correo, es necesario renovar las credenciales de acceso
+                val credential = EmailAuthProvider.getCredential(correo, contra)
+                user.reauthenticate(credential).addOnCompleteListener { taskReAuth ->
+                    if(taskReAuth.isSuccessful){
+                        // Primero se actualizara el correo en la autenticacion
+                        user.updateEmail(nCorreo).addOnCompleteListener { task ->
+                            if(task.isSuccessful){
+                                // Y luego se actualizara el valor en la base de datos en la entidad de usuarios
+                                refDB.addValueEventListener(object: ValueEventListener{
+                                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                                        for (objUs in dataSnapshot.children){
+                                            val userJSON = gson.toJson(objUs.value)
+                                            val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                                            if(resUser.correo == correo){
+                                                refDB.child(resUser.id_Usuario).child("correo").setValue(nCorreo.trim()).addOnCompleteListener { task2 ->
+                                                    if(task2.isSuccessful){
+                                                        // Y finalmente en la entidad intermedia de User_Sistems se actualizara el valor del correo
+                                                        refDB2.addValueEventListener(object: ValueEventListener{
+                                                            override fun onDataChange(dataSnapshot: DataSnapshot){
+                                                                for (objSisUs in dataSnapshot.children){
+                                                                    val sisUsJSON = gson.toJson(objSisUs.value)
+                                                                    val resSisUs = gson.fromJson(sisUsJSON, UserSistem::class.java)
+                                                                    if(resSisUs.user_Email == correo){
+                                                                        refDB2.child(resSisUs.id_User_Sis).child("user_Email").setValue(nCorreo.trim()).addOnCompleteListener { task3 ->
+                                                                            if(task3.isSuccessful){
+                                                                                Toast.makeText(applicationContext, "Su correo fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                                                                Timer().schedule(2000){
+                                                                                    FirebaseAuth.getInstance().signOut()
+                                                                                    val endEditAcc = Intent(applicationContext, MainActivity::class.java)
+                                                                                    startActivity(endEditAcc)
+                                                                                    finish()
+                                                                                }
+                                                                            }else{
+                                                                                Toast.makeText(applicationContext, "Error: Su correo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                                                                Log.w("UpdateFirebaseError:", task3.exception.toString())
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            override fun onCancelled(databaseError: DatabaseError) {
+                                                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Correo: UserSis", databaseError.toException())
+                                                            }
+                                                        })
+                                                    }else {
+                                                        Toast.makeText(applicationContext,"Error: Su correo no pudo ser actualizado en la BD",Toast.LENGTH_SHORT).show()
+                                                        Log.w("UpdateFirebaseErrorDB:", task2.exception.toString())
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    override fun onCancelled(databaseError: DatabaseError) {
+                                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Correo", databaseError.toException())
+                                    }
+                                })
+                            }else{
+                                Toast.makeText(applicationContext,"Error: Su correo no pudo ser actualizado en la autenticacion",Toast.LENGTH_SHORT).show()
+                                Log.w("UpdateFirebaseError:", task.exception.toString())
                             }
-                        })
+                        }
                     }else{
-                        Toast.makeText(contexto,"Error: Su correo no pudo ser actualizado en la autenticacion",Toast.LENGTH_SHORT).show()
-                        Log.w("UpdateFirebaseError:", task.exception.toString())
+                        Toast.makeText(applicationContext, "Error: No se pudieron reautenticar las credenciales de acceso", Toast.LENGTH_SHORT).show()
+                        Log.w("UpdateFirebaseError:", taskReAuth.exception.toString())
                     }
                 }
-            }else{
-                Toast.makeText(contexto, "Error: No se pudieron reautenticar las credenciales de acceso", Toast.LENGTH_SHORT).show()
-                Log.w("UpdateFirebaseError:", taskReAuth.exception.toString())
             }
+            updCorreo.await()
         }
     }
     private fun actContra(nContra: String, correo: String, contra: String, user: FirebaseUser){
-        // Para poder actualizar la contraseña, es necesario renovar las credenciales de acceso
-        val credential = EmailAuthProvider.getCredential(correo, contra)
-        user.reauthenticate(credential)
-        // Ya que la contraseña solo la guarda Firebase Auth y no se guarda en la BD, solo se ejecuta el metodo de auth
-        user.updatePassword(nContra).addOnCompleteListener { task ->
-            if(task.isSuccessful){
-                Toast.makeText(contexto,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
-                FirebaseAuth.getInstance().signOut()
-                val endEditAcc = Intent(contexto, MainActivity::class.java)
-                finish()
-                startActivity(contexto, endEditAcc, null)
-            }else{
-                Toast.makeText(contexto, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
-                Log.w("UpdateFirebaseError:", task.exception.toString())
+        lifecycleScope.launch(Dispatchers.Default) {
+            val updContra = async {
+                // Para poder actualizar la contraseña, es necesario renovar las credenciales de acceso
+                val credential = EmailAuthProvider.getCredential(correo, contra)
+                user.reauthenticate(credential)
+                // Ya que la contraseña solo la guarda Firebase Auth y no se guarda en la BD, solo se ejecuta el metodo de auth
+                user.updatePassword(nContra).addOnCompleteListener { task ->
+                    if(task.isSuccessful){
+                        Toast.makeText(applicationContext,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
+                        Timer().schedule(2000){
+                            FirebaseAuth.getInstance().signOut()
+                            val endEditAcc = Intent(applicationContext, MainActivity::class.java)
+                            startActivity(endEditAcc)
+                            finish()
+                        }
+                    }else{
+                        Toast.makeText(applicationContext, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                        Log.w("UpdateFirebaseError:", task.exception.toString())
+                    }
+                }
             }
+            updContra.await()
         }
     }
     private fun actPreg(selPreg: String, correo: String, genRef: DatabaseReference, gson: Gson){
-        // Creando la referencia de la coleccion de usuarios en la BD
-        val refDB = genRef.child("Usuarios")
-        refDB.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objUs in dataSnapshot.children){
-                    val userJSON = gson.toJson(objUs.value)
-                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo){
-                        refDB.child(resUser.id_Usuario).child("preg_Seguri").setValue(selPreg).addOnCompleteListener { task ->
-                            if(task.isSuccessful){
-                                Toast.makeText(contexto, "Su pregunta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                val endEdit = Intent(contexto, UserActivity::class.java)
-                                finish()
-                                startActivity(contexto, endEdit, null)
-                            }else{
-                                Toast.makeText(contexto, "Error: Su pregunta no pudo ser actualizada", Toast.LENGTH_SHORT).show()
-                                Log.w("UpdateFirebaseError:", task.exception.toString())
+        lifecycleScope.launch(Dispatchers.Default){
+            val updPregunta = async {
+                Log.w("NuevaPreguntaSeleccionada", selPreg)
+                val refDB = genRef.child("Usuarios")
+                refDB.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objUs in dataSnapshot.children){
+                            val userJSON = gson.toJson(objUs.value)
+                            val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                            if(resUser.correo == correo){
+                                Log.w("Referencia de pregunta", refDB.child(resUser.id_Usuario).child("preg_Seguri").toString())
+                                refDB.child(resUser.id_Usuario).child("preg_Seguri").setValue(selPreg).addOnCompleteListener { task ->
+                                    if(task.isSuccessful){
+                                        Toast.makeText(applicationContext, "Su pregunta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(2000){
+                                            val endEdit = Intent(applicationContext, UserActivity::class.java)
+                                            startActivity(endEdit)
+                                            finish()
+                                        }
+                                    }else{
+                                        Toast.makeText(applicationContext, "Error: Su pregunta no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                                        Log.w("UpdateFirebaseError:", task.exception.toString())
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Nombre", databaseError.toException())
+                    }
+                })
             }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Pregunta", databaseError.toException())
-            }
-        })
+            updPregunta.await()
+        }
     }
     private fun actResp(resp: String, correo: String, genRef: DatabaseReference, gson: Gson){
-        // Creando la referencia de la coleccion de usuarios en la BD
-        val refDB = genRef.child("Usuarios")
-        refDB.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objUs in dataSnapshot.children){
-                    val userJSON = gson.toJson(objUs.value)
-                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo){
-                        refDB.child(resUser.id_Usuario).child("resp_Seguri").setValue(resp).addOnCompleteListener { task ->
-                            if(task.isSuccessful){
-                                Toast.makeText(contexto, "Su respuesta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                val endEdit = Intent(contexto, UserActivity::class.java)
-                                finish()
-                                startActivity(contexto, endEdit, null)
-                            }else{
-                                Toast.makeText(contexto, "Error: Su respuesta no pudo ser actualizada", Toast.LENGTH_SHORT).show()
-                                Log.w("UpdateFirebaseError:", task.exception.toString())
+        lifecycleScope.launch(Dispatchers.Default) {
+            val updResp = async {
+                // Creando la referencia de la coleccion de usuarios en la BD
+                val refDB = genRef.child("Usuarios")
+                refDB.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objUs in dataSnapshot.children){
+                            val userJSON = gson.toJson(objUs.value)
+                            val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                            if(resUser.correo == correo){
+                                refDB.child(resUser.id_Usuario).child("resp_Seguri").setValue(resp).addOnCompleteListener { task ->
+                                    if(task.isSuccessful){
+                                        Toast.makeText(applicationContext, "Su respuesta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(2000){
+                                            val endEdit = Intent(applicationContext, UserActivity::class.java)
+                                            startActivity(endEdit)
+                                            finish()
+                                        }
+                                    }else{
+                                        Toast.makeText(applicationContext, "Error: Su respuesta no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                                        Log.w("UpdateFirebaseError:", task.exception.toString())
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Respuesta", databaseError.toException())
+                    }
+                })
             }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Respuesta", databaseError.toException())
-            }
-        })
+            updResp.await()
+        }
     }
     private fun actSis(selSis: String, correo: String, genRef: DatabaseReference, gson: Gson){
-        // Creando la referencia de la coleccion de usuarios_sistemas en la BD
-        val refDB = genRef.child("User_Sistems")
-        refDB.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objSisUs in dataSnapshot.children){
-                    val sisUsJSON = gson.toJson(objSisUs.value)
-                    val resSisUs = gson.fromJson(sisUsJSON, UserSistem::class.java)
-                    if(resSisUs.user_Email == correo){
-                        refDB.child(resSisUs.id_User_Sis).child("sistema_Nom").setValue(selSis.trim()).addOnCompleteListener { task ->
-                            if(task.isSuccessful){
-                                Toast.makeText(contexto, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                val endEdit = Intent(contexto, UserActivity::class.java)
-                                finish()
-                                startActivity(contexto, endEdit, null)
-                            }else{
-                                Toast.makeText(contexto, "Error: Su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                                Log.w("UpdateFirebaseError:", task.exception.toString())
+        lifecycleScope.launch {
+            val updSistema = async {
+                // Creando la referencia de la coleccion de usuarios_sistemas en la BD
+                val refDB = genRef.child("User_Sistems")
+                refDB.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objSisUs in dataSnapshot.children){
+                            val sisUsJSON = gson.toJson(objSisUs.value)
+                            val resSisUs = gson.fromJson(sisUsJSON, UserSistem::class.java)
+                            if(resSisUs.user_Email == correo){
+                                refDB.child(resSisUs.id_User_Sis).child("sistema_Nom").setValue(selSis.trim()).addOnCompleteListener { task ->
+                                    if(task.isSuccessful){
+                                        Toast.makeText(applicationContext, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(2000){
+                                            val endEdit = Intent(applicationContext, UserActivity::class.java)
+                                            startActivity(endEdit)
+                                            finish()
+                                        }
+                                    }else{
+                                        Toast.makeText(applicationContext, "Error: Su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                        Log.w("UpdateFirebaseError:", task.exception.toString())
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Sistema", databaseError.toException())
+                    }
+                })
             }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Sistema", databaseError.toException())
-            }
-        })
+            updSistema.await()
+        }
     }
     private fun actPin(pin: String, correo: String, genRef: DatabaseReference, gson: Gson){
-        // Creando la referencia de la coleccion de usuarios en la BD
-        val refDB = genRef.child("Usuarios")
-        refDB.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objUs in dataSnapshot.children){
-                    val userJSON = gson.toJson(objUs.value)
-                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo){
-                        refDB.child(resUser.id_Usuario).child("pin_Pass").setValue(pin).addOnCompleteListener { task ->
-                            if(task.isSuccessful){
-                                Toast.makeText(contexto, "Su pin fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                val endEdit = Intent(contexto, UserActivity::class.java)
-                                finish()
-                                startActivity(contexto, endEdit, null)
-                            }else{
-                                Toast.makeText(contexto, "Error: Su pin no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                                Log.w("UpdateFirebaseError:", task.exception.toString())
+        lifecycleScope.launch(Dispatchers.Default) {
+            val updPin = async {
+                // Creando la referencia de la coleccion de usuarios en la BD
+                val refDB = genRef.child("Usuarios")
+                refDB.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objUs in dataSnapshot.children){
+                            val userJSON = gson.toJson(objUs.value)
+                            val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                            if(resUser.correo == correo){
+                                refDB.child(resUser.id_Usuario).child("pin_Pass").setValue(pin).addOnCompleteListener { task ->
+                                    if(task.isSuccessful){
+                                        Toast.makeText(applicationContext, "Su pin fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(2000){
+                                            val endEdit = Intent(applicationContext, UserActivity::class.java)
+                                            startActivity(endEdit)
+                                            finish()
+                                        }
+                                    }else{
+                                        Toast.makeText(applicationContext, "Error: Su pin no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                        Log.w("UpdateFirebaseError:", task.exception.toString())
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados: Pin", databaseError.toException())
+                    }
+                })
             }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados: Pin", databaseError.toException())
-            }
-        })
+            updPin.await()
+        }
     }
     private fun actTel(tel: String, correo: String, genRef: DatabaseReference, gson: Gson){
-        // Creando la referencia de la coleccion de preguntas en la BD
-        val refDB = genRef.child("Usuarios")
-        refDB.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objUs in dataSnapshot.children){
-                    val userJSON = gson.toJson(objUs.value)
-                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo){
-                        refDB.child(resUser.id_Usuario).child("num_Tel").setValue(tel.toLong()).addOnCompleteListener { task ->
-                            if(task.isSuccessful){
-                                Toast.makeText(contexto, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                val endEdit = Intent(contexto, UserActivity::class.java)
-                                finish()
-                                startActivity(contexto, endEdit, null)
-                            }else{
-                                Toast.makeText(contexto, "Error: Su telefono no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                                Log.w("UpdateFirebaseError:", task.exception.toString())
+        lifecycleScope.launch(Dispatchers.Default) {
+            val updTel = async {
+                // Creando la referencia de la coleccion de preguntas en la BD
+                val refDB = genRef.child("Usuarios")
+                refDB.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objUs in dataSnapshot.children){
+                            val userJSON = gson.toJson(objUs.value)
+                            val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                            if(resUser.correo == correo){
+                                refDB.child(resUser.id_Usuario).child("num_Tel").setValue(tel.toLong()).addOnCompleteListener { task ->
+                                    if(task.isSuccessful){
+                                        Toast.makeText(applicationContext, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(2000){
+                                            val endEdit = Intent(applicationContext, UserActivity::class.java)
+                                            startActivity(endEdit)
+                                            finish()
+                                        }
+                                    }else{
+                                        Toast.makeText(applicationContext, "Error: Su telefono no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                        Log.w("UpdateFirebaseError:", task.exception.toString())
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Telefono", databaseError.toException())
+                    }
+                })
             }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados; Telefono", databaseError.toException())
-            }
-        })
+            updTel.await()
+        }
     }
 }
