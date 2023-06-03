@@ -336,107 +336,192 @@ class EditDataUserActivity : AppCompatActivity() {
         }
         return false
     }
-    private fun validarCorreo(correo: Editable): Boolean{
+    suspend fun validarCorreo(correo: Editable): Boolean{
         // Si se detectan espacios en el correo, estos seran removidos
         if(Regex("""\s+""").containsMatchIn(correo)){
             val correoFil = correo.replace("\\s".toRegex(), "")
             when{
                 // Si el correo esta vacio
-                TextUtils.isEmpty(correoFil) -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(correoFil) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 else -> return true
             }
         }else{
             when{
                 // Si el correo esta vacio
-                TextUtils.isEmpty(correo) -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(correo) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> Toast.makeText(applicationContext, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                else -> return true
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
+                    }
+                }else -> return true
             }
         }
         return false
     }
-    private fun validarContra(contra: Editable): Boolean{
+    suspend fun validarContra(contra: Editable): Boolean{
         // Si se detectan espacios en la contraseña, estos seran removidos
         if(Regex("""\s+""").containsMatchIn(contra)) {
             val contraFil = contra.replace("\\s".toRegex(), "")
             when {
                 // Si la contraseña esta vacia
-                TextUtils.isEmpty(contraFil) -> Toast.makeText(applicationContext, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(contraFil) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // Extension minima de 8 caracteres
-                (contraFil.length < 8) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                (contraFil.length < 8) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contraFil)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                (!Regex("""\d""").containsMatchIn(contraFil)) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> Toast.makeText(applicationContext, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(applicationContext, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 else -> return true
             }
         }else{
             when {
                 // Si la contraseña esta vacia
-                TextUtils.isEmpty(contra) -> Toast.makeText(applicationContext, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                TextUtils.isEmpty(contra) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // Extension minima de 8 caracteres
-                (contra.length < 8) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                (contra.length < 8) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contra)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                (!Regex("[A-Z]+").containsMatchIn(contra)) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contra)) -> Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                (!Regex("""\d""").containsMatchIn(contra)) -> {
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(applicationContext, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> Toast.makeText(applicationContext, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(applicationContext, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 else -> return true
             }
         }
         return false
     }
-    private fun validarSelPreg(lista: Spinner): Boolean {
+    suspend fun validarSelPreg(lista: Spinner): Boolean {
         if(lista.selectedItemPosition == 0){
-            Toast.makeText(applicationContext, "Error: Favor de seleccionar una pregunta", Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main){
+                Toast.makeText(applicationContext, "Error: Favor de seleccionar una pregunta", Toast.LENGTH_SHORT).show()
+            }
             return false
         }
         return true
     }
-    private fun validarResp(respuesta: Editable): Boolean {
+    suspend fun validarResp(respuesta: Editable): Boolean {
         if(TextUtils.isEmpty(respuesta)){
-            Toast.makeText(applicationContext, "Error: Favor de introducir una respuesta para su pregunta", Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main){
+                Toast.makeText(applicationContext, "Error: Favor de introducir una respuesta para su pregunta", Toast.LENGTH_SHORT).show()
+            }
             return false
         }
         return true
     }
-    private fun validarSelSis(lista: Spinner): Boolean {
+    suspend fun validarSelSis(lista: Spinner): Boolean {
         if(lista.selectedItemPosition == 0){
-            Toast.makeText(applicationContext, "Error: Favor de seleccionar un sistema", Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main){
+                Toast.makeText(applicationContext, "Error: Favor de seleccionar un sistema", Toast.LENGTH_SHORT).show()
+            }
             return false
         }
         return true
     }
-    private fun validarPin(Pin: Editable): Boolean {
+    suspend fun validarPin(Pin: Editable): Boolean {
         when {
-            TextUtils.isEmpty(Pin) -> Toast.makeText(applicationContext, "Error: Favor de introducir un pin", Toast.LENGTH_SHORT).show()
-            (Regex("""\D""").containsMatchIn(Pin)) -> Toast.makeText(applicationContext, "Error: El pin de acceso solo puede contener digitos", Toast.LENGTH_SHORT).show()
-            (Pin.length < 4) -> Toast.makeText(applicationContext, "Advertencia: Se recomienda un pin numerico de al menos 4 digitos", Toast.LENGTH_SHORT).show()
+            TextUtils.isEmpty(Pin) -> {
+                withContext(Dispatchers.Main){
+                    Toast.makeText(applicationContext, "Error: Favor de introducir un pin", Toast.LENGTH_SHORT).show()
+                }
+            }
+            (Regex("""\D""").containsMatchIn(Pin)) -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "Error: El pin de acceso solo puede contener digitos", Toast.LENGTH_SHORT).show()
+                }
+            }
+            (Pin.length < 4) -> {
+                withContext(Dispatchers.Main){
+                    Toast.makeText(applicationContext, "Advertencia: Se recomienda un pin numerico de al menos 4 digitos", Toast.LENGTH_SHORT).show()
+                }
+            }
             else -> return true
         }
         return false
     }
-    private fun validarTel(numTel: Editable): Boolean {
+    suspend fun validarTel(numTel: Editable): Boolean {
         when {
             // Si el telefono esta vacio
-            TextUtils.isEmpty(numTel) -> Toast.makeText(applicationContext, "Error: Favor de introducir un numero telefonico", Toast.LENGTH_SHORT).show()
+            TextUtils.isEmpty(numTel) -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "Error: Favor de introducir un numero telefonico", Toast.LENGTH_SHORT).show()
+                }
+            }
             // Si se encuentra algun caracter ademas de numeros
-            (Regex("""\D""").containsMatchIn(numTel)) -> Toast.makeText(applicationContext, "Error: El numero de telefono solo puede contener digitos", Toast.LENGTH_SHORT).show()
+            (Regex("""\D""").containsMatchIn(numTel)) -> {
+                withContext(Dispatchers.Main){
+                    Toast.makeText(applicationContext, "Error: El numero de telefono solo puede contener digitos", Toast.LENGTH_SHORT).show()
+                }
+            }
             // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
-            (numTel.length < 10) -> Toast.makeText(applicationContext, "Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular", Toast.LENGTH_SHORT).show()
+            (numTel.length < 10) -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular", Toast.LENGTH_SHORT).show()
+                }
+            }
             else -> return true
         }
         return false
     }
 
     //Actualizacion de campos
-    private fun actNombre(nombre: String, correo: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson){
+    suspend fun actNombre(nombre: String, correo: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson){
         lifecycleScope.launch(Dispatchers.Default) {
             val updNombre = async {
                 // Actualizar el nombre del usuario visible en la lista de Firebase Auth
@@ -450,7 +535,6 @@ class EditDataUserActivity : AppCompatActivity() {
                             val userJSON = gson.toJson(objUs.value)
                             val resUser = gson.fromJson(userJSON, Usuario::class.java)
                             if(resUser.correo == correo){
-                                Log.w("ReferenciaNombre", refDB.child(resUser.id_Usuario).child("nombre").toString())
                                 refDB.child(resUser.id_Usuario).child("nombre").setValue(nombre).addOnCompleteListener { task ->
                                     if(task.isSuccessful){
                                         Toast.makeText(applicationContext,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
@@ -475,7 +559,7 @@ class EditDataUserActivity : AppCompatActivity() {
             updNombre.await()
         }
     }
-    private fun actCorreo(nCorreo: String, correo: String, contra: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson){
+    suspend fun actCorreo(nCorreo: String, correo: String, contra: String, user: FirebaseUser, genRef: DatabaseReference, gson: Gson){
         lifecycleScope.launch(Dispatchers.Default) {
             val updCorreo = async {
                 val refDB = genRef.child("Usuarios")
@@ -550,7 +634,7 @@ class EditDataUserActivity : AppCompatActivity() {
             updCorreo.await()
         }
     }
-    private fun actContra(nContra: String, correo: String, contra: String, user: FirebaseUser){
+    suspend fun actContra(nContra: String, correo: String, contra: String, user: FirebaseUser){
         lifecycleScope.launch(Dispatchers.Default) {
             val updContra = async {
                 // Para poder actualizar la contraseña, es necesario renovar las credenciales de acceso
@@ -575,7 +659,7 @@ class EditDataUserActivity : AppCompatActivity() {
             updContra.await()
         }
     }
-    private fun actPreg(selPreg: String, correo: String, genRef: DatabaseReference, gson: Gson){
+    suspend fun actPreg(selPreg: String, correo: String, genRef: DatabaseReference, gson: Gson){
         lifecycleScope.launch(Dispatchers.Default){
             val updPregunta = async {
                 Log.w("NuevaPreguntaSeleccionada", selPreg)
@@ -611,7 +695,7 @@ class EditDataUserActivity : AppCompatActivity() {
             updPregunta.await()
         }
     }
-    private fun actResp(resp: String, correo: String, genRef: DatabaseReference, gson: Gson){
+    suspend fun actResp(resp: String, correo: String, genRef: DatabaseReference, gson: Gson){
         lifecycleScope.launch(Dispatchers.Default) {
             val updResp = async {
                 // Creando la referencia de la coleccion de usuarios en la BD
@@ -646,7 +730,7 @@ class EditDataUserActivity : AppCompatActivity() {
             updResp.await()
         }
     }
-    private fun actSis(selSis: String, correo: String, genRef: DatabaseReference, gson: Gson){
+    suspend fun actSis(selSis: String, correo: String, genRef: DatabaseReference, gson: Gson){
         lifecycleScope.launch {
             val updSistema = async {
                 // Creando la referencia de la coleccion de usuarios_sistemas en la BD
@@ -681,7 +765,7 @@ class EditDataUserActivity : AppCompatActivity() {
             updSistema.await()
         }
     }
-    private fun actPin(pin: String, correo: String, genRef: DatabaseReference, gson: Gson){
+    suspend fun actPin(pin: String, correo: String, genRef: DatabaseReference, gson: Gson){
         lifecycleScope.launch(Dispatchers.Default) {
             val updPin = async {
                 // Creando la referencia de la coleccion de usuarios en la BD
@@ -716,7 +800,7 @@ class EditDataUserActivity : AppCompatActivity() {
             updPin.await()
         }
     }
-    private fun actTel(tel: String, correo: String, genRef: DatabaseReference, gson: Gson){
+    suspend fun actTel(tel: String, correo: String, genRef: DatabaseReference, gson: Gson){
         lifecycleScope.launch(Dispatchers.Default) {
             val updTel = async {
                 // Creando la referencia de la coleccion de preguntas en la BD

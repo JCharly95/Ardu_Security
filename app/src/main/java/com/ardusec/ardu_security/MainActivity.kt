@@ -20,7 +20,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUp(){
         // Mensaje de bienvenida a la App
-        Toast.makeText(this, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+        Timer().schedule(1000){
+            Toast.makeText(applicationContext, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+        }
 
         // Si el usuario salio de la app pero no finalizo su sesion, sera enviado directamente a su dashboard
         val user = FirebaseAuth.getInstance().currentUser
