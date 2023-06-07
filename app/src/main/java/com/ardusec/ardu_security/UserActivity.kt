@@ -25,9 +25,6 @@ class UserActivity : AppCompatActivity() {
     private lateinit var btnEditSis: Button
     private lateinit var btnEditPin: Button
     private lateinit var btnEditTel: Button
-    // Instancias de Firebase; Database y ReferenciaDB
-    private lateinit var ref: DatabaseReference
-    private lateinit var database: FirebaseDatabase
     // Creando el objeto GSON
     private var gson = Gson()
 
@@ -55,8 +52,6 @@ class UserActivity : AppCompatActivity() {
         btnEditSis = findViewById(R.id.btnEditSisRel)
         btnEditPin = findViewById(R.id.btnEditPin)
         btnEditTel = findViewById(R.id.btnEditTele)
-        // Inicializando instancia hacia el nodo raiz de la BD
-        database = Firebase.database
 
         // Obtener el correo del usuario desde Firebase auth y enviarlo a la funcion de la vista del boton
         val corrAcc = getEmail()
@@ -73,7 +68,7 @@ class UserActivity : AppCompatActivity() {
     }
 
     private fun rellDatPerf(correo: String){
-        ref = database.getReference("Usuarios")
+        val ref = Firebase.database.getReference("Usuarios")
         data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
         ref.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot){
@@ -86,6 +81,7 @@ class UserActivity : AppCompatActivity() {
                         if(resUser.tipo_Usuario == "Administrador"){
                             btnEditTel.isGone = false
                         }
+                        break
                     }
                 }
             }
@@ -99,52 +95,52 @@ class UserActivity : AppCompatActivity() {
         // Toda la edicion de campos se lanzara hacia la misma actividad,
         // solo que dependera del campo a editar, los valores que seran mostrados
         btnEditNom.setOnClickListener {
-            val intentChgNom = Intent(this, EditDataUserActivity::class.java).apply {
+            Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Nombre")
+                startActivity(this)
             }
-            startActivity(intentChgNom)
         }
-        btnEditEma.setOnClickListener{
-            val intentChgEma = Intent(this, EditDataUserActivity::class.java).apply {
+        btnEditEma.setOnClickListener {
+            Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Correo")
+                startActivity(this)
             }
-            startActivity(intentChgEma)
         }
         btnEditPass.setOnClickListener {
-            val intentChgPass = Intent(this, EditDataUserActivity::class.java).apply {
+            Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Contraseña")
+                startActivity(this)
             }
-            startActivity(intentChgPass)
         }
         btnEditPreg.setOnClickListener {
-            val intentChgPreg = Intent(this, EditDataUserActivity::class.java).apply {
+            Intent(this, EditDataUsSpActivity::class.java).apply {
                 putExtra("campo", "Pregunta")
+                startActivity(this)
             }
-            startActivity(intentChgPreg)
         }
         btnEditResp.setOnClickListener {
-            val intentChgResp = Intent(this, EditDataUserActivity::class.java).apply {
+            Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Respuesta")
+                startActivity(this)
             }
-            startActivity(intentChgResp)
         }
         btnEditSis.setOnClickListener {
-            val intentChgSis = Intent(this, EditDataUserActivity::class.java).apply {
+            Intent(this, EditDataUsSpActivity::class.java).apply {
                 putExtra("campo", "Sistema")
+                startActivity(this)
             }
-            startActivity(intentChgSis)
         }
         btnEditPin.setOnClickListener {
-            val intentChgPin = Intent(this, EditDataUserActivity::class.java).apply {
+            Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Pin")
+                startActivity(this)
             }
-            startActivity(intentChgPin)
         }
         btnEditTel.setOnClickListener {
-            val intentChgTel = Intent(this, EditDataUserActivity::class.java).apply {
+            Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Telefono")
+                startActivity(this)
             }
-            startActivity(intentChgTel)
         }
     }
 }

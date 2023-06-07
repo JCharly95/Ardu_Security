@@ -4,7 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -21,7 +24,9 @@ class MainActivity : AppCompatActivity() {
     private fun setUp(){
         // Mensaje de bienvenida a la App
         Timer().schedule(1000){
-            Toast.makeText(applicationContext, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+            lifecycleScope.launch(Dispatchers.Main) {
+                Toast.makeText(applicationContext, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Si el usuario salio de la app pero no finalizo su sesion, sera enviado directamente a su dashboard

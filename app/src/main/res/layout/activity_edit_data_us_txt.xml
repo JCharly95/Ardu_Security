@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollPerfil"
+    android:id="@+id/scrollPerfilTxt"
     android:background="@color/azulRey"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -12,10 +12,10 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:background="@color/azulRey"
-        tools:context=".EditDataUserActivity">
+        tools:context=".EditDataUsTxtActivity">
 
         <TextView
-            android:id="@+id/lblHeadEdit"
+            android:id="@+id/lblHeadEditTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -29,7 +29,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btnInfoActu"
+            android:id="@+id/btnInfoActuTxt"
             android:layout_width="51dp"
             android:layout_height="48dp"
             android:layout_marginTop="18dp"
@@ -40,7 +40,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/lblOldDat"
+            android:id="@+id/lblOldDatTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -51,10 +51,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.242"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblHeadEdit" />
+            app:layout_constraintTop_toBottomOf="@+id/lblHeadEditTxt" />
 
         <EditText
-            android:id="@+id/txtOldEditDat"
+            android:id="@+id/txtOldEditDatTxt"
             android:layout_width="256dp"
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
@@ -70,10 +70,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblOldDat" />
+            app:layout_constraintTop_toBottomOf="@+id/lblOldDatTxt" />
 
         <TextView
-            android:id="@+id/lblNewDat"
+            android:id="@+id/lblNewDatTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -84,7 +84,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.242"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtOldEditDat" />
+            app:layout_constraintTop_toBottomOf="@+id/txtOldEditDatTxt" />
 
         <EditText
             android:id="@+id/txtNewEditDat"
@@ -102,7 +102,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblNewDat" />
+            app:layout_constraintTop_toBottomOf="@+id/lblNewDatTxt" />
 
         <TextView
             android:id="@+id/lblConfChg"
@@ -153,43 +153,11 @@
             app:layout_constraintTop_toBottomOf="@+id/txtConfChg"
             tools:visibility="visible" />
 
-        <Spinner
-            android:id="@+id/spNewPregKey"
-            android:layout_width="256dp"
-            android:layout_height="48sp"
-            android:layout_marginTop="10dp"
-            android:background="@color/white"
-            android:textColor="@color/black"
-            android:dropDownWidth="wrap_content"
-            android:entries="@array/lstSavQues"
-            android:spinnerMode="dropdown"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chbConfPass"
-            tools:visibility="visible" />
-
-        <Spinner
-            android:id="@+id/spNewSis"
-            android:layout_width="256dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/white"
-            android:textColor="@color/black"
-            android:dropDownWidth="wrap_content"
-            android:entries="@array/lstSistems"
-            android:spinnerMode="dropdown"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spNewPregKey"
-            tools:visibility="visible" />
-
         <Button
-            android:id="@+id/btnConfEditData"
+            android:id="@+id/btnConfEditDataTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="20dp"
             android:text="@string/btnConfEdit"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -197,7 +165,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spNewSis" />
+            app:layout_constraintTop_toBottomOf="@+id/chbConfPass" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
