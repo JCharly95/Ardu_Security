@@ -73,7 +73,7 @@ class LoginActivity : AppCompatActivity() {
     private fun addListeners(){
         // Agregar los listener de los botones
         btnLostPass.setOnClickListener{
-            val intentLost = Intent(applicationContext,ResetPassActivity::class.java)
+            val intentLost = Intent(this,ResetPassActivity::class.java)
             startActivity(intentLost)
         }
         chbVerContra.setOnClickListener{
@@ -84,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
         btnRegister.setOnClickListener{
-            val intentRegister = Intent(applicationContext,RegisterActivity::class.java)
+            val intentRegister = Intent(this,RegisterActivity::class.java)
             startActivity(intentRegister)
         }
         btnAyuda.setOnClickListener {
@@ -188,8 +188,8 @@ class LoginActivity : AppCompatActivity() {
                                     val userJSON = gson.toJson(objUs.value)
                                     val resUser = gson.fromJson(userJSON, Usuario::class.java)
                                     val nombre = resUser.nombre
-                                    Toast.makeText(applicationContext, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
-                                    val intentoDash = Intent(applicationContext, DashboardActivity::class.java)
+                                    Toast.makeText(this@LoginActivity, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
+                                    val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
                                     startActivity(intentoDash)
                                 }
                             }

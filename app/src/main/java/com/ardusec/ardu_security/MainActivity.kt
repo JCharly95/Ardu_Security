@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         // Mensaje de bienvenida a la App
         Timer().schedule(1000){
             lifecycleScope.launch(Dispatchers.Main) {
-                Toast.makeText(applicationContext, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }else{
             // En caso de que no haya una sesion iniciada se hara un retardo de 2 segundos y se enviara al login
             Timer().schedule(2000) {
-                val intentLogin = Intent(applicationContext, LoginActivity::class.java)
+                val intentLogin = Intent(this@MainActivity, LoginActivity::class.java)
                 startActivity(intentLogin)
             }
         }

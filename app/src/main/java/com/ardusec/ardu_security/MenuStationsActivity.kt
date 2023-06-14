@@ -85,7 +85,6 @@ class MenuStationsActivity : AppCompatActivity() {
     private fun setupBtn(){
         data class Sistema(val id_Sistema: String, val nombre_Sis: String, val tipo: String, val ulti_Cam_Nom: String)
         data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
-
         // Obteniendo el correo del usuario
         val user = Firebase.auth.currentUser
         user?.let {task ->

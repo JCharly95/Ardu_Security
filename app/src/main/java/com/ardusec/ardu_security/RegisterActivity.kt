@@ -262,9 +262,9 @@ class RegisterActivity : AppCompatActivity() {
                                         addUserSisDB.setValue(nRelSisUs)
                                     }
                                     // Se procede a lanzar al usuario a la activity de dashboard
-                                    Toast.makeText(applicationContext, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                    val intentDash = Intent(applicationContext, DashboardActivity::class.java).apply {
+                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                                         putExtra("correo", txtEmail.text.toString())
                                     }
                                     startActivity(intentDash)
@@ -313,7 +313,7 @@ class RegisterActivity : AppCompatActivity() {
                                         addUserSisDB.setValue(nRelSisUs)
                                     }
                                     // Se procede a lanzar al usuario a la activity de dashboard
-                                    Toast.makeText(applicationContext, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                                     val intentDash = Intent(applicationContext, DashboardActivity::class.java).apply {
                                         putExtra("correo", txtEmail.text.toString())
