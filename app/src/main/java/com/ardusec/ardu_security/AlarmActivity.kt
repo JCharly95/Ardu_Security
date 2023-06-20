@@ -3,15 +3,24 @@ package com.ardusec.ardu_security
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.RadioButton
+import android.widget.Switch
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class AlarmActivity : AppCompatActivity() {
     private lateinit var lblSta: TextView
-    private lateinit var swAlarma: SwitchMaterial
+    private lateinit var swAlarma: Switch
+    private lateinit var rbCondAlaActi: RadioButton
+    private lateinit var rbCondAlaOper: RadioButton
+    private lateinit var rbCondAlaInac: RadioButton
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
@@ -32,6 +41,9 @@ class AlarmActivity : AppCompatActivity() {
         // Relacionando los elementos con su objeto de la interfaz
         lblSta = findViewById(R.id.lblStaVal)
         swAlarma = findViewById(R.id.swAlarma)
+        rbCondAlaActi = findViewById(R.id.rbAlaActi)
+        rbCondAlaOper = findViewById(R.id.rbAlaOper)
+        rbCondAlaInac = findViewById(R.id.rbAlaInac)
         // Inicializando instancia hacia el nodo raiz de la BD
         database = Firebase.database
 
@@ -40,33 +52,66 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     private fun setSwitch(){
-        // Establecer el estado del switch acorde al valor de la entidad en firebase
-        ref = database.getReference("Alarma").child("estado")
-        ref.addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                val estado = dataSnapshot.value
-                if(estado as Boolean){
-                    lblSta.text = resources.getString(R.string.alEstaAct)
-                    swAlarma.isChecked = true
-                }else{
-                    lblSta.text = resources.getString(R.string.alEstaDesa)
-                    swAlarma.isChecked = false
-                }
+        lifecycleScope.launch(Dispatchers.IO) {
+            val setEstAla = async {
+                // Establecer el estado del switch acorde al valor de la entidad en firebase
+                ref = database.getReference("Alarma").child("estado")
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        val estado = dataSnapshot.value
+                        if(estado as Boolean){
+                            lblSta.text = resources.getString(R.string.alEstaAct)
+                            swAlarma.text = resources.getString(R.string.alEstaAct)
+                            swAlarma.isChecked = true
+                        }else{
+                            lblSta.text = resources.getString(R.string.alEstaDesa)
+                            swAlarma.text = resources.getString(R.string.alEstaDesa)
+                            swAlarma.isChecked = false
+                            rbCondAlaInac.isChecked = true
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                    }
+                })
             }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+            setEstAla.await()
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val setcondAla = async {
+                // Establecer el estado del switch acorde al valor de la entidad en firebase
+                ref = database.getReference("Alarma").child("condicion")
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        val estado = dataSnapshot.value
+                        if(estado as Boolean){
+                            rbCondAlaActi.isChecked = true
+                        }else{
+                            rbCondAlaOper.isChecked = true
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                    }
+                })
             }
-        })
+            setcondAla.await()
+        }
     }
 
     private fun addListeners(){
         swAlarma.setOnCheckedChangeListener{ _, isChecked ->
             if (isChecked){
                 swAlarma.isChecked = true
+                rbCondAlaOper.isChecked = true
                 database.getReference("Alarma").child("estado").setValue(true)
+                swAlarma.text = resources.getString(R.string.alEstaAct)
             }else{
                 swAlarma.isChecked = false
+                rbCondAlaInac.isChecked = true
                 database.getReference("Alarma").child("estado").setValue(false)
+                swAlarma.text = resources.getString(R.string.alEstaDesa)
             }
         }
     }

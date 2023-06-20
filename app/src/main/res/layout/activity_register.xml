@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollReg"
-    android:background="@color/azulRey"
+    android:background="@color/lightGray"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="@color/azulRey"
+        android:background="@color/lightGray"
         tools:context=".RegisterActivity">
 
         <TextView
@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/headRegi"
-            android:textColor="@color/white"
             android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
@@ -34,7 +33,6 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:text="@string/btnHelp"
-            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -44,8 +42,6 @@
             android:layout_height="48dp"
             android:layout_marginTop="15dp"
             android:autofillHints="name"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:ems="10"
             android:hint="@string/txtNam"
             android:textColorHint="@color/darkgray"
@@ -62,8 +58,6 @@
             android:layout_height="48dp"
             android:layout_marginTop="15dp"
             android:autofillHints="emailAddress"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:ems="10"
             android:hint="@string/txtEmail"
             android:textColorHint="@color/darkgray"
@@ -80,8 +74,6 @@
             android:layout_height="48dp"
             android:layout_marginTop="15dp"
             android:autofillHints="password"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:ems="10"
             android:hint="@string/txtPass"
             android:textColorHint="@color/darkgray"
@@ -97,7 +89,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="@string/chbPass"
-            android:textColor="@color/white"
             android:textSize="14sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
@@ -107,11 +98,9 @@
 
         <Spinner
             android:id="@+id/spSafQuKyReg"
-            android:layout_width="256dp"
+            android:layout_width="270dp"
             android:layout_height="48sp"
             android:layout_marginTop="10dp"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:dropDownWidth="wrap_content"
             android:entries="@array/lstSavQues"
             android:spinnerMode="dropdown"
@@ -125,8 +114,6 @@
             android:layout_height="48dp"
             android:layout_marginTop="15dp"
             android:autofillHints="name"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:ems="10"
             android:hint="@string/txtRespQues"
             android:textColorHint="@color/darkgray"
@@ -143,6 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:visibility="visible"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtRespQues">
@@ -152,7 +140,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lblTipUser"
-                android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498" />
@@ -162,7 +149,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rbUserGen"
-                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:visibility="visible" />
 
@@ -171,7 +157,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rbUserAdmin"
-                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:visibility="visible" />
         </RadioGroup>
@@ -181,8 +166,6 @@
             android:layout_width="256dp"
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:dropDownWidth="wrap_content"
             android:entries="@array/lstSistems"
             android:spinnerMode="dropdown"
@@ -196,6 +179,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:visibility="visible"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spSistema">
@@ -205,7 +189,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lblIngrePin"
-                android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498" />
@@ -215,7 +198,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rbIngrePinSi"
-                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:visibility="visible" />
 
@@ -224,7 +206,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rbIngrePinNo"
-                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:visibility="visible" />
         </RadioGroup>
@@ -235,8 +216,6 @@
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
             android:autofillHints="phone"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:ems="10"
             android:hint="@string/txtPin"
             android:textColorHint="@color/darkgray"
@@ -254,8 +233,6 @@
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
             android:autofillHints="phone"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:ems="10"
             android:hint="@string/txtPhone"
             android:textColorHint="@color/darkgray"
@@ -274,7 +251,6 @@
             android:layout_marginTop="10dp"
             android:text="@string/btnReg"
             android:textSize="14sp"
-            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"

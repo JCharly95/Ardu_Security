@@ -98,4 +98,8 @@
     <string name="lblEstaVal">Cargando estado…</string>
     <string name="alEstaAct">Encendida</string>
     <string name="alEstaDesa">Apagada</string>
+    <string name="lblCondAla">Condicion de Alarma:</string>
+    <string name="alCondActi">Accionada</string>
+    <string name="alCondOper">Operando</string>
+    <string name="alCondInac">Inhabilitada</string>
 </resources>

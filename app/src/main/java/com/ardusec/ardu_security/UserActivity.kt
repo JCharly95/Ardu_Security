@@ -7,7 +7,6 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.view.isGone
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -54,19 +53,9 @@ class UserActivity : AppCompatActivity() {
         btnEditPin = findViewById(R.id.btnEditPin)
         btnEditTel = findViewById(R.id.btnEditTele)
 
-        // Cuando el correo o la contraseña sean cambiados, el usuario sera redirigidio a la Main Activity
-        //session()
-
         // Obtener el correo del usuario desde Firebase auth y enviarlo a la funcion de la vista del boton
         val corrAcc = getEmail()
         rellDatPerf(corrAcc)
-    }
-    private fun session(){
-        val user = FirebaseAuth.getInstance().currentUser
-        if(user==null){
-            val intentMain = Intent(this, MainActivity::class.java)
-            startActivity(intentMain)
-        }
     }
 
     private fun getEmail(): String {
@@ -87,8 +76,8 @@ class UserActivity : AppCompatActivity() {
                     val userJSON = gson.toJson(objUs.value)
                     val resUser = gson.fromJson(userJSON, Usuario::class.java)
                     if(resUser.correo == correo){
-                        lblNom.text = lblNom.text.toString() +"  "+ resUser.nombre
-                        lblCor.text = lblCor.text.toString() +"  "+ resUser.correo
+                        lblNom.text = "Nombre: "+ resUser.nombre
+                        lblCor.text = "Correo: "+ resUser.correo
                         if(resUser.tipo_Usuario == "Administrador"){
                             btnEditTel.isGone = false
                         }

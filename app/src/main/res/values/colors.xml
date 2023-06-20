@@ -5,8 +5,27 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="azulRey">#02035b</color>
+    <color name="azulApp">#2772FF</color>
+    <color name="lightGray">#F8F8F8</color>
     <color name="darkgray">#707070</color>
+    <!--Colores del arcoiris-->
+    <color name="violeta">#9400D3</color>
+    <color name="morado">#4B0082</color>
+    <color name="azul">#0000FF</color>
+    <color name="verdeLima">#00FF00</color>
+    <color name="amarillo">#FFFF00</color>
+    <color name="naranja">#FF7F00</color>
+    <color name="rojo">#FF0000</color>
+    <!--Colores mas populares-->
+    <color name="negro">#000000</color>
+    <color name="gris">#808080</color>
+    <color name="verde">#008000</color>
+    <color name="fucsia">#800080</color>
+    <color name="blanco">#FFFFFF</color>
+    <!--Colores peculiares o unicos-->
+    <color name="azulAlicia">#F0F8FF</color>
+    <color name="coral">#FF7F50</color>
+    <color name="fireBrick">#B22222</color>
+    <color name="hotPink">#FF69B4</color>
+    <color name="lemonChiffon">#FFFACD</color>
 </resources>

@@ -1,6 +1,5 @@
 package com.ardusec.ardu_security
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +15,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
@@ -310,8 +308,10 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                 upPreg.addOnSuccessListener {
                                     Toast.makeText(this@EditDataUsSpActivity, "Su pregunta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(2000){
-                                        retorno()
-                                        finish()
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            retorno()
+                                            finish()
+                                        }
                                     }
                                 }
                                 upPreg.addOnFailureListener {
@@ -345,8 +345,10 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                 upSis.addOnSuccessListener {
                                     Toast.makeText(this@EditDataUsSpActivity, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(2000){
-                                        retorno()
-                                        finish()
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            retorno()
+                                            finish()
+                                        }
                                     }
                                 }
                                 upSis.addOnFailureListener {

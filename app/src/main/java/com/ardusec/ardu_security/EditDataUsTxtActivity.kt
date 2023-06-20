@@ -23,7 +23,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -34,6 +33,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
     private lateinit var txtValVie: EditText
     private lateinit var txtValNue: EditText
     private lateinit var txtValNueNum: EditText
+    private lateinit var txtValNuePas: EditText
     private lateinit var lblConfChg: TextView
     private lateinit var txtConfChg: EditText
     private lateinit var chbConfChg: CheckBox
@@ -68,6 +68,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
         txtValVie = findViewById(R.id.txtOldEditDatTxt)
         txtValNue = findViewById(R.id.txtNewEditDat)
         txtValNueNum = findViewById(R.id.txtNewEditDatNum)
+        txtValNuePas = findViewById(R.id.txtNewEditDatPas)
         lblConfChg = findViewById(R.id.lblConfChg)
         txtConfChg = findViewById(R.id.txtConfChg)
         chbConfChg = findViewById(R.id.chbConfPass)
@@ -189,9 +190,10 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 txtConfChg.isGone = false
                                 chbConfChg.isGone = false
                                 txtValVie.isGone = false
-                                txtValNue.isGone = false
+                                txtValNuePas.isGone = false
                                 btnConfCamb.isGone = false
                                 txtValVie.setText("Por seguridad, no es posible mostrar la contraseña previa")
+                                chbConfChg.text = "Mostrar Valores"
                             }
                             setCon.await()
                         }
@@ -301,8 +303,10 @@ class EditDataUsTxtActivity : AppCompatActivity() {
         chbConfChg.setOnClickListener {
             if(!chbConfChg.isChecked){
                 txtConfChg.transformationMethod = PasswordTransformationMethod.getInstance()
+                txtValNuePas.transformationMethod = PasswordTransformationMethod.getInstance()
             }else{
                 txtConfChg.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                txtValNuePas.transformationMethod = HideReturnsTransformationMethod.getInstance()
             }
         }
         btnConfCamb.setOnClickListener {
@@ -316,22 +320,6 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 email = task.email.toString()
                                 if(validarNombre(txtValNue.text)) {
                                     actNombre(txtValNue.text.toString(), email, gson)
-                                }
-                            }
-                        }
-                        "Correo" -> {
-                            user.let { task ->
-                                email = task.email.toString()
-                                if(validarCorreo(txtValNue.text) && validarContra(txtConfChg.text)) {
-                                    actCorreo(txtValNue.text.toString(), email, txtConfChg.text.toString(), gson)
-                                }
-                            }
-                        }
-                        "Contraseña" -> {
-                            user.let { task ->
-                                email = task.email.toString()
-                                if(validarContra(txtValNue.text) && validarContra(txtConfChg.text)) {
-                                    actContra(txtValNue.text.toString(), email, txtConfChg.text.toString())
                                 }
                             }
                         }
@@ -356,6 +344,22 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 email = task.email.toString()
                                 if(validarTel(txtValNueNum.text)) {
                                     actTel(txtValNueNum.text.toString(), email, gson)
+                                }
+                            }
+                        }
+                        "Correo" -> {
+                            user.let { task ->
+                                email = task.email.toString()
+                                if(validarCorreo(txtValNue.text) && validarContra(txtConfChg.text)) {
+                                    actCorreo(txtValNue.text.toString(), email, txtConfChg.text.toString(), gson)
+                                }
+                            }
+                        }
+                        "Contraseña" -> {
+                            user.let { task ->
+                                email = task.email.toString()
+                                if(validarContra(txtValNuePas.text) && validarContra(txtConfChg.text)) {
+                                    actContra(txtValNuePas.text.toString(), email, txtConfChg.text.toString())
                                 }
                             }
                         }
@@ -553,8 +557,10 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 upNom.addOnSuccessListener {
                                     Toast.makeText(this@EditDataUsTxtActivity,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
                                     Timer().schedule(2000) {
-                                        retorno()
-                                        finish()
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            retorno()
+                                            finish()
+                                        }
                                     }
                                 }
                                 upNom.addOnFailureListener {
@@ -605,8 +611,12 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                                                 Toast.makeText(this@EditDataUsTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
                                                                 Timer().schedule(2000) {
                                                                     FirebaseAuth.getInstance().signOut()
-                                                                    retorno()
-                                                                    finish()
+                                                                    lifecycleScope.launch(Dispatchers.Main){
+                                                                        Intent(this@EditDataUsTxtActivity, MainActivity::class.java).apply {
+                                                                            startActivity(this)
+                                                                            finish()
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                             upEmaSis.addOnFailureListener {
@@ -657,8 +667,12 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         Toast.makeText(this@EditDataUsTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
                         Timer().schedule(2000){
                             FirebaseAuth.getInstance().signOut()
-                            retorno()
-                            finish()
+                            lifecycleScope.launch(Dispatchers.Main){
+                                Intent(this@EditDataUsTxtActivity, MainActivity::class.java).apply {
+                                    startActivity(this)
+                                    finish()
+                                }
+                            }
                         }
                     }
                     upPas.addOnFailureListener {
@@ -690,8 +704,10 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 upResp.addOnSuccessListener {
                                     Toast.makeText(this@EditDataUsTxtActivity, "Su respuesta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(2000){
-                                        retorno()
-                                        finish()
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            retorno()
+                                            finish()
+                                        }
                                     }
                                 }
                                 upResp.addOnFailureListener {
@@ -726,8 +742,10 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 upPin.addOnSuccessListener {
                                     Toast.makeText(this@EditDataUsTxtActivity, "Su pin fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(2000){
-                                        retorno()
-                                        finish()
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            retorno()
+                                            finish()
+                                        }
                                     }
                                 }
                                 upPin.addOnFailureListener {
@@ -746,7 +764,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
             updPin.await()
         }
     }
-    suspend fun actTel(tel: String, correo: String, gson: Gson){
+    private fun actTel(tel: String, correo: String, gson: Gson){
         lifecycleScope.launch(Dispatchers.IO) {
             val updTel = async {
                 val database = Firebase.database
@@ -762,8 +780,10 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 upTel.addOnSuccessListener {
                                     Toast.makeText(this@EditDataUsTxtActivity, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(2000){
-                                        retorno()
-                                        finish()
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            retorno()
+                                            finish()
+                                        }
                                     }
                                 }
                                 upTel.addOnFailureListener {

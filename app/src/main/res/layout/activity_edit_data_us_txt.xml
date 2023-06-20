@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollPerfilTxt"
-    android:background="@color/azulRey"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/lightGray">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="@color/azulRey"
-        tools:context=".EditDataUsTxtActivity">
+        tools:context=".EditDataUsTxtActivity"
+        android:background="@color/lightGray">
 
         <TextView
             android:id="@+id/lblHeadEditTxt"
@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/headEdit"
-            android:textColor="@color/white"
             android:textSize="30sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +34,6 @@
             android:layout_marginTop="18dp"
             android:layout_marginEnd="25dp"
             android:text="¿?"
-            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,7 +43,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/lblOldVal"
-            android:textColor="@color/white"
             android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,12 +56,10 @@
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
             android:autofillHints="emailAddress"
-            android:background="@color/white"
             android:ems="10"
             android:enabled="false"
             android:hint="@string/txtViejo"
             android:inputType="none"
-            android:textColor="@color/darkgray"
             android:textColorHint="@color/darkgray"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,7 +74,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="@string/lblNewVal"
-            android:textColor="@color/white"
             android:textSize="16sp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
@@ -96,8 +90,6 @@
             android:ems="10"
             android:hint="@string/txtNuevo"
             android:inputType="text"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:textColorHint="@color/darkgray"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -115,8 +107,6 @@
             android:ems="10"
             android:hint="@string/txtNuevo"
             android:inputType="number"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:textColorHint="@color/darkgray"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -125,19 +115,35 @@
             app:layout_constraintTop_toBottomOf="@+id/txtNewEditDat"
             tools:visibility="visible" />
 
+        <EditText
+            android:id="@+id/txtNewEditDatPas"
+            android:layout_width="256dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:autofillHints="text"
+            android:ems="10"
+            android:hint="Ingrese su nueva contraseña"
+            android:inputType="textPassword"
+            android:textColorHint="@color/darkgray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtNewEditDatNum"
+            tools:visibility="visible" />
+
         <TextView
             android:id="@+id/lblConfChg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="@string/lblConfCamb"
-            android:textColor="@color/white"
             android:textSize="16sp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.242"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtNewEditDatNum"
+            app:layout_constraintTop_toBottomOf="@+id/txtNewEditDatPas"
             tools:visibility="visible" />
 
         <EditText
@@ -148,8 +154,6 @@
             android:autofillHints="emailAddress"
             android:ems="10"
             android:hint="@string/txtConfCamb"
-            android:background="@color/white"
-            android:textColor="@color/black"
             android:textColorHint="@color/darkgray"
             android:inputType="textPassword"
             android:visibility="gone"
@@ -165,7 +169,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="@string/chbPass"
-            android:textColor="@color/white"
             android:textSize="14sp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -180,7 +183,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/btnConfEdit"
-            android:textColor="@color/white"
             android:textSize="20sp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
