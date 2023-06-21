@@ -8,7 +8,7 @@
     <string name="btnLogin">Acceder</string>
     <string name="btnLstCPass">¿Olvido su Contraseña?</string>
     <string name="btnRegister">Registrese aqui</string>
-    <string name="lblCopyright">Ardu Security 2023 Copyright © Todos los derechos reservados</string>
+    <string name="lblCopyright">Ardu Security 2023\n Copyright © Todos los derechos reservados</string>
     <!-- Botones de ayuda -->
     <string name="btnHelp">¿?</string>
     <!-- Strings de la vista de olvido su contraseña -->
@@ -96,8 +96,8 @@
     <string name="headAlarma">Activar ó Desactivar Alarma</string>
     <string name="lblEsta">Estado Actual:</string>
     <string name="lblEstaVal">Cargando estado…</string>
-    <string name="alEstaAct">Encendida</string>
-    <string name="alEstaDesa">Apagada</string>
+    <string name="alEstaAct">Apagar</string>
+    <string name="alEstaDesa">Encender</string>
     <string name="lblCondAla">Condicion de Alarma:</string>
     <string name="alCondActi">Accionada</string>
     <string name="alCondOper">Operando</string>

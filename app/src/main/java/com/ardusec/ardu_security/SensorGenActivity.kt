@@ -1,5 +1,6 @@
 package com.ardusec.ardu_security
 
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
@@ -8,6 +9,7 @@ class SensorGenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sensor_gen)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.teal_700)))
 
         // Obteniendo el encabezado textual de la activity
         val encaSen: TextView = findViewById(R.id.lblSensor)

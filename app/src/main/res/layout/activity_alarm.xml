@@ -14,52 +14,34 @@
         android:layout_marginTop="60dp"
         android:text="@string/headAlarma"
         android:textSize="25sp"
+        android:textColor="@color/negro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/lblStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="@string/lblEsta"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.218"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblHeadAlarma" />
-
-    <TextView
-        android:id="@+id/lblStaVal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="@string/lblEstaVal"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lblStatus"
-        app:layout_constraintTop_toBottomOf="@+id/lblHeadAlarma" />
-
     <Switch
         android:id="@+id/swAlarma"
         android:layout_width="130dp"
         android:layout_height="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
+        android:paddingLeft="9dp"
         android:text="@string/lblEstaVal"
+        android:background="@color/azulAlicia"
+        android:textColor="@color/negro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/lblHeadAlarma" />
 
     <RadioGroup
         android:id="@+id/rbgCondAlarma"
-        android:layout_width="260dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="40dp"
         android:visibility="visible"
         android:gravity="center"
+        android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/swAlarma">
@@ -68,8 +50,10 @@
             android:id="@+id/lblCondAla"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:text="@string/lblCondAla"
             android:textSize="20sp"
+            android:textColor="@color/negro"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498" />
 
@@ -79,6 +63,7 @@
             android:layout_height="wrap_content"
             android:buttonTint="@color/rojo"
             android:textColor="@color/rojo"
+            android:layout_marginBottom="5dp"
             android:text="@string/alCondActi"
             android:textSize="16sp"
             android:enabled="false"
@@ -90,6 +75,7 @@
             android:layout_height="wrap_content"
             android:buttonTint="@color/verde"
             android:textColor="@color/verde"
+            android:layout_marginBottom="5dp"
             android:text="@string/alCondOper"
             android:textSize="16sp"
             android:enabled="false"
@@ -101,6 +87,7 @@
             android:layout_height="wrap_content"
             android:buttonTint="@color/gris"
             android:textColor="@color/gris"
+            android:layout_marginBottom="5dp"
             android:text="@string/alCondInac"
             android:textSize="16sp"
             android:enabled="false"

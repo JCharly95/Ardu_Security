@@ -1,5 +1,6 @@
 package com.ardusec.ardu_security
 
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +17,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class AlarmActivity : AppCompatActivity() {
-    private lateinit var lblSta: TextView
     private lateinit var swAlarma: Switch
     private lateinit var rbCondAlaActi: RadioButton
     private lateinit var rbCondAlaOper: RadioButton
@@ -28,6 +28,7 @@ class AlarmActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alarm)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.teal_700)))
 
         // Configurar el arranque de la interfaz
         setUp()
@@ -39,7 +40,6 @@ class AlarmActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Gestionar Alarma"
         // Relacionando los elementos con su objeto de la interfaz
-        lblSta = findViewById(R.id.lblStaVal)
         swAlarma = findViewById(R.id.swAlarma)
         rbCondAlaActi = findViewById(R.id.rbAlaActi)
         rbCondAlaOper = findViewById(R.id.rbAlaOper)
@@ -60,11 +60,9 @@ class AlarmActivity : AppCompatActivity() {
                     override fun onDataChange(dataSnapshot: DataSnapshot){
                         val estado = dataSnapshot.value
                         if(estado as Boolean){
-                            lblSta.text = resources.getString(R.string.alEstaAct)
                             swAlarma.text = resources.getString(R.string.alEstaAct)
                             swAlarma.isChecked = true
                         }else{
-                            lblSta.text = resources.getString(R.string.alEstaDesa)
                             swAlarma.text = resources.getString(R.string.alEstaDesa)
                             swAlarma.isChecked = false
                             rbCondAlaInac.isChecked = true
@@ -104,9 +102,28 @@ class AlarmActivity : AppCompatActivity() {
         swAlarma.setOnCheckedChangeListener{ _, isChecked ->
             if (isChecked){
                 swAlarma.isChecked = true
-                rbCondAlaOper.isChecked = true
                 database.getReference("Alarma").child("estado").setValue(true)
                 swAlarma.text = resources.getString(R.string.alEstaAct)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val setcondAla = async {
+                        // Establecer el estado del switch acorde al valor de la entidad en firebase
+                        ref = database.getReference("Alarma").child("condicion")
+                        ref.addValueEventListener(object: ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot){
+                                val estado = dataSnapshot.value
+                                if(estado as Boolean){
+                                    rbCondAlaActi.isChecked = true
+                                }else{
+                                    rbCondAlaOper.isChecked = true
+                                }
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                            }
+                        })
+                    }
+                    setcondAla.await()
+                }
             }else{
                 swAlarma.isChecked = false
                 rbCondAlaInac.isChecked = true

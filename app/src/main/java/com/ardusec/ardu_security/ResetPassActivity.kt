@@ -2,6 +2,7 @@ package com.ardusec.ardu_security
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -41,6 +42,7 @@ class ResetPassActivity : AppCompatActivity(){
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_pass)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.teal_700)))
 
         // Configurar el arranque de la interfaz
         setUp()

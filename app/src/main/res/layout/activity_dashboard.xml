@@ -21,6 +21,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/headDash"
         android:textSize="34sp"
+        android:textColor="@color/negro"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
