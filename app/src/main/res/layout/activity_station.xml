@@ -11,8 +11,9 @@
         android:id="@+id/lblStaHead"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:text="@string/lblStaHead"
+        android:gravity="center"
         android:textSize="24sp"
         android:visibility="visible"
         android:textColor="@color/negro"
@@ -27,31 +28,24 @@
         android:layout_marginTop="30dp"
         android:text="@string/btnCam"
         android:textSize="20sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblStaHead" />
+        app:layout_constraintTop_toBottomOf="@+id/lblStaHead"
+        tools:visibility="visible" />
 
     <Button
-        android:id="@+id/btnSenGas"
+        android:id="@+id/btnSenGH"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="@string/btnSenGas"
+        android:text="@string/btnSenGH"
         android:textSize="20sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCam" />
-
-    <Button
-        android:id="@+id/btnSenHum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/btnSenHum"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSenGas" />
+        app:layout_constraintTop_toBottomOf="@+id/btnCam"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/btnSenMagne"
@@ -60,8 +54,10 @@
         android:layout_marginTop="30dp"
         android:text="@string/btnSenMag"
         android:textSize="20sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSenHum" />
+        app:layout_constraintTop_toBottomOf="@+id/btnSenGH"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

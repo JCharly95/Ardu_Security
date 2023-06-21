@@ -55,11 +55,10 @@
     </string-array>
     <string name="btnReg">Registrar</string>
     <!-- Strings de la vistas de estaciones-->
-    <string name="lblStaHead">Accesos de la</string>
+    <string name="lblStaHead">Accesos de:</string>
     <string name="btnCam">Camara</string>
-    <string name="btnSenGas">Sensor de Gas</string>
-    <string name="btnSenHum">Sensor de Humo</string>
-    <string name="btnSenMag">Sensor Magnetico</string>
+    <string name="btnSenGH">Sensor de\n Gas/Humo</string>
+    <string name="btnSenMag">Sensor\n Magnetico</string>
     <!-- Strings de la vistas de las camaras-->
     <string name="lblCamView">Camara</string>
     <!-- Strings de la vistas de los sensores-->

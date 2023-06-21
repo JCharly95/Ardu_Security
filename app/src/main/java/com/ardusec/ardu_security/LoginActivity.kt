@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,6 +19,10 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
@@ -93,118 +98,168 @@ class LoginActivity : AppCompatActivity() {
             aviso()
         }
         btnAcc.setOnClickListener{
-            val correo = txtEmail.text.toString()
-            val contra = txtContra.text.toString()
+            lifecycleScope.launch(Dispatchers.IO) {
+                val accProc = async {
+                    val correo = txtEmail.text.toString()
+                    val contra = txtContra.text.toString()
 
-            if(correo.isNotEmpty() && contra.isNotEmpty()){
-                // Validacion de campos
-                if(validarCorreo(correo, this)){
-                    valCorr = true
+                    if(correo.isNotEmpty() && contra.isNotEmpty()){
+                        // Validacion de campos
+                        if(validarCorreo(correo)){
+                            valCorr = true
+                        }
+                        if(validarContra(contra)){
+                            valContra = true
+                        }
+                        // Si las validaciones de campos fueron correctas, se logueara en firebase
+                        if(valCorr && valContra){
+                            acceder(correo, contra)
+                        }else{
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LoginActivity, "Error: Favor de revisar sus datos", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }else{
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(this@LoginActivity, "Error: Favor de ingresar datos", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
-                if(validarContra(contra, this)){
-                    valContra = true
-                }
-                // Si las validaciones de campos fueron correctas, se logueara en firebase
-                if(valCorr && valContra){
-                    acceder(correo, contra)
+                accProc.await()
+            }
+        }
+    }
+
+    private fun validarCorreo(correo: String): Boolean {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val valCor = async {
+                // Si se detectan espacios en el correo, estos seran removidos
+                if(Regex("""\s+""").containsMatchIn(correo)){
+                    val correoFil = correo.replace("\\s".toRegex(), "")
+                    when{
+                        // Si el correo esta vacio
+                        TextUtils.isEmpty(correoFil) -> {
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LoginActivity, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+                        !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> {
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LoginActivity, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        else -> return@async true
+                    }
                 }else{
-                    Toast.makeText(this, "Error: Favor de revisar sus datos", Toast.LENGTH_SHORT).show()
+                    when{
+                        // Si el correo esta vacio
+                        TextUtils.isEmpty(correo) -> {
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LoginActivity, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+                        !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> {
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LoginActivity, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        else -> return@async true
+                    }
                 }
-            }else{
-                Toast.makeText(this, "Error: Favor de ingresar datos", Toast.LENGTH_SHORT).show()
+                return@async false
             }
+            valCor.await()
         }
+        return valCorr
     }
 
-    private fun validarCorreo(correo: String, contexto: Context): Boolean{
-        // Si se detectan espacios en el correo, estos seran removidos
-        if(Regex("""\s+""").containsMatchIn(correo)){
-            val correoFil = correo.replace("\\s".toRegex(), "")
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correoFil) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                else -> return true
-            }
-        }else{
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correo) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                else -> return true
-            }
-        }
-        return false
-    }
-
-    private fun validarContra(contra: String, contexto: Context): Boolean{
+    private fun validarContra(contra: String): Boolean {
         // Si se detectan espacios en la contraseña, estos seran removidos
         if(Regex("""\s+""").containsMatchIn(contra)) {
             val contraFil = contra.replace("\\s".toRegex(), "")
             when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(contraFil) -> Toast.makeText(contexto, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
-                // Extension minima de 8 caracteres
-                (contraFil.length < 8) -> Toast.makeText(contexto, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
-                else -> return true
+                TextUtils.isEmpty(contraFil) -> { // Si la contraseña esta vacia
+                    Toast.makeText(this@LoginActivity, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                }
+                (contraFil.length < 8) -> { // Extension minima de 8 caracteres
+                    Toast.makeText(this@LoginActivity, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                }
+                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> { // No se tiene al menos una mayuscula
+                    Toast.makeText(this@LoginActivity, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                }
+                (!Regex("""\d""").containsMatchIn(contraFil)) -> { // No se tiene al menos un numero
+                    Toast.makeText(this@LoginActivity, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                }
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> { // No se tiene al menos un caracter especial
+                    Toast.makeText(this@LoginActivity, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    return true
+                }
             }
         }else{
             when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(contra) -> Toast.makeText(contexto, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
-                // Extension minima de 8 caracteres
-                (contra.length < 8) -> Toast.makeText(contexto, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
-                else -> return true
+                TextUtils.isEmpty(contra) -> { // Si la contraseña esta vacia
+                    Toast.makeText(this@LoginActivity, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
+                }
+                (contra.length < 8) -> { // Extension minima de 8 caracteres
+                    Toast.makeText(this@LoginActivity, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
+                }
+                (!Regex("[A-Z]+").containsMatchIn(contra)) -> { // No se tiene al menos una mayuscula
+                    Toast.makeText(this@LoginActivity, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
+                }
+                (!Regex("""\d""").containsMatchIn(contra)) -> { // No se tiene al menos un numero
+                    Toast.makeText(this@LoginActivity, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
+                }
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> { // No se tiene al menos un caracter especial
+                    Toast.makeText(this@LoginActivity, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    return true
+                }
             }
         }
         return false
     }
 
     private fun acceder(email: String, password: String) {
-        // Se crea una instancia de FirebaseAuth (Autenticacion y se inicia sesion/loguea)
-        FirebaseAuth.getInstance()
-            .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener{ task ->
-                    if(task.isSuccessful){
-                        // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard y se accede a firebase para mostrar su nombre
-                        val refDB = Firebase.database.getReference("Usuarios")
-                        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
-                        refDB.addValueEventListener(object: ValueEventListener{
-                            override fun onDataChange(dataSnapshot: DataSnapshot){
-                                for (objUs in dataSnapshot.children){
-                                    val gson = Gson()
-                                    val userJSON = gson.toJson(objUs.value)
-                                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                                    val nombre = resUser.nombre
-                                    Toast.makeText(this@LoginActivity, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
-                                    val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
-                                    startActivity(intentoDash)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val acceso = async {
+                // Se crea una instancia de FirebaseAuth (Autenticacion y se inicia sesion/loguea)
+                FirebaseAuth.getInstance()
+                    .signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener{ task ->
+                        if(task.isSuccessful){
+                            // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard y se accede a firebase para mostrar su nombre
+                            val refDB = Firebase.database.getReference("Usuarios")
+                            data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+                            refDB.addValueEventListener(object: ValueEventListener{
+                                override fun onDataChange(dataSnapshot: DataSnapshot){
+                                    for (objUs in dataSnapshot.children){
+                                        val gson = Gson()
+                                        val userJSON = gson.toJson(objUs.value)
+                                        val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                                        val nombre = resUser.nombre
+                                        Toast.makeText(this@LoginActivity, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
+                                        val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
+                                        startActivity(intentoDash)
+                                    }
                                 }
-                            }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                            }
-                        })
-                    }else{
-                        // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                        Toast.makeText(this, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
-                        txtEmail.text.clear()
-                        txtContra.text.clear()
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                                }
+                            })
+                        }else{
+                            // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                            Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                            txtEmail.text.clear()
+                            txtContra.text.clear()
+                        }
                     }
-                }
+            }
+            acceso.await()
+        }
     }
 }

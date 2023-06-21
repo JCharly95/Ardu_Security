@@ -6,19 +6,35 @@ import android.os.Bundle
 import android.widget.TextView
 
 class CameraGenActivity : AppCompatActivity() {
+    private lateinit var encaCam: TextView
+    private lateinit var bundle: Bundle
+    private lateinit var estacion: String
+    private lateinit var nombre: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera_gen)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.teal_700)))
 
-        // Obteniendo el encabezado textual de la activity
-        val encaCam: TextView = findViewById(R.id.lblCamera)
+        // Configurar el arranque de la interfaz
+        setUp()
+        // Agregar los listeners
+        addListeners()
+    }
 
+    private fun setUp(){
         // Obteniendo la estacion seleccionada por el boton
-        val dataPack: Bundle? = intent.extras
-        val staHead: String? = dataPack?.getString("name_station")
-        // Estableciendo el encabezado de la estacion segun la seleccion hecha
-        var encaAct: String = encaCam.text as String + " "
-        encaCam.text = encaAct + staHead
+        bundle = intent.extras!!
+        estacion = bundle.getString("name_station").toString()
+        nombre = bundle.getString("nom_cam").toString()
+
+        // Titulo de la pantalla
+        title = nombre
+        encaCam = findViewById(R.id.lblCamera)
+        encaCam.text = encaCam.text.toString()+":\n"+estacion.split(";")[0]
+    }
+
+    private fun addListeners(){
+
     }
 }
