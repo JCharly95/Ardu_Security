@@ -53,6 +53,11 @@ class MenuStationsActivity : AppCompatActivity() {
         btnAlarma = findViewById(R.id.btnAlarma)
         // Habilitando solo los botones adecuados de acuerdo al plan del sistema
         setupBtn()
+        //btnSta1.isGone = false
+        //btnSta2.isGone = false
+        //btnSta3.isGone = false
+        //btnSta4.isGone = false
+        //btnSta5.isGone = false
     }
 
     private fun addListeners() {
