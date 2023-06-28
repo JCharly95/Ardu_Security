@@ -4,113 +4,111 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightGray"
-    android:visibility="visible"
+    android:background="@color/azulAlicia"
     tools:context=".LoginActivity">
 
-    <ImageView
-        android:id="@+id/imgLogo"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvImgLogo"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
         android:layout_width="188dp"
         android:layout_height="152dp"
         android:layout_marginTop="30dp"
-        android:contentDescription="@string/imgLogo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo_v2" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imgLogoPan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/imgLogo"
+            app:srcCompat="@drawable/logo_v2"
+            android:scaleType="fitXY"/>
+    </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/btnInfo"
-        android:layout_width="51dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="25dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="26dp"
         android:text="@string/btnHelp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/txtEmail"
-        android:ems="10"
-        android:hint="@string/txtEmail"
-        android:visibility="visible"
-        android:layout_width="256dp"
-        android:layout_height="48dp"
+    <LinearLayout
+        android:id="@+id/llLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:orientation="vertical"
         android:layout_marginTop="20dp"
-        android:textColor="@color/negro"
-        android:autofillHints="emailAddress"
-        android:shadowColor="@color/azulApp"
-        android:inputType="textEmailAddress"
-        android:background="@color/azulAlicia"
-        android:textColorHint="@color/darkgray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgLogo" />
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/cvImgLogo">
 
-    <EditText
-        android:id="@+id/txtPass"
-        android:ems="10"
-        android:hint="@string/txtPass"
-        android:layout_width="256dp"
-        android:layout_height="48dp"
-        android:inputType="textPassword"
-        android:layout_marginTop="20dp"
-        android:autofillHints="password"
-        android:textColor="@color/negro"
-        android:background="@color/azulAlicia"
-        android:textColorHint="@color/darkgray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtEmail" />
+        <EditText
+            android:id="@+id/txtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:autofillHints="emailAddress"
+            android:inputType="textEmailAddress"
+            android:drawableStart="@android:drawable/sym_action_email"
+            android:drawableTint="@color/negro"
+            android:hint="@string/txtEmail"
+            android:textColorHint="@color/darkgray"
+            android:textColor="@color/negro" />
 
-    <CheckBox
-        android:id="@+id/chbPass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/chbPass"
-        android:textColor="@color/negro"
-        android:textSize="14sp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPass" />
+        <EditText
+            android:id="@+id/txtPass"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:autofillHints="password"
+            android:inputType="textPassword"
+            android:drawableStart="@android:drawable/ic_lock_idle_lock"
+            android:drawableTint="@color/negro"
+            android:hint="@string/txtPass"
+            android:textColorHint="@color/darkgray"
+            android:textColor="@color/negro" />
 
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/btnLogin"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chbPass" />
+        <CheckBox
+            android:id="@+id/chbPass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:text="@string/chbPass"
+            android:textColor="@color/negro" />
 
-    <Button
-        android:id="@+id/btnLstContra"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/btnLstCPass"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/btnLogin"
+            android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btnRegView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/btnRegister"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLstContra" />
+        <Button
+            android:id="@+id/btnLstContra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/btnLstCPass"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/btnRegView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/btnRegister"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/txtCopyright"
@@ -124,7 +122,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnRegView"
+        app:layout_constraintTop_toBottomOf="@+id/llLogin"
         app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
