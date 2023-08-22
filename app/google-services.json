@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "221885248757-1q32enp889f4hrhmk58pabqv24gq0fca.apps.googleusercontent.com",
+          "client_id": "221885248757-o73chlq1maqvh0eg4aigmh8efq81lr64.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ardusec.ardu_security",
+            "certificate_hash": "8285fd8cd831ed91e93fb557810ed4bd57d6c9c9"
+          }
+        },
+        {
+          "client_id": "221885248757-g3mm3pnnnanhlqh7anbf28htakoi0vae.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

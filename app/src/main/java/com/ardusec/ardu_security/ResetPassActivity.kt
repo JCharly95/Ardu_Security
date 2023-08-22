@@ -10,6 +10,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import com.google.firebase.auth.FirebaseAuth
@@ -23,7 +24,7 @@ class ResetPassActivity : AppCompatActivity(){
     private lateinit var txtNombre: EditText
     private lateinit var btnHelp: Button
     private lateinit var txtDirEma: EditText
-    private lateinit var spPreguntas: Spinner
+    private lateinit var spPreguntas: AppCompatSpinner
     private lateinit var txtResPreg: EditText
     private lateinit var btnEnvCorr: Button
     private lateinit var lblMsgSta: TextView

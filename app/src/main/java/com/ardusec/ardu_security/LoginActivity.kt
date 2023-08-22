@@ -3,16 +3,20 @@ package com.ardusec.ardu_security
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.TextUtils
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -28,8 +32,11 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var chbVerContra: CheckBox
     private lateinit var btnLostPass: Button
     private lateinit var btnAcc: Button
+    private lateinit var btnAccGo: ImageButton
     private lateinit var btnRegister: Button
     private lateinit var btnAyuda: Button
+    // ID del acceso de google
+    private val GoogleAcces = 195
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +57,8 @@ class LoginActivity : AppCompatActivity() {
         chbVerContra = findViewById(R.id.chbPass)
         btnLostPass = findViewById(R.id.btnLstContra)
         btnAcc = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegView)
+        btnRegister = findViewById(R.id.btnRegCor)
+        btnAccGo = findViewById(R.id.btnRegGoo)
         btnAyuda = findViewById(R.id.btnInfo)
     }
 
@@ -121,7 +129,75 @@ class LoginActivity : AppCompatActivity() {
                 accProc.await()
             }
         }
+        btnAccGo.setOnClickListener {
+            signInGoo()
+        }
     }
+
+    private fun signInGoo() {
+        // Configuracion google
+        val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        // Obteniendo el cliente de google
+        val googleCli = GoogleSignIn.getClient(this, googleConf)
+        // Obteniendo el intent de google
+        val intent = googleCli.signInIntent
+        // Implementando el launcher result posterior al haber obtenido el intent de google
+        resultLauncher.launch(intent)
+    }
+
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
+        if (result.resultCode == GoogleAcces) {
+            val data = result.data
+            data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val cuenta = task.getResult(ApiException::class.java)
+                // Verificacion de existencia de cuenta
+                if(cuenta != null){
+                    // Obteniendo la credencial
+                    val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
+                    // Accediendo con los datos de la cuenta de google
+                    FirebaseAuth.getInstance().signInWithCredential(credencial).addOnCompleteListener {
+                        if(it.isSuccessful) {
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                val accesoGoogle = async {
+                                    // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard y se accede a firebase para mostrar su nombre
+                                    val refDB = Firebase.database.getReference("Usuarios")
+                                    refDB.addValueEventListener(object: ValueEventListener{
+                                        override fun onDataChange(dataSnapshot: DataSnapshot){
+                                            for (objUs in dataSnapshot.children){
+                                                val gson = Gson()
+                                                val userJSON = gson.toJson(objUs.value)
+                                                val resUser = gson.fromJson(userJSON, Usuario::class.java)
+                                                val nombre = resUser.nombre
+                                                Toast.makeText(this@LoginActivity, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
+                                                val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
+                                                startActivity(intentoDash)
+                                            }
+                                        }
+                                        override fun onCancelled(databaseError: DatabaseError) {
+                                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                                        }
+                                    })
+                                }
+                                accesoGoogle.await()
+                            }
+                        }
+                    }
+                }
+            }catch (error: ApiException){
+                // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                txtEmail.text.clear()
+                txtContra.text.clear()
+            }
+        }
+    }
+
 
     private suspend fun validarCorreo(correo: String): Boolean {
         // Si se detectan espacios en el correo, estos seran removidos

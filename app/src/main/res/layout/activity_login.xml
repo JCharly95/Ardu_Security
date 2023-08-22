@@ -9,11 +9,11 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvImgLogo"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="0dp"
         android:layout_width="188dp"
         android:layout_height="152dp"
         android:layout_marginTop="30dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,22 +24,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/imgLogo"
-            app:srcCompat="@drawable/logo_v2"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/logo_v2" />
     </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/btnInfo"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginStart="37dp"
         android:layout_marginTop="26dp"
         android:layout_marginEnd="26dp"
         android:text="@string/btnHelp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cvImgLogo"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/llLogin"
+        android:id="@+id/LlLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -68,12 +70,12 @@
             android:layout_height="48dp"
             android:layout_marginTop="5dp"
             android:autofillHints="password"
-            android:inputType="textPassword"
-            android:drawableStart="@android:drawable/ic_lock_idle_lock"
+            android:drawableStart="@drawable/key"
             android:drawableTint="@color/negro"
             android:hint="@string/txtPass"
-            android:textColorHint="@color/darkgray"
-            android:textColor="@color/negro" />
+            android:inputType="textPassword"
+            android:textColor="@color/negro"
+            android:textColorHint="@color/darkgray" />
 
         <CheckBox
             android:id="@+id/chbPass"
@@ -100,13 +102,46 @@
             android:text="@string/btnLstCPass"
             android:textSize="16sp"/>
 
-        <Button
-            android:id="@+id/btnRegView"
+        <TextView
+            android:id="@+id/lblRespSel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/btnRegister"
-            android:textSize="16sp"/>
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:visibility="visible"
+            android:text="@string/lblReg"
+            android:textColor="@color/negro"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="5dp">
+
+            <Button
+                android:id="@+id/btnRegCor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/btnRegCor"
+                android:textSize="16sp" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/btnRegGoo"
+                android:layout_width="12dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/btnRegGoo"
+                android:background="@color/azulAlicia"
+                app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -122,7 +157,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llLogin"
+        app:layout_constraintTop_toBottomOf="@+id/LlLogin"
         app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
