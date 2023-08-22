@@ -73,7 +73,6 @@ class StationActivity : AppCompatActivity() {
                 "EstGen5"
             }
         }
-
         // Determinar que botones estaran visibles acorde a la relacion con la estacion
         btnCam.isGone = false
         setBtnSen()
