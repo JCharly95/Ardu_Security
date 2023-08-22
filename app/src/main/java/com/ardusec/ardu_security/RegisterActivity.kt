@@ -32,9 +32,6 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var rbSelCli: RadioButton
     private lateinit var rbSelAdmin: RadioButton
     private lateinit var spSisRel: Spinner
-    private lateinit var rbPinSi: RadioButton
-    private lateinit var rbPinNo: RadioButton
-    private lateinit var txtPin: EditText
     private lateinit var txtAdminTel: EditText
     private lateinit var btnReg: Button
     private lateinit var btnAyuda: Button
@@ -78,9 +75,6 @@ class RegisterActivity : AppCompatActivity() {
         txtRespQues = findViewById(R.id.txtRespQues)
         rbSelCli = findViewById(R.id.rbTipUsCli)
         rbSelAdmin = findViewById(R.id.rbTipUsAdmin)
-        rbPinSi = findViewById(R.id.rbIngrePin)
-        rbPinNo = findViewById(R.id.rbNoIngrePin)
-        txtPin = findViewById(R.id.txtPin)
         txtAdminTel = findViewById(R.id.txtTel)
         spSisRel = findViewById(R.id.spSistema)
         btnReg = findViewById(R.id.btnRegister)
@@ -198,14 +192,6 @@ class RegisterActivity : AppCompatActivity() {
         btnAyuda.setOnClickListener {
             avisoReg()
         }
-        rbPinSi.setOnClickListener {
-            txtPin.isGone = false
-            selPin = true
-        }
-        rbPinNo.setOnClickListener {
-            txtPin.isGone = true
-            selPin = false
-        }
         btnReg.setOnClickListener {
             validaciones()
         }
@@ -221,7 +207,7 @@ class RegisterActivity : AppCompatActivity() {
         valiSis = ValiCampos.validarSelSis(spSisRel, this)
 
         // Clases de datos virtuales para implementar el guardado
-        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String)
         data class Sistema(val id_Sistema: String, val nombre_Sis: String, val tipo: String, val ulti_Cam_Nom: String)
         data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
 
@@ -242,12 +228,7 @@ class RegisterActivity : AppCompatActivity() {
                         // Preparando el sistema para ingresar el usuario en la BD; Parte 1: Obteniendo el valor de la pregunta seleccionada
                         val pregSel = spSafQuKyReg.selectedItem.toString()
                         // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
-                        val nUser = if(selPin){    // Si se trae pin, aqui es donde sera agregado para su almacenado
-                            valiPin = ValiCampos.validarPin(txtPin.text, this)
-                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
-                        }else{
-                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
-                        }
+                        val nUser = Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString())
                         // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
                         database.reference.child("Usuarios").child(authUs.uid).setValue(nUser)
                         // Creando los elementos para relacionar el usuario con el sistema
@@ -293,12 +274,7 @@ class RegisterActivity : AppCompatActivity() {
                         // Obteniendo el valor de la pregunta seleccionada
                         val pregSel = spSafQuKyReg.selectedItem.toString()
                         // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
-                        val nUser = if(selPin){    // Si se trae pin, aqui es donde sera agregado para su almacenado
-                            valiPin = ValiCampos.validarPin(txtPin.text, this)
-                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=txtPin.text.toString().toInt())
-                        }else{
-                            Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString(),pin_Pass=0)
-                        }
+                        val nUser = Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString())
                         // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
                         database.reference.child("Usuarios").child(authUs.uid).setValue(nUser)
                         // Creando los elementos para relacionar el usuario con el sistema
@@ -428,15 +404,6 @@ class RegisterActivity : AppCompatActivity() {
                 return false
             }
             return true
-        }
-        fun validarPin(Pin: Editable, contexto: Context): Boolean {
-            when {
-                TextUtils.isEmpty(Pin) -> Toast.makeText(contexto, "Error: Favor de introducir un pin", Toast.LENGTH_SHORT).show()
-                (Regex("""\D""").containsMatchIn(Pin)) -> Toast.makeText(contexto, "Error: El pin de acceso solo puede contener digitos", Toast.LENGTH_SHORT).show()
-                (Pin.length < 4) -> Toast.makeText(contexto, "Advertencia: Se recomienda un pin numerico de al menos 4 digitos", Toast.LENGTH_SHORT).show()
-                else -> return true
-            }
-            return false
         }
         fun validarTel(numTel: Editable, contexto: Context): Boolean {
             when {

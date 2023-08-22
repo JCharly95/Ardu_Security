@@ -117,7 +117,7 @@ class DashboardActivity : AppCompatActivity() {
     private fun btnGestSis(correo: String){
         // Creando la referencia de la coleccion de preguntas en la BD
         val refDB = Firebase.database.getReference("Usuarios")
-        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
+        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String)
         refDB.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 for (objUs in dataSnapshot.children){

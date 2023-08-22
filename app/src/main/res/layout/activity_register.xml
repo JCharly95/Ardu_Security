@@ -190,65 +190,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rbgSelTipUser" />
 
-        <RadioGroup
-            android:id="@+id/rbgSelIngrePin"
-            android:gravity="center"
-            android:visibility="visible"
-            android:layout_width="307dp"
-            android:layout_marginTop="10dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spSistema">
-
-            <TextView
-                android:id="@+id/lblQuesPin"
-                android:textSize="20sp"
-                android:textColor="@color/negro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lblIngrePin"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498" />
-
-            <RadioButton
-                android:id="@+id/rbIngrePin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/rbIngrePinSi"
-                android:textSize="16sp"
-                android:textColor="@color/negro"
-                android:visibility="visible" />
-
-            <RadioButton
-                android:id="@+id/rbNoIngrePin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/rbIngrePinNo"
-                android:textSize="16sp"
-                android:textColor="@color/negro"
-                android:visibility="visible" />
-        </RadioGroup>
-
-        <EditText
-            android:id="@+id/txtPin"
-            android:ems="10"
-            android:visibility="gone"
-            android:inputType="number"
-            android:layout_width="256dp"
-            android:layout_height="48dp"
-            android:autofillHints="phone"
-            android:layout_marginTop="10dp"
-            android:hint="@string/txtPin"
-            android:textColor="@color/negro"
-            android:background="@color/azulAlicia"
-            android:textColorHint="@color/darkgray"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rbgSelIngrePin"
-            tools:visibility="visible" />
-
         <EditText
             android:id="@+id/txtTel"
             android:layout_width="256dp"
@@ -264,7 +205,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtPin"
+            app:layout_constraintTop_toBottomOf="@+id/spSistema"
             tools:visibility="visible" />
 
         <Button
