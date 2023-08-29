@@ -108,8 +108,29 @@ class DashboardActivity : AppCompatActivity() {
     private fun getEmail(): String {
         val user = Firebase.auth.currentUser
         var email = ""
-        user?.let {task ->
-            email = task.email.toString()
+        user?.let {
+            for (profile in it.providerData) {
+                // Id of the provider (ex: google.com)
+                val providerId = profile.providerId
+
+                // UID specific to the provider
+                val uid = profile.uid
+
+                // Name, email address, and profile photo Url
+                val name = profile.displayName
+                email = profile.email.toString()
+                val photoUrl = profile.photoUrl
+
+                Log.w("ProviderID", providerId)
+                Log.w("UsuarioID", uid)
+                if (name != null) {
+                    Log.w("Nombre", name)
+                }else{
+                    Log.w("Nombre", "No se encontro el nombre del usuario")
+                }
+                Log.w("Correo", email)
+                Log.w("ImagenURL", photoUrl.toString())
+            }
         }
         return email
     }

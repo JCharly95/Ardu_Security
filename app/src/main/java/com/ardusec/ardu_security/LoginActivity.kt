@@ -2,6 +2,7 @@ package com.ardusec.ardu_security
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
+import android.net.wifi.hotspot2.pps.Credential
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -11,12 +12,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -28,16 +33,19 @@ import kotlinx.coroutines.*
 
 class LoginActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
+    private lateinit var txtUser: EditText
     private lateinit var txtEmail: EditText
     private lateinit var txtContra: EditText
     private lateinit var chbVerContra: CheckBox
     private lateinit var btnLostPass: Button
+    private lateinit var btnSelAccEma: Button
+    private lateinit var btnSelAccGoo: Button
     private lateinit var btnAcc: Button
-    private lateinit var btnAccGo: ImageButton
     private lateinit var btnRegister: Button
     private lateinit var btnAyuda: Button
     private lateinit var googleConf: GoogleSignInOptions
     private lateinit var googleCli: GoogleSignInClient
+    private lateinit var linLayEma: LinearLayout
     // ID del acceso de google
     private val GoogleAcces = 195
 
@@ -55,14 +63,18 @@ class LoginActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Iniciar Sesion"
         // Relacionando los elementos con su objeto de la interfaz
+        txtUser = findViewById(R.id.txtUsername)
         txtEmail = findViewById(R.id.txtEmail)
         txtContra = findViewById(R.id.txtPass)
         chbVerContra = findViewById(R.id.chbPass)
         btnLostPass = findViewById(R.id.btnLstContra)
+        btnSelAccEma = findViewById(R.id.btnAccUsPass)
+        btnSelAccGoo = findViewById(R.id.btnAccGoogle)
         btnAcc = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegCor)
-        btnAccGo = findViewById(R.id.btnRegGoo)
+        btnRegister = findViewById(R.id.btnRegistro)
+        //btnAccGo = findViewById(R.id.btnRegGoo)
         btnAyuda = findViewById(R.id.btnInfo)
+        linLayEma = findViewById(R.id.LinLaLogEma)
     }
 
     private fun aviso(){
@@ -85,6 +97,12 @@ class LoginActivity : AppCompatActivity() {
 
     private fun addListeners(){
         // Agregar los listener de los botones
+        btnAyuda.setOnClickListener {
+            aviso()
+        }
+        btnSelAccEma.setOnClickListener {
+            linLayEma.isGone = !btnSelAccEma.isGone
+        }
         btnLostPass.setOnClickListener{
             val intentLost = Intent(this,ResetPassActivity::class.java)
             startActivity(intentLost)
@@ -100,18 +118,17 @@ class LoginActivity : AppCompatActivity() {
             val intentRegister = Intent(this,RegisterActivity::class.java)
             startActivity(intentRegister)
         }
-        btnAyuda.setOnClickListener {
-            aviso()
-        }
         btnAcc.setOnClickListener{
             lifecycleScope.launch(Dispatchers.IO) {
                 val accProc = async {
+                    val user = txtUser.text.toString()
                     val correo = txtEmail.text.toString()
                     val contra = txtContra.text.toString()
 
                     if(correo.isNotEmpty() && contra.isNotEmpty()){
                         if(validarCorreo(correo) && validarContra(contra)){
-                            acceder(correo, contra)
+                            val credencial = EmailAuthProvider.getCredential(correo, contra)
+                            acceder(credencial)
                         }
                     }else{
                         if(correo.isEmpty() && contra.isEmpty()){
@@ -132,9 +149,14 @@ class LoginActivity : AppCompatActivity() {
                 accProc.await()
             }
         }
-        btnAccGo.setOnClickListener {
-            crearPeticionGoogle()
-            signInGoo()
+
+        btnSelAccGoo.setOnClickListener {
+            if(txtUser.text.toString().isNotEmpty()){
+                crearPeticionGoogle()
+                signInGoo()
+            }else{
+                Toast.makeText(this@LoginActivity, "Error: El usuario no ha sido ingresado", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -146,46 +168,6 @@ class LoginActivity : AppCompatActivity() {
             .build()
         // Obteniendo el cliente de google
         googleCli = GoogleSignIn.getClient(this@LoginActivity, googleConf)
-    }
-
-    private fun signInGoo() {
-        // Obteniendo el intent de google
-        val intentGoo = googleCli.signInIntent
-        // Implementando el launcher result posterior al haber obtenido el intent de google
-        startActivityForResult(intentGoo, GoogleAcces)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
-        if (requestCode == GoogleAcces) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val cuenta = task.getResult(ApiException::class.java)
-                // Obteniendo la credencial
-                val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
-                // Accediendo con los datos de la cuenta de google
-                FirebaseAuth.getInstance().signInWithCredential(credencial).addOnCompleteListener {
-                    if(it.isSuccessful){
-                        Toast.makeText(this@LoginActivity, "Bienvenido", Toast.LENGTH_SHORT).show()
-                        val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
-                        startActivity(intentoDash)
-                    }else{
-                        // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                        Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
-                        txtEmail.text.clear()
-                        txtContra.text.clear()
-                    }
-                }
-            }catch (error: ApiException){
-                // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
-                txtEmail.text.clear()
-                txtContra.text.clear()
-            }
-        }
     }
 
     private suspend fun validarCorreo(correo: String): Boolean {
@@ -288,13 +270,55 @@ class LoginActivity : AppCompatActivity() {
         return false
     }
 
-    private fun acceder(email: String, password: String) {
+    private fun signInGoo() {
+        // Obteniendo el intent de google
+        val intentGoo = googleCli.signInIntent
+        // Implementando el launcher result posterior al haber obtenido el intent de google
+        startActivityForResult(intentGoo, GoogleAcces)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
+        if (requestCode == GoogleAcces) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val cuenta = task.getResult(ApiException::class.java)
+                // Obteniendo la credencial
+                val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
+                acceder(credencial)
+
+                // Accediendo con los datos de la cuenta de google
+                FirebaseAuth.getInstance().signInWithCredential(credencial).addOnCompleteListener {
+                    if(it.isSuccessful){
+                        Toast.makeText(this@LoginActivity, "Bienvenido", Toast.LENGTH_SHORT).show()
+                        val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
+                        startActivity(intentoDash)
+                    }else{
+                        // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                        Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                        txtEmail.text.clear()
+                        txtContra.text.clear()
+                    }
+                }
+            }catch (error: ApiException){
+                // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                txtEmail.text.clear()
+                txtContra.text.clear()
+            }
+        }
+    }
+
+    private fun acceder(credencial: AuthCredential) {
         lifecycleScope.launch(Dispatchers.IO) {
             val acceso = async {
                 data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String)
                 // Se crea una instancia de FirebaseAuth (Autenticacion y se inicia sesion/loguea)
                 FirebaseAuth.getInstance()
-                    .signInWithEmailAndPassword(email, password)
+                    .signInWithEmailAndPassword(txtEmail.toString(), txtContra.toString())
                     .addOnCompleteListener{ task ->
                         if(task.isSuccessful){
                             // Si el usuario accedio satisfactoriamente, se le envia hacia el dashboard y se accede a firebase para mostrar su nombre

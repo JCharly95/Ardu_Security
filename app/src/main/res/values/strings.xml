@@ -3,6 +3,10 @@
     <string name="prefs_file">com.ardusec.ardu_security.PREFERENCE_FILE_KEY</string>
     <!--Strings de la vista de login-->
     <string name="imgLogo">AppLogoImage</string>
+    <string name="lblAcces">Acceder con…</string>
+    <string name="btnAccUsPass">Email/Pass</string>
+    <string name="btnAccGoogle">Google</string>
+    <string name="txtUsName">Username</string>
     <string name="txtEmail">Correo</string>
     <string name="txtPass">Contraseña</string>
     <string name="chbPass">Mostrar Contraseña</string>
