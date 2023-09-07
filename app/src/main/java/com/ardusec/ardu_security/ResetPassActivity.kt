@@ -22,7 +22,7 @@ import com.google.gson.Gson
 class ResetPassActivity : AppCompatActivity(){
     // Estableciendo los elementos de interaccion
     private lateinit var txtNombre: EditText
-    private lateinit var btnHelp: Button
+    private lateinit var btnHelp: ImageButton
     private lateinit var txtDirEma: EditText
     private lateinit var spPreguntas: AppCompatSpinner
     private lateinit var txtResPreg: EditText

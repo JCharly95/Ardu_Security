@@ -33,19 +33,21 @@ import kotlinx.coroutines.*
 
 class LoginActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
+    private lateinit var btnAyuda: ImageButton
+    private lateinit var rbSelAccEma: RadioButton
+    private lateinit var rbSelAccGoo: RadioButton
+    private lateinit var linLayEma: LinearLayout
     private lateinit var txtUser: EditText
     private lateinit var txtEmail: EditText
     private lateinit var txtContra: EditText
-    private lateinit var chbVerContra: CheckBox
-    private lateinit var btnLostPass: Button
-    private lateinit var btnSelAccEma: Button
-    private lateinit var btnSelAccGoo: Button
-    private lateinit var btnAcc: Button
+    private lateinit var chbVerPass: CheckBox
+    private lateinit var btnAccEma: Button
+    private lateinit var btnAccGoo: Button
     private lateinit var btnRegister: Button
-    private lateinit var btnAyuda: Button
+    private lateinit var btnLostPass: Button
+    // Variables de acceso para google
     private lateinit var googleConf: GoogleSignInOptions
     private lateinit var googleCli: GoogleSignInClient
-    private lateinit var linLayEma: LinearLayout
     // ID del acceso de google
     private val GoogleAcces = 195
 
@@ -63,18 +65,18 @@ class LoginActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Iniciar Sesion"
         // Relacionando los elementos con su objeto de la interfaz
-        txtUser = findViewById(R.id.txtUsername)
+        btnAyuda = findViewById(R.id.btnInfoLog)
+        rbSelAccEma = findViewById(R.id.rbSelEma)
+        rbSelAccGoo = findViewById(R.id.rbSelGoo)
+        linLayEma = findViewById(R.id.LLLogEma)
+        txtUser = findViewById(R.id.txtUserLogin)
         txtEmail = findViewById(R.id.txtEmail)
         txtContra = findViewById(R.id.txtPass)
-        chbVerContra = findViewById(R.id.chbPass)
-        btnLostPass = findViewById(R.id.btnLstContra)
-        btnSelAccEma = findViewById(R.id.btnAccUsPass)
-        btnSelAccGoo = findViewById(R.id.btnAccGoogle)
-        btnAcc = findViewById(R.id.btnLogin)
+        chbVerPass = findViewById(R.id.chbPass)
+        btnAccEma = findViewById(R.id.btnLogEma)
+        btnAccGoo = findViewById(R.id.btnLogGoo)
         btnRegister = findViewById(R.id.btnRegistro)
-        //btnAccGo = findViewById(R.id.btnRegGoo)
-        btnAyuda = findViewById(R.id.btnInfo)
-        linLayEma = findViewById(R.id.LinLaLogEma)
+        btnLostPass = findViewById(R.id.btnLstContra)
     }
 
     private fun aviso(){
@@ -100,15 +102,27 @@ class LoginActivity : AppCompatActivity() {
         btnAyuda.setOnClickListener {
             aviso()
         }
-        btnSelAccEma.setOnClickListener {
-            linLayEma.isGone = !btnSelAccEma.isGone
+        rbSelAccEma.setOnClickListener {
+            if(rbSelAccEma.isChecked){
+                txtUser.isGone = false
+                linLayEma.isGone = false
+                btnAccGoo.isGone = true
+            }else{
+                linLayEma.isGone = true
+            }
         }
-        btnLostPass.setOnClickListener{
-            val intentLost = Intent(this,ResetPassActivity::class.java)
-            startActivity(intentLost)
+        rbSelAccGoo.setOnClickListener {
+            if(rbSelAccGoo.isChecked){
+                txtUser.isGone = false
+                linLayEma.isGone = true
+                btnAccGoo.isGone = false
+            }else{
+                linLayEma.isGone = true
+                btnAccGoo.isGone = true
+            }
         }
-        chbVerContra.setOnClickListener{
-            if(!chbVerContra.isChecked){
+        chbVerPass.setOnClickListener{
+            if(!chbVerPass.isChecked){
                 txtContra.transformationMethod = PasswordTransformationMethod.getInstance()
             }else{
                 txtContra.transformationMethod = HideReturnsTransformationMethod.getInstance()
@@ -118,17 +132,20 @@ class LoginActivity : AppCompatActivity() {
             val intentRegister = Intent(this,RegisterActivity::class.java)
             startActivity(intentRegister)
         }
-        btnAcc.setOnClickListener{
+        btnLostPass.setOnClickListener{
+            val intentLost = Intent(this,ResetPassActivity::class.java)
+            startActivity(intentLost)
+        }
+        btnAccEma.setOnClickListener{
             lifecycleScope.launch(Dispatchers.IO) {
                 val accProc = async {
                     val user = txtUser.text.toString()
                     val correo = txtEmail.text.toString()
                     val contra = txtContra.text.toString()
 
-                    if(correo.isNotEmpty() && contra.isNotEmpty()){
+                    if(user.isNotEmpty() && correo.isNotEmpty() && contra.isNotEmpty()){
                         if(validarCorreo(correo) && validarContra(contra)){
-                            val credencial = EmailAuthProvider.getCredential(correo, contra)
-                            acceder(credencial)
+                            acceder()
                         }
                     }else{
                         if(correo.isEmpty() && contra.isEmpty()){
@@ -143,14 +160,17 @@ class LoginActivity : AppCompatActivity() {
                             withContext(Dispatchers.Main){
                                 Toast.makeText(this@LoginActivity, "Error: Favor de ingresar su contraseña", Toast.LENGTH_SHORT).show()
                             }
+                        }else if (user.isEmpty()){
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LoginActivity, "Error: Favor de ingresar su nombre de usuario", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
                 accProc.await()
             }
         }
-
-        btnSelAccGoo.setOnClickListener {
+        btnAccGoo.setOnClickListener {
             if(txtUser.text.toString().isNotEmpty()){
                 crearPeticionGoogle()
                 signInGoo()
@@ -288,8 +308,6 @@ class LoginActivity : AppCompatActivity() {
                 val cuenta = task.getResult(ApiException::class.java)
                 // Obteniendo la credencial
                 val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
-                acceder(credencial)
-
                 // Accediendo con los datos de la cuenta de google
                 FirebaseAuth.getInstance().signInWithCredential(credencial).addOnCompleteListener {
                     if(it.isSuccessful){
@@ -312,7 +330,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun acceder(credencial: AuthCredential) {
+    private fun acceder() {
         lifecycleScope.launch(Dispatchers.IO) {
             val acceso = async {
                 data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String)

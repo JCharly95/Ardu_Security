@@ -1,92 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollForgPass"
     android:background="@color/azulAlicia"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/lblFgtPass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/headLblForPass"
-        android:textSize="20sp"
-        android:visibility="visible"
-        android:textColor="@color/negro"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnInfoRecPass"
-        android:layout_width="49dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="5dp"
-        android:text="@string/btnHelp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.56"
-        app:layout_constraintStart_toEndOf="@+id/lblFgtPass"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
-        android:id="@+id/LlRecPass"
+        android:id="@+id/ForgPassView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:orientation="vertical"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@+id/lblFgtPass">
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end|center"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/lblForPass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/LblForPass"
+                android:textColor="@color/negro"
+                android:textSize="25sp" />
+
+            <Space
+                android:layout_width="5dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/btnInfoRecPass"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:backgroundTint="@color/teal_200"
+                app:srcCompat="@android:drawable/ic_menu_help" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+
+        <TextView
+            android:id="@+id/lblFgtPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/headLblForPass"
+            android:textColor="@color/negro"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:visibility="visible"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
 
         <EditText
             android:id="@+id/txtNomForPass"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="5dp"
             android:autofillHints="name"
-            android:drawableStart="@drawable/user"
-            android:drawableTint="@color/negro"
             android:hint="@string/txtNombre"
             android:inputType="textPersonName"
             android:textColor="@color/negro"
             android:textColorHint="@color/darkgray"
             android:visibility="visible" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+
+        <EditText
+            android:id="@+id/txtUserForPass"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:autofillHints="text"
+            android:hint="@string/txtUsName"
+            android:inputType="textPersonName"
+            android:textColor="@color/negro"
+            android:textColorHint="@color/darkgray"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+
         <EditText
             android:id="@+id/txtEmaForPass"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="5dp"
             android:autofillHints="email"
-            android:drawableStart="@android:drawable/sym_action_email"
-            android:drawableTint="@color/negro"
             android:hint="@string/txtIngreCorr"
             android:inputType="textEmailAddress"
             android:textColor="@color/negro"
             android:textColorHint="@color/darkgray"
             android:visibility="visible" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+
         <TextView
             android:id="@+id/lblRespSel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:textSize="20sp"
             android:gravity="center"
             android:visibility="visible"
             android:text="@string/lblPreg"
             android:textColor="@color/negro"/>
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_marginTop="10dp"
             app:strokeWidth="1dp"
             app:strokeColor="@color/negro"
             app:cardCornerRadius="4dp">
@@ -102,34 +140,41 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+
         <EditText
             android:id="@+id/txtResPregKey"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:autofillHints="name"
-            android:drawableStart="@drawable/stylus_note"
-            android:drawableTint="@color/negro"
+            android:autofillHints="text"
             android:hint="@string/txtRespKey"
-            android:inputType="textPersonName"
+            android:inputType="text"
             android:textColor="@color/negro"
             android:textColorHint="@color/darkgray"
             android:visibility="visible" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
 
         <Button
             android:id="@+id/btnEnviar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:text="@string/btnComproResp"
             android:visibility="visible"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
 
         <TextView
             android:id="@+id/lblRespPeti"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/msgRecEma"
-            android:layout_marginTop="20dp"
             android:textSize="20sp"
             android:visibility="gone"
             android:textColor="@color/negro"

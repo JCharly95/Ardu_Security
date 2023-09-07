@@ -3,23 +3,25 @@
     <string name="prefs_file">com.ardusec.ardu_security.PREFERENCE_FILE_KEY</string>
     <!--Strings de la vista de login-->
     <string name="imgLogo">AppLogoImage</string>
-    <string name="lblAcces">Acceder con…</string>
+    <string name="lblAcces">Elegir metodo de acceso:</string>
     <string name="btnAccUsPass">Email/Pass</string>
     <string name="btnAccGoogle">Google</string>
     <string name="txtUsName">Username</string>
     <string name="txtEmail">Correo</string>
     <string name="txtPass">Contraseña</string>
     <string name="chbPass">Mostrar Contraseña</string>
-    <string name="btnLogin">Acceder</string>
+    <string name="btnLogEma">Acceder con Correo</string>
+    <string name="btnLogGoo">Acceder con Google</string>
     <string name="btnLstCPass">¿Olvido su Contraseña?</string>
-    <string name="lblReg">Registrarse</string>
+    <string name="lblReg">Registro</string>
     <string name="btnRegCor">Correo</string>
     <string name="btnRegGoo">Google</string>
     <string name="lblCopyright">Ardu Security 2023\n Copyright © Todos los derechos reservados</string>
     <!-- Botones de ayuda -->
     <string name="btnHelp">¿?</string>
     <!-- Strings de la vista de olvido su contraseña -->
-    <string name="headLblForPass">Ingrese los datos solicitados</string>
+    <string name="LblForPass">Recuperar Contraseña</string>
+    <string name="headLblForPass">Ingrese los datos solicitados:</string>
     <string name="txtNombre">Nombre Completo</string>
     <string name="txtIngreCorr">Direccion de correo</string>
     <string name="lblPreg">Pregunta Clave</string>
@@ -27,7 +29,7 @@
         <item>Seleccione su pregunta clave</item>
     </string-array>
     <string name="txtRespKey">Respuesta clave</string>
-    <string name="btnComproResp">Enviar Correo</string>
+    <string name="btnComproResp">Enviar Recuperacion</string>
     <string name="msgRecEma">Procesando Solicitud…</string>
     <!-- Strings de la vista dashboard -->
     <string name="headDash">Menú Principal</string>
@@ -48,8 +50,11 @@
     <!-- Strings de la vista de registro -->
     <string name="headRegi">Registro</string>
     <string name="txtNam">Nombre Completo</string>
-    <string name="txtRespQues">Respuesta pregunta clave</string>
-    <string name="lblTipUser">Seleccione su tipo de usuario:</string>
+    <string name="lblTipReg">Elegir metodo de registro:</string>
+    <string name="btnRegEma">Registrar con Correo</string>
+    <string name="btnRegGo">Registrar con Google</string>
+    <string name="txtRespQues">Respuesta pregunta clave:</string>
+    <string name="lblTipUser">Seleccione el tipo de usuario:</string>
     <string name="rbUserGen">Cliente</string>
     <string name="rbUserAdmin">Administrador</string>
     <string name="lblIngrePin">¿Desea ingresar un PIN?</string>

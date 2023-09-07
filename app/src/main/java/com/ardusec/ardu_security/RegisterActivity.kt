@@ -1,6 +1,5 @@
 package com.ardusec.ardu_security
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
@@ -9,32 +8,52 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import androidx.lifecycle.lifecycleScope
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
-    private lateinit var txtName: EditText
-    private lateinit var txtEmail: EditText
-    private lateinit var txtPass: EditText
-    private lateinit var chbVerContra: CheckBox
-    private lateinit var spSafQuKyReg: Spinner
-    private lateinit var txtRespQues: EditText
+    private lateinit var btnAyuda: ImageButton
+    private lateinit var txtNomReg: EditText
+    private lateinit var txtUsReg: EditText
+    private lateinit var rbSelRegEma: RadioButton
+    private lateinit var LinEmaReg: LinearLayout
+    private lateinit var rbSelRegGoo: RadioButton
+    private lateinit var txtEmailReg: EditText
+    private lateinit var txtPassReg: EditText
+    private lateinit var chbVerPassReg: CheckBox
+    private lateinit var spPregsSegur: Spinner
+    private lateinit var txtRespSeguri: EditText
     private lateinit var rbSelCli: RadioButton
     private lateinit var rbSelAdmin: RadioButton
     private lateinit var spSisRel: Spinner
-    private lateinit var txtAdminTel: EditText
-    private lateinit var btnReg: Button
-    private lateinit var btnAyuda: Button
+    private lateinit var txtTel: EditText
+    private lateinit var btnRegEma: Button
+    private lateinit var btnRegGoo: Button
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
@@ -43,15 +62,26 @@ class RegisterActivity : AppCompatActivity() {
     private var gson = Gson()
     // Banderas de validacion
     private var valiNam = false
+    private var valiUser = false
     private var valiCorr = false
-    private var valiCon = false
+    private var valiPass = false
     private var valiPreg = false
     private var valiResp = false
-    private var selPin = false  // Por defecto, se espera que el usuario no ingrese pin al registro
-    private var valiPin = false
+    private var valiTipUser = false // Por defecto, se establecera a todos como clientes
     private var valiSis = false
     private var valiTel = false
-    private var valiTipUser = false // Po defecto, se establecera a todos como clientes
+    // Variables de acceso para google
+    private lateinit var googleConf: GoogleSignInOptions
+    private lateinit var googleCli: GoogleSignInClient
+    // ID del acceso de google
+    private val GoogleAcces = 195
+
+    // Data clases para objetos virtuales (simulados) de kotlin
+    data class Acceso(val correo: String, val google: String)
+    data class SistemasUser(val sistema1: String)
+    data class UserCliente(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String)
+    data class UserAdmin(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Double)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,86 +97,37 @@ class RegisterActivity : AppCompatActivity() {
     private fun setUp(){
         title = "Registrarse"
         // Inicializando los elementos
-        txtName = findViewById(R.id.txtName)
-        txtEmail = findViewById(R.id.txtEmailReg)
-        txtPass = findViewById(R.id.txtPassReg)
-        chbVerContra = findViewById(R.id.chbPassReg)
-        spSafQuKyReg = findViewById(R.id.spSafQuKyReg)
-        txtRespQues = findViewById(R.id.txtRespQues)
+        btnAyuda = findViewById(R.id.btnInfoReg)
+        txtNomReg = findViewById(R.id.txtNomReg)
+        txtUsReg = findViewById(R.id.txtUserReg)
+        rbSelRegEma = findViewById(R.id.rbSelEmaReg)
+        LinEmaReg = findViewById(R.id.LLRegEma)
+        rbSelRegGoo = findViewById(R.id.rbSelGooReg)
+        txtEmailReg = findViewById(R.id.txtEmailReg)
+        txtPassReg = findViewById(R.id.txtPassReg)
+        chbVerPassReg = findViewById(R.id.chbRegPass)
+        spPregsSegur = findViewById(R.id.spSafQuKyReg)
+        txtRespSeguri = findViewById(R.id.txtRespSegur)
         rbSelCli = findViewById(R.id.rbTipUsCli)
         rbSelAdmin = findViewById(R.id.rbTipUsAdmin)
-        txtAdminTel = findViewById(R.id.txtTel)
         spSisRel = findViewById(R.id.spSistema)
-        btnReg = findViewById(R.id.btnRegister)
-        btnAyuda = findViewById(R.id.btnInfoReg)
+        txtTel = findViewById(R.id.txtTel)
+        btnRegEma = findViewById(R.id.btnRegEma)
+        btnRegGoo = findViewById(R.id.btnRegGoo)
         // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
         database = Firebase.database
         auth = FirebaseAuth.getInstance()
 
         // Mensaje de bienvenida para decirle al usuario que debe hacer
-        Toast.makeText(this,"Ingrese los datos que se solicitan",Toast.LENGTH_LONG).show()
+        Toast.makeText(this@RegisterActivity,"Ingrese los datos que se solicitan",Toast.LENGTH_LONG).show()
         // Invocacion a la funcion para rellenar el spinner de las preguntas
         rellSpinPregs()
         // Invocacion a la funcion para rellenar el spinner de los sistemas registrados
         rellSpinSis()
     }
 
-    private fun rellSpinPregs(){
-        // Obtener el arreglo de strings establecido para las preguntas
-        val lstPregs = resources.getStringArray(R.array.lstSavQues)
-        var arrPregs = ArrayList<String>()
-        arrPregs.addAll(lstPregs)
-        // Creando la referencia de la coleccion de preguntas en la BD
-        ref = database.getReference("Pregunta")
-        data class Pregunta(val ID_Pregunta: String, val Val_Pregunta: String) // Creando una data class (es como una clase virtual de kotlin)
-        // Agregando un ValueEventListener para operar con las instancias de pregunta
-        ref.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objPreg in dataSnapshot.children){
-                    val pregJSON = gson.toJson(objPreg.value)
-                    val resPreg = gson.fromJson(pregJSON, Pregunta::class.java)
-                    arrPregs.add(resPreg.Val_Pregunta)
-                }
-                // Estableciendo el adaptador para el rellenado del spinner
-                val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
-                adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spSafQuKyReg.adapter = adapPregs
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-            }
-        })
-    }
-
-    private fun rellSpinSis(){
-        // Obtener el arreglo de strings establecido para los sistemas
-        val lstSists = resources.getStringArray(R.array.lstSistems)
-        var arrSists = ArrayList<String>()
-        arrSists.addAll(lstSists)
-        // Creando la referencia de la coleccion de preguntas en la BD
-        ref = database.getReference("Sistema")
-        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val ulti_Cam_Nom: String) // Creando una data class (es como una clase virtual de kotlin)
-        // Agregando un ValueEventListener para operar con las instancias de pregunta
-        ref.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objSis in dataSnapshot.children){
-                    val sisJSON = gson.toJson(objSis.value)
-                    val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                    arrSists.add(resSis.nombre_Sis)
-                }
-                // Estableciendo el adaptador para el rellenado del spinner
-                val adapSis = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrSists)
-                adapSis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spSisRel.adapter = adapSis
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-            }
-        })
-    }
-
-    private fun avisoReg(){
-        val mensaje = "Consideraciones de campos: \n\n" +
+    private fun addListeners(){
+        val msg = "Consideraciones de campos: \n\n" +
                 "Nombre;\n" +
                 "* Su nombre no debe tener numeros\n" +
                 "* Su nombre debe tener al menos 10 caracteres\n\n" +
@@ -160,6 +141,113 @@ class RegisterActivity : AppCompatActivity() {
                 "Administradores; Numero Telefonico:\n" +
                 "* Solo se permiten numeros\n" +
                 "* Lada + Numero ó Tel. Celular"
+
+        //Agregar los listener
+        btnAyuda.setOnClickListener {
+            avisoReg(msg)
+        }
+        rbSelRegEma.setOnClickListener {
+            if (rbSelRegEma.isChecked) {
+                LinEmaReg.isGone = false
+                btnRegEma.isGone = false
+                btnRegGoo.isGone = true
+            }
+        }
+        rbSelRegGoo.setOnClickListener {
+            if (rbSelRegGoo.isChecked) {
+                LinEmaReg.isGone = true
+                btnRegEma.isGone = true
+                btnRegGoo.isGone = false
+            }
+        }
+        rbSelCli.setOnClickListener {
+            if(rbSelCli.isChecked){
+                txtTel.isGone = true
+                valiTipUser = false
+            }
+        }
+        rbSelAdmin.setOnClickListener {
+            if(rbSelAdmin.isChecked){
+                txtTel.isGone = false
+                valiTipUser = true
+            }
+        }
+        chbVerPassReg.setOnClickListener{
+            if(!chbVerPassReg.isChecked){
+                txtPassReg.transformationMethod = PasswordTransformationMethod.getInstance()
+            }else{
+                txtPassReg.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            }
+        }
+        btnRegEma.setOnClickListener {
+            valiRegEma()
+        }
+        btnRegGoo.setOnClickListener {
+            valiRegGoo()
+        }
+    }
+
+    private fun rellSpinPregs(){
+        lifecycleScope.launch(Dispatchers.IO) {
+            val rellPregs = async {
+                // Obtener el arreglo de strings establecido para las preguntas
+                val lstPregs = resources.getStringArray(R.array.lstSavQues)
+                var arrPregs = ArrayList<String>()
+                arrPregs.addAll(lstPregs)
+                // Creando la referencia de la coleccion de preguntas en la BD
+                ref = database.getReference("Preguntas")
+                // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
+                ref.get().addOnSuccessListener{
+                    for (objPreg in it.children){
+                        objPreg.ref.child("Val_Pregunta").get().addOnSuccessListener {
+                            arrPregs.add(it.value.toString())
+                        }
+                    }
+                    // Estableciendo el adaptador para el rellenado del spinner
+                    val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
+                    adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spPregsSegur.adapter = adapPregs
+                }
+                    .addOnFailureListener {
+                        avisoReg("Error: Datos parcialmente obtenidos")
+                    }
+            }
+            rellPregs.await()
+        }
+    }
+
+    private fun rellSpinSis(){
+        lifecycleScope.launch(Dispatchers.IO) {
+            val rellSis = async {
+                // Obtener el arreglo de strings establecido para los sistemas
+                val lstSists = resources.getStringArray(R.array.lstSistems)
+                var arrSists = ArrayList<String>()
+                arrSists.addAll(lstSists)
+                // Creando la referencia de la coleccion de preguntas en la BD
+                ref = database.getReference("Sistemas")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objSis in dataSnapshot.children){
+                            objSis.ref.child("nombre_Sis").get().addOnSuccessListener {
+                                arrSists.add(it.value.toString())
+                            }
+                        }
+                        // Estableciendo el adaptador para el rellenado del spinner
+                        val adapSis = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrSists)
+                        adapSis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        spSisRel.adapter = adapSis
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        avisoReg("Error: Datos parcialmente obtenidos; ${databaseError.toException()}")
+                    }
+                })
+            }
+            rellSis.await()
+        }
+    }
+
+    private fun avisoReg(mensaje: String){
         val aviso = AlertDialog.Builder(this)
         aviso.setTitle("Aviso")
         aviso.setMessage(mensaje)
@@ -168,254 +256,487 @@ class RegisterActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun addListeners(){
-        //Agregar los listener
-        rbSelCli.setOnClickListener {
-            if(rbSelCli.isChecked){
-                txtAdminTel.isGone = true
-                valiTipUser = false
+    private fun validarNombre(nombre: Editable): Boolean{
+        when{
+            // Si el nombre esta vacio
+            TextUtils.isEmpty(nombre) -> avisoReg("Error: Favor de introducir un nombre")
+            // Si se encuentra algun numero
+            (Regex("""\d+""").containsMatchIn(nombre)) -> avisoReg("Error: Su nombre no puede contener numeros")
+            // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
+            (nombre.length < 10) -> avisoReg("Error: Su nombre es muy corto, favor de agregar su nombre completo")
+            // Si se encuentran caracteres especiales
+            (Regex("""[^A-Za-z ]+""").containsMatchIn(nombre)) -> avisoReg("Error: Su nombre no puede contener caracteres especiales")
+            else -> return true
+        }
+        return false
+    }
+    private fun validarUsuario(usuario: Editable): Boolean{
+        // Si se detectan espacios en el usuario, estos seran removidos
+        if (Regex("""\s+""").containsMatchIn(usuario)) {
+            val usuarioFil = usuario.replace("\\s".toRegex(), "")
+            when {
+                // Si la contraseña esta vacia
+                TextUtils.isEmpty(usuarioFil) -> avisoReg("Error: Favor de introducir un nombre de usuario")
+                // Extension minima de 8 caracteres
+                (usuarioFil.length < 6) -> avisoReg("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
+                // No se tiene al menos una mayuscula
+                (!Regex("[A-Z]+").containsMatchIn(usuarioFil)) -> avisoReg("Error: El nombre de usuario debera tener al menos una letra mayuscula")
+                // No se tiene al menos un numero
+                (!Regex("""\d""").containsMatchIn(usuarioFil)) -> avisoReg("Error: El nombre de usuario debera tener al menos un numero")
+                // No se tiene al menos un caracter especial
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
+                else -> return true
+            }
+        } else {
+            when {
+                // Si la contraseña esta vacia
+                TextUtils.isEmpty(usuario) -> avisoReg("Error: Favor de introducir un nombre de usuario")
+                // Extension minima de 8 caracteres
+                (usuario.length < 6) -> avisoReg("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
+                // No se tiene al menos una mayuscula
+                (!Regex("[A-Z]+").containsMatchIn(usuario)) -> avisoReg("Error: El nombre de usuario debera tener al menos una letra mayuscula")
+                // No se tiene al menos un numero
+                (!Regex("""\d""").containsMatchIn(usuario)) -> avisoReg("Error: El nombre de usuario debera tener al menos un numero")
+                // No se tiene al menos un caracter especial
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuario)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
+                else -> return true
             }
         }
-        rbSelAdmin.setOnClickListener {
-            if(rbSelAdmin.isChecked){
-                txtAdminTel.isGone = false
-                valiTipUser = true
+        return false
+    }
+    private fun validarCorreo(correo: Editable): Boolean{
+        // Si se detectan espacios en el correo, estos seran removidos
+        if(Regex("""\s+""").containsMatchIn(correo)){
+            val correoFil = correo.replace("\\s".toRegex(), "")
+            when{
+                // Si el correo esta vacio
+                TextUtils.isEmpty(correoFil) -> avisoReg("Error: Favor de introducir un correo")
+                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> avisoReg("Error: Favor de introducir un correo valido")
+                else -> return true
+            }
+        }else{
+            when{
+                // Si el correo esta vacio
+                TextUtils.isEmpty(correo) -> avisoReg("Error: Favor de introducir un correo")
+                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> avisoReg("Error: Favor de introducir un correo valido")
+                else -> return true
             }
         }
-        chbVerContra.setOnClickListener{
-            if(!chbVerContra.isChecked){
-                txtPass.transformationMethod = PasswordTransformationMethod.getInstance()
-            }else{
-                txtPass.transformationMethod = HideReturnsTransformationMethod.getInstance()
+        return false
+    }
+    private fun validarContra(contra: Editable): Boolean{
+        // Si se detectan espacios en la contraseña, estos seran removidos
+        if(Regex("""\s+""").containsMatchIn(contra)) {
+            val contraFil = contra.replace("\\s".toRegex(), "")
+            when {
+                // Si la contraseña esta vacia
+                TextUtils.isEmpty(contraFil) -> avisoReg("Error: Favor de introducir una contraseña")
+                // Extension minima de 8 caracteres
+                (contraFil.length < 8) -> avisoReg("Error: La contraseña debera tener una extension minima de 8 caracteres")
+                // No se tiene al menos una mayuscula
+                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> avisoReg("Error: La contraseña debera tener al menos una letra mayuscula")
+                // No se tiene al menos un numero
+                (!Regex("""\d""").containsMatchIn(contraFil)) -> avisoReg("Error: La contraseña debera tener al menos un numero")
+                // No se tiene al menos un caracter especial
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su contraseña")
+                else -> return true
+            }
+        }else{
+            when {
+                // Si la contraseña esta vacia
+                TextUtils.isEmpty(contra) -> avisoReg("Error: Favor de introducir una contraseña")
+                // Extension minima de 8 caracteres
+                (contra.length < 8) -> avisoReg("Error: La contraseña debera tener una extension minima de 8 caracteres")
+                // No se tiene al menos una mayuscula
+                (!Regex("[A-Z]+").containsMatchIn(contra)) -> avisoReg("Error: La contraseña debera tener al menos una letra mayuscula")
+                // No se tiene al menos un numero
+                (!Regex("""\d""").containsMatchIn(contra)) -> avisoReg("Error: La contraseña debera tener al menos un numero")
+                // No se tiene al menos un caracter especial
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su contraseña")
+                else -> return true
             }
         }
-        btnAyuda.setOnClickListener {
-            avisoReg()
+        return false
+    }
+    private fun validarSelPreg(lista: Spinner): Boolean{
+        if(lista.selectedItemPosition == 0){
+            avisoReg("Error: Favor de seleccionar una pregunta")
+            return false
         }
-        btnReg.setOnClickListener {
-            validaciones()
+        return true
+    }
+    private fun validarResp(respuesta: Editable): Boolean{
+        if(TextUtils.isEmpty(respuesta)){
+            avisoReg("Error: Favor de introducir una respuesta para su pregunta")
+            return false
+        }
+        return true
+    }
+    private fun validarSelTipoUser(rbCliente: RadioButton, rbAdmin: RadioButton): Boolean{
+        if(!rbCliente.isChecked && !rbAdmin.isChecked){
+            avisoReg("Error: Favor de seleccionar un tipo de usuario")
+            return false
+        }
+        return true
+    }
+    private fun validarSelSis(lista: Spinner): Boolean{
+        if(lista.selectedItemPosition == 0){
+            avisoReg("Error: Favor de seleccionar un sistema")
+            return false
+        }
+        return true
+    }
+    private fun validarTel(numTel: Editable): Boolean{
+        // Si se detectan espacios en el telefono, estos seran removidos
+        if(Regex("""\s+""").containsMatchIn(numTel)){
+            val telFil = numTel.replace("\\s".toRegex(), "")
+            when {
+                // Si el telefono esta vacio
+                TextUtils.isEmpty(telFil) -> avisoReg("Error: Favor de introducir un numero telefonico")
+                // Si se encuentra algun caracter ademas de numeros
+                (Regex("""\D""").containsMatchIn(telFil)) -> avisoReg("Error: El numero de telefono solo puede contener digitos")
+                // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
+                (telFil.length < 10) -> avisoReg("Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular")
+                else -> return true
+            }
+        }else{
+            when {
+                // Si el telefono esta vacio
+                TextUtils.isEmpty(numTel) -> avisoReg("Error: Favor de introducir un numero telefonico")
+                // Si se encuentra algun caracter ademas de numeros
+                (Regex("""\D""").containsMatchIn(numTel)) -> avisoReg("Error: El numero de telefono solo puede contener digitos")
+                // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
+                (numTel.length < 10) -> avisoReg("Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular")
+                else -> return true
+            }
+        }
+        return false
+    }
+
+    private fun valiRegEma(){
+        // Validacion individual de los campos
+        valiNam = validarNombre(txtNomReg.text)
+        valiUser = validarUsuario(txtUsReg.text)
+        valiCorr = validarCorreo(txtEmailReg.text)
+        valiPass = validarContra(txtPassReg.text)
+        valiPreg = validarSelPreg(spPregsSegur)
+        valiResp = validarResp(txtRespSeguri.text)
+        valiTipUser = validarSelTipoUser(rbSelCli, rbSelAdmin)
+        valiSis = validarSelSis(spSisRel)
+        // Determinacion del tipo de usuario a registrar
+        val tipo = when {
+            rbSelCli.isChecked -> "Cliente"
+            rbSelAdmin.isChecked -> "Administrador"
+            else -> ""
+        }
+        // Verificacion de seleccion: Cliente
+        if(valiTipUser && tipo=="Cliente"){
+            if(valiNam && valiUser && valiCorr && valiPass && valiPreg && valiResp && valiSis)
+                registroEma(tipo)
+            else
+                avisoReg("Error: No se ha podido validar la informacion del cliente")
+        }else if(valiTipUser && tipo=="Administrador"){
+            // Verificacion de seleccion: Administrador
+            valiTel = validarTel(txtTel.text)
+            if(valiNam && valiUser && valiCorr && valiPass && valiPreg && valiResp && valiSis && valiTel)
+                registroEma(tipo)
+            else
+                avisoReg("Error: No se ha podido validar la informacion del administrador")
         }
     }
 
-    private fun validaciones(){
+    private fun valiRegGoo(){
         // Validacion individual de todos los campos
-        valiNam = ValiCampos.validarNombre(txtName.text, this)
-        valiCorr = ValiCampos.validarCorreo(txtEmail.text, this)
-        valiCon = ValiCampos.validarContra(txtPass.text, this)
-        valiPreg = ValiCampos.validarSelPreg(spSafQuKyReg, this)
-        valiResp = ValiCampos.validarResp(txtRespQues.text, this)
-        valiSis = ValiCampos.validarSelSis(spSisRel, this)
+        valiNam = validarNombre(txtNomReg.text)
+        valiUser = validarUsuario(txtUsReg.text)
+        valiPreg = validarSelPreg(spPregsSegur)
+        valiResp = validarResp(txtRespSeguri.text)
+        valiSis = validarSelSis(spSisRel)
+        // Determinacion del tipo de usuario a registrar
+        val tipo = when {
+            rbSelCli.isChecked -> "Cliente"
+            rbSelAdmin.isChecked -> "Administrador"
+            else -> ""
+        }
+        // Verificacion de seleccion: Cliente
+        if(valiTipUser && tipo=="Cliente"){
+            if(valiNam && valiUser && valiPreg && valiResp && valiSis)
+                registroGoo()
+            else
+                avisoReg("Error: No se ha podido validar la informacion del cliente")
+        }else if(valiTipUser && tipo=="Administrador"){
+            // Verificacion de seleccion: Administrador
+            valiTel = validarTel(txtTel.text)
+            if(valiNam && valiUser && valiPreg && valiResp && valiSis && valiTel)
+                registroGoo()
+            else
+                avisoReg("Error: No se ha podido validar la informacion del administrador")
+        }
+    }
 
-        // Clases de datos virtuales para implementar el guardado
-        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String)
-        data class Sistema(val id_Sistema: String, val nombre_Sis: String, val tipo: String, val ulti_Cam_Nom: String)
-        data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
+    private fun registroEma(tipo: String){
+        // Preparando valores para guardado y procesamiento
+        val nombre = txtNomReg.text.toString()
+        val usuario = txtUsReg.text.toString()
+        val emaLimp = txtEmailReg.text.toString().trim()
+        val pasLimp = txtPassReg.text.toString().trim()
+        val pregunta = spPregsSegur.selectedItem.toString()
+        val respuesta = txtRespSeguri.text.toString()
+        val sistema = spSisRel.selectedItem.toString()
+        val telefono = txtTel.text.toString().toDouble()
 
-        // Preparar los campos limpios sin espacios para su guardado
-        val emaLimp = txtEmail.text.toString().trim()
-        val pasLimp = txtPass.text.toString().trim()
-        // Verificar que tipo de usuario se va a registrar; Primero sera cliente, si no, es porque es administrador
-        if(!valiTipUser){
-            if(valiNam && valiCorr && valiCon && valiPreg && valiResp && valiSis){
-                // Usuario cliente
-                auth.createUserWithEmailAndPassword(emaLimp, pasLimp).addOnCompleteListener{ task ->
-                    if(task.isSuccessful){
+        auth.createUserWithEmailAndPassword(emaLimp, pasLimp).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Obteniendo la referencia del usuario generada por el objeto de autenticacion
+                val authUs = auth.currentUser
+                // Ingresar el nombre del usuario en el perfil de autenticacion de firebase
+                val actPerfil = userProfileChangeRequest { displayName = nombre }
+                authUs?.updateProfile(actPerfil)
+                // Creando la relacion del usuario con la pregunta en la entidad Preguntas
+                ref = database.getReference("Preguntas")
+                ref.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objPreg in dataSnapshot.children) {
+                            if (objPreg.child("Val_Pregunta").value.toString() == pregunta)
+                                objPreg.ref.child("usuarios").child(usuario).setValue(true)
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        avisoReg("Datos recuperados parcialmente o sin recuperar")
+                    }
+                })
+                // Creando la relacion del usuario con el sistema en la entidad Sistemas
+                ref = database.getReference("Sistemas")
+                ref.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objSis in dataSnapshot.children) {
+                            if (objSis.child("nombre_Sis").value.toString() == sistema)
+                                objSis.ref.child("usuarios").child(usuario).setValue(true)
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        avisoReg("Datos recuperados parcialmente o sin recuperar")
+                    }
+                })
+                // Preparando el objeto del usuario para el registro en la BD
+                val nAcc = Acceso(correo = emaLimp, google = "")
+                val nUsSis = SistemasUser(sistema1 = sistema)
+                if(tipo == "Cliente") {
+                    // Usuario cliente
+                    val nUser = UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta )
+                    // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                    ref = database.getReference("Usuarios")
+                    ref.child(usuario).setValue(nUser).addOnCompleteListener {
+                        // Se procede a lanzar al usuario a la activity de dashboard
+                        Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                        // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                        val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                            putExtra("username", usuario)
+                        }
+                        startActivity(intentDash)
+                    }
+                        .addOnFailureListener {
+                            Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                        }
+                }else{
+                    // Usuario administrador
+                    val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta, num_Tel = telefono )
+                    // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                    ref = database.getReference("Usuarios")
+                    ref.child(usuario).setValue(nUser).addOnCompleteListener {
+                        // Se procede a lanzar al usuario a la activity de dashboard
+                        Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                        // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                        val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                            putExtra("username", usuario)
+                        }
+                        startActivity(intentDash)
+                    }
+                        .addOnFailureListener {
+                            Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }else{
+                avisoReg("Ocurrio un error en el proceso de creacion del usuario, favor de intentarlo despues")
+            }
+        }
+    }
+
+    private fun registroGoo(){
+        // Bloque de codigo de la funcion crearPeticionGoogle() con el fin de optimizar las funciones
+            // Configuracion google
+            googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+            // Obteniendo el cliente de google
+            googleCli = GoogleSignIn.getClient(this@RegisterActivity, googleConf)
+        // Fin de crearPeticionGoogle() y preparar la peticion de google
+        // Lanzar la peticion de google con el activity result
+        signInGoo()
+    }
+
+    private fun signInGoo() {
+        // Obteniendo el intent de google
+        val intentGoo = googleCli.signInIntent
+        // Implementando el launcher result posterior al haber obtenido el intent de google
+        startForResult.launch(intentGoo)
+        //startActivityForResult(intentGoo, GoogleAcces, bundle)
+    }
+
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
+        if (result.resultCode == GoogleAcces) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            // Preparando valores para guardado y procesamiento
+            val nombre = txtNomReg.text.toString()
+            val usuario = txtUsReg.text.toString()
+            // Determinacion del tipo de usuario a registrar
+            val tipo = when {
+                rbSelCli.isChecked -> "Cliente"
+                rbSelAdmin.isChecked -> "Administrador"
+                else -> ""
+            }
+            val pregunta = spPregsSegur.selectedItem.toString()
+            val respuesta = txtRespSeguri.text.toString()
+            val sistema = spSisRel.selectedItem.toString()
+            val telefono = txtTel.text.toString().toDouble()
+
+            try {
+                val cuenta = task.getResult(ApiException::class.java)
+                // Obteniendo la credencial
+                val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
+                // Accediendo con los datos de la cuenta de google
+                auth.signInWithCredential(credencial).addOnCompleteListener {task2 ->
+                    if(task2.isSuccessful){
                         // Obteniendo la referencia del usuario generada por el objeto de autenticacion
                         val authUs = auth.currentUser
                         // Ingresar el nombre del usuario en el perfil de autenticacion de firebase
-                        val actPerfil = userProfileChangeRequest { displayName = txtName.text.toString() }
+                        val actPerfil = userProfileChangeRequest { displayName = nombre }
                         authUs?.updateProfile(actPerfil)
-                        // Preparando el sistema para ingresar el usuario en la BD; Parte 1: Obteniendo el valor de la pregunta seleccionada
-                        val pregSel = spSafQuKyReg.selectedItem.toString()
-                        // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
-                        val nUser = Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Cliente",num_Tel=0,preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString())
-                        // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
-                        database.reference.child("Usuarios").child(authUs.uid).setValue(nUser)
-                        // Creando los elementos para relacionar el usuario con el sistema
-                        val sisRef = Firebase.database.getReference("Sistema")
-                        sisRef.addValueEventListener(object: ValueEventListener{
-                            override fun onDataChange(dataSnapshot: DataSnapshot){
-                                for (objSis in dataSnapshot.children){
-                                    val sisJSON = gson.toJson(objSis.value)
-                                    val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                                    // Si el sistema selecionado corresponde con el registro de firebase se extraera el valor para ingresarlo en user_sistems
-                                    if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
-                                        val sisUsRef = Firebase.database.getReference("User_Sistems")
-                                        val addUserSisDB = sisUsRef.push()
-                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_Nom=resSis.nombre_Sis,user_Email=emaLimp)
-                                        addUserSisDB.setValue(nRelSisUs)
-                                    }
+                        // Creando la relacion del usuario con la pregunta en la entidad Preguntas
+                        ref = database.getReference("Preguntas")
+                        ref.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for (objPreg in dataSnapshot.children) {
+                                    if (objPreg.child("Val_Pregunta").value.toString() == pregunta)
+                                        objPreg.ref.child("usuarios").child(usuario).setValue(true)
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                avisoReg("Datos recuperados parcialmente o sin recuperar")
+                            }
+                        })
+                        // Creando la relacion del usuario con el sistema en la entidad Sistemas
+                        ref = database.getReference("Sistemas")
+                        ref.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for (objSis in dataSnapshot.children) {
+                                    if (objSis.child("nombre_Sis").value.toString() == sistema)
+                                        objSis.ref.child("usuarios").child(usuario).setValue(true)
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                avisoReg("Datos recuperados parcialmente o sin recuperar")
+                            }
+                        })
+                        // En este caso, como es necesario extraer el correo desde la autenticacion de google, se tiene usar el let
+                        authUs.let { _ ->
+                            val correo = authUs?.email
+                            // Preparando el objeto del usuario para el registro en la BD
+                            val nAcc = correo?.let { Acceso(correo = "", google = it) }
+                            val nUsSis = SistemasUser(sistema1 = sistema)
+                            if(tipo == "Cliente"){
+                                // Usuario cliente
+                                val nUser = nAcc?.let {
+                                    UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = it, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta )
+                                }
+                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                ref = database.getReference("Usuarios")
+                                ref.child(usuario).setValue(nUser).addOnCompleteListener {
                                     // Se procede a lanzar al usuario a la activity de dashboard
-                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                                     val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                                        putExtra("correo", txtEmail.text.toString())
+                                        putExtra("username", usuario)
                                     }
                                     startActivity(intentDash)
                                 }
-                            }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                            }
-                        })
-                    }
-                }
-            }else{
-                Toast.makeText(this, "Error: No se ha podido autenticar al cliente", Toast.LENGTH_SHORT).show()
-            }
-        }else{
-            valiTel = ValiCampos.validarTel(txtAdminTel.text, this)
-            if(valiNam && valiCorr && valiCon && valiPreg && valiResp && valiSis && valiTel){
-                // Usuario administrador
-                auth.createUserWithEmailAndPassword(emaLimp,pasLimp).addOnCompleteListener { task ->
-                    if(task.isSuccessful){
-                        // Obteniendo el ID generada por el objeto de autenticacion
-                        val authUs = auth.currentUser
-                        // Obteniendo el valor de la pregunta seleccionada
-                        val pregSel = spSafQuKyReg.selectedItem.toString()
-                        // Preparando la informacion del registro para que se guarde con una key generada por firebase autenticacion
-                        val nUser = Usuario(id_Usuario=authUs!!.uid,nombre=txtName.text.toString(),correo=emaLimp,tipo_Usuario="Administrador",num_Tel=txtAdminTel.text.toString().toLong(),preg_Seguri=pregSel,resp_Seguri=txtRespQues.text.toString())
-                        // Estableciendo el nuevo valor del usuario usando un child en la coleccion de usuarios
-                        database.reference.child("Usuarios").child(authUs.uid).setValue(nUser)
-                        // Creando los elementos para relacionar el usuario con el sistema
-                        val sisRef = Firebase.database.getReference("Sistema")
-                        sisRef.addValueEventListener(object: ValueEventListener{
-                            override fun onDataChange(dataSnapshot: DataSnapshot){
-                                for (objSis in dataSnapshot.children){
-                                    val sisJSON = gson.toJson(objSis.value)
-                                    val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                                    // Si el sistema selecionado corresponde con el registro de firebase se extraera el valor para ingresarlo en user_sistems
-                                    if(spSisRel.selectedItem.toString() == resSis.nombre_Sis){
-                                        val sisUsRef = Firebase.database.getReference("User_Sistems")
-                                        val addUserSisDB = sisUsRef.push()
-                                        val nRelSisUs = UserSistem(id_User_Sis=addUserSisDB.key.toString(),sistema_Nom=resSis.nombre_Sis,user_Email=authUs.email!!)
-                                        addUserSisDB.setValue(nRelSisUs)
+                                    .addOnFailureListener {
+                                        Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
                                     }
+                            }else{
+                                // Usuario administrador
+                                val nUser = nAcc?.let {
+                                    UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = it, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta, num_Tel = telefono )
+                                }
+                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                ref = database.getReference("Usuarios")
+                                ref.child(usuario).setValue(nUser).addOnCompleteListener {
                                     // Se procede a lanzar al usuario a la activity de dashboard
-                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security ${txtName.text}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                    val intentDash = Intent(applicationContext, DashboardActivity::class.java).apply {
-                                        putExtra("correo", txtEmail.text.toString())
-                                        putExtra("contra", txtPass.text.toString())
+                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                        putExtra("username", usuario)
                                     }
                                     startActivity(intentDash)
                                 }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                    }
                             }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                            }
-                        })
+                        }
+                    }else{
+                        avisoReg("Ocurrio un error en el proceso de creacion del usuario, favor de intentarlo despues")
                     }
                 }
-            }else{
-                Toast.makeText(this, "Error: No se ha podido autenticar al administrador", Toast.LENGTH_SHORT).show()
+            }catch (error: ApiException){
+                avisoReg("Error: No se pudo acceder con la informacion ingresada")
             }
         }
     }
 
-    object ValiCampos{
-        fun validarNombre(nombre: Editable, contexto: Context): Boolean{
-            when{
-                // Si el nombre esta vacio
-                TextUtils.isEmpty(nombre) -> Toast.makeText(contexto, "Error: Favor de introducir un nombre", Toast.LENGTH_SHORT).show()
-                // Si se encuentra algun numero
-                (Regex("""\d+""").containsMatchIn(nombre)) -> Toast.makeText(contexto, "Error: Su nombre no puede contener numeros", Toast.LENGTH_SHORT).show()
-                // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
-                (nombre.length < 10) -> Toast.makeText(contexto, "Error: Su nombre es muy corto, favor de agregar su nombre completo", Toast.LENGTH_SHORT).show()
-                // Si se encuentran caracteres especiales
-                (Regex("""[^A-Za-z ]+""").containsMatchIn(nombre)) -> Toast.makeText(contexto, "Error: Su nombre no puede contener caracteres especiales", Toast.LENGTH_SHORT).show()
-                else -> return true
-            }
-            return false
-        }
-        fun validarCorreo(correo: Editable, contexto: Context): Boolean{
-            // Si se detectan espacios en el correo, estos seran removidos
-            if(Regex("""\s+""").containsMatchIn(correo)){
-                val correoFil = correo.replace("\\s".toRegex(), "")
-                when{
-                    // Si el correo esta vacio
-                    TextUtils.isEmpty(correoFil) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
-                    // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                    !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                    else -> return true
+    /*@Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Preparando valores para guardado y procesamiento
+        val nombre = data?.getStringExtra("nombre")
+        val usuario = data?.getStringExtra("usuario")
+        val pregunta = data?.getStringExtra("pregunta")
+        val respuesta = data?.getStringExtra("respuesta")
+        val tipo = data?.getStringExtra("tipo")
+        val sistema = data?.getStringExtra("sistema")
+        val telefono = data?.getDoubleExtra("telefono", 0.0)
+
+        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
+        if (requestCode == GoogleAcces) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val cuenta = task.getResult(ApiException::class.java)
+                // Obteniendo la credencial
+                val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
+                // Accediendo con los datos de la cuenta de google
+                auth.signInWithCredential(credencial).addOnCompleteListener {
+                    if(it.isSuccessful){
+                        Toast.makeText(this@LoginActivity, "Bienvenido", Toast.LENGTH_SHORT).show()
+                        val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
+                        startActivity(intentoDash)
+                    }else{
+                        // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                        Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                        txtEmail.text.clear()
+                        txtContra.text.clear()
+                    }
                 }
-            }else{
-                when{
-                    // Si el correo esta vacio
-                    TextUtils.isEmpty(correo) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
-                    // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                    !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                    else -> return true
-                }
+            }catch (error: ApiException){
+                // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                txtEmail.text.clear()
+                txtContra.text.clear()
             }
-            return false
         }
-        fun validarContra(contra: Editable, contexto: Context): Boolean{
-            // Si se detectan espacios en la contraseña, estos seran removidos
-            if(Regex("""\s+""").containsMatchIn(contra)) {
-                val contraFil = contra.replace("\\s".toRegex(), "")
-                when {
-                    // Si la contraseña esta vacia
-                    TextUtils.isEmpty(contraFil) -> Toast.makeText(contexto, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
-                    // Extension minima de 8 caracteres
-                    (contraFil.length < 8) -> Toast.makeText(contexto, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
-                    // No se tiene al menos una mayuscula
-                    (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
-                    // No se tiene al menos un numero
-                    (!Regex("""\d""").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
-                    // No se tiene al menos un caracter especial
-                    (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> Toast.makeText(contexto, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
-                    else -> return true
-                }
-            }else{
-                when {
-                    // Si la contraseña esta vacia
-                    TextUtils.isEmpty(contra) -> Toast.makeText(contexto, "Error: Favor de introducir una contraseña", Toast.LENGTH_SHORT).show()
-                    // Extension minima de 8 caracteres
-                    (contra.length < 8) -> Toast.makeText(contexto, "Error: La contraseña debera tener una extension minima de 8 caracteres", Toast.LENGTH_SHORT).show()
-                    // No se tiene al menos una mayuscula
-                    (!Regex("[A-Z]+").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos una letra mayuscula", Toast.LENGTH_SHORT).show()
-                    // No se tiene al menos un numero
-                    (!Regex("""\d""").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: La contraseña debera tener al menos un numero", Toast.LENGTH_SHORT).show()
-                    // No se tiene al menos un caracter especial
-                    (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> Toast.makeText(contexto, "Error: Favor de incluir al menos un caracter especial en su contraseña", Toast.LENGTH_SHORT).show()
-                    else -> return true
-                }
-            }
-            return false
-        }
-        fun validarSelPreg(lista: Spinner, contexto: Context): Boolean {
-            if(lista.selectedItemPosition == 0){
-                Toast.makeText(contexto, "Error: Favor de seleccionar una pregunta", Toast.LENGTH_SHORT).show()
-                return false
-            }
-            return true
-        }
-        fun validarResp(respuesta: Editable, contexto: Context): Boolean {
-            if(TextUtils.isEmpty(respuesta)){
-                Toast.makeText(contexto, "Error: Favor de introducir una respuesta para su pregunta", Toast.LENGTH_SHORT).show()
-                return false
-            }
-            return true
-        }
-        fun validarSelSis(lista: Spinner, contexto: Context): Boolean {
-            if(lista.selectedItemPosition == 0){
-                Toast.makeText(contexto, "Error: Favor de seleccionar un sistema", Toast.LENGTH_SHORT).show()
-                return false
-            }
-            return true
-        }
-        fun validarTel(numTel: Editable, contexto: Context): Boolean {
-            when {
-                // Si el telefono esta vacio
-                TextUtils.isEmpty(numTel) -> Toast.makeText(contexto, "Error: Favor de introducir un numero telefonico", Toast.LENGTH_SHORT).show()
-                // Si se encuentra algun caracter ademas de numeros
-                (Regex("""\D""").containsMatchIn(numTel)) -> Toast.makeText(contexto, "Error: El numero de telefono solo puede contener digitos", Toast.LENGTH_SHORT).show()
-                // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
-                (numTel.length < 10) -> Toast.makeText(contexto, "Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular", Toast.LENGTH_SHORT).show()
-                else -> return true
-            }
-            return false
-        }
-    }
+    }*/
 }
