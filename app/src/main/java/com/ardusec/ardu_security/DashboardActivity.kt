@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -21,12 +23,17 @@ import com.google.gson.Gson
 
 class DashboardActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
-    private lateinit var btnEstas: Button
-    private lateinit var btnGenRep: Button
-    private lateinit var btnMenAj: Button
-    private lateinit var btnManual: Button
-    private lateinit var btnMenSis: Button
-    private lateinit var btnCerSes: Button
+    private lateinit var btnEstas: ImageButton
+    private lateinit var btnGenRep: ImageButton
+    private lateinit var btnMenAj: ImageButton
+    private lateinit var btnManual: ImageButton
+    private lateinit var btnMenSis: ImageButton
+    private lateinit var btnCerSes: ImageButton
+    private lateinit var linLayGesSis: LinearLayout
+    // Elementos del bundle de acceso/registro
+    private lateinit var bundle: Bundle
+    private lateinit var user: String
+    private lateinit var tipo: String
     // Creando el objeto GSON
     private var gson = Gson()
 
@@ -34,6 +41,10 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        //Obteniendo los valores de acceso/registro
+        bundle = intent.extras!!
+        user = bundle.getString("username").toString()
+        tipo = bundle.getString("tipo").toString()
 
         // Configurar el arranque de la interfaz
         setUp()
@@ -57,12 +68,13 @@ class DashboardActivity : AppCompatActivity() {
         btnGenRep = findViewById(R.id.btnGenRep)
         btnMenAj = findViewById(R.id.btnAjuste)
         btnManual = findViewById(R.id.btnManUs)
+        linLayGesSis = findViewById(R.id.LinBtnGesSis)
         btnMenSis = findViewById(R.id.btnGesSis)
         btnCerSes = findViewById(R.id.btnCerrSes)
 
-        // Obtener el correo del usuario desde Firebase auth y enviarlo a la funcion de la vista del boton
-        val corrAcc = getEmail()
-        btnGestSis(corrAcc)
+        if(tipo == "Administrador"){
+            linLayGesSis.isGone = false
+        }
     }
 
     private fun addListeners(){
@@ -103,57 +115,5 @@ class DashboardActivity : AppCompatActivity() {
         aviso.setPositiveButton("Aceptar", null)
         val dialog: AlertDialog = aviso.create()
         dialog.show()
-    }
-
-    private fun getEmail(): String {
-        val user = Firebase.auth.currentUser
-        var email = ""
-        user?.let {
-            for (profile in it.providerData) {
-                // Id of the provider (ex: google.com)
-                val providerId = profile.providerId
-
-                // UID specific to the provider
-                val uid = profile.uid
-
-                // Name, email address, and profile photo Url
-                val name = profile.displayName
-                email = profile.email.toString()
-                val photoUrl = profile.photoUrl
-
-                Log.w("ProviderID", providerId)
-                Log.w("UsuarioID", uid)
-                if (name != null) {
-                    Log.w("Nombre", name)
-                }else{
-                    Log.w("Nombre", "No se encontro el nombre del usuario")
-                }
-                Log.w("Correo", email)
-                Log.w("ImagenURL", photoUrl.toString())
-            }
-        }
-        return email
-    }
-
-    private fun btnGestSis(correo: String){
-        // Creando la referencia de la coleccion de preguntas en la BD
-        val refDB = Firebase.database.getReference("Usuarios")
-        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String)
-        refDB.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objUs in dataSnapshot.children){
-                    val userJSON = gson.toJson(objUs.value)
-                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo){
-                        if(resUser.tipo_Usuario == "Administrador"){
-                            btnMenSis.isGone = false
-                        }
-                    }
-                }
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-            }
-        })
     }
 }

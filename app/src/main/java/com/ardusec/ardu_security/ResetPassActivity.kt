@@ -13,11 +13,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class ResetPassActivity : AppCompatActivity(){
     // Estableciendo los elementos de interaccion
@@ -53,28 +57,32 @@ class ResetPassActivity : AppCompatActivity(){
     }
 
     private fun rellSpinPregs(){
-        val lstPregs = resources.getStringArray(R.array.lstSavQues)
-        var arrPregs = ArrayList<String>()
-        arrPregs.addAll(lstPregs)
-
-        ref = database.getReference("Pregunta")
-        data class Pregunta(val ID_Pregunta: String, val Val_Pregunta: String)
-
-        ref.addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objPreg in dataSnapshot.children){
-                    val pregJSON = gson.toJson(objPreg.value)
-                    val resPreg = gson.fromJson(pregJSON, Pregunta::class.java)
-                    arrPregs.add(resPreg.Val_Pregunta)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val rellPregs = async {
+                // Obtener el arreglo de strings establecido para las preguntas
+                val lstPregs = resources.getStringArray(R.array.lstSavQues)
+                var arrPregs = ArrayList<String>()
+                arrPregs.addAll(lstPregs)
+                // Creando la referencia de la coleccion de preguntas en la BD
+                ref = database.getReference("Preguntas")
+                // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
+                ref.get().addOnSuccessListener{ taskGet ->
+                    for (objPreg in taskGet.children){
+                        objPreg.ref.child("Val_Pregunta").get().addOnSuccessListener { taskAdd ->
+                            arrPregs.add(taskAdd.value.toString())
+                        }
+                    }
+                    // Estableciendo el adaptador para el rellenado del spinner
+                    val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
+                    adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spPreguntas.adapter = adapPregs
                 }
-                val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
-                adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spPreguntas.adapter = adapPregs
+                    .addOnFailureListener {
+                        //avisoReg("Error: Datos parcialmente obtenidos")
+                    }
             }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-            }
-        })
+            rellPregs.await()
+        }
     }
 
     private fun setUp(){

@@ -13,24 +13,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -54,12 +49,11 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var txtTel: EditText
     private lateinit var btnRegEma: Button
     private lateinit var btnRegGoo: Button
+    // Estableciendo la obtencion de valores
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
-    // Creando el objeto GSON
-    private var gson = Gson()
     // Banderas de validacion
     private var valiNam = false
     private var valiUser = false
@@ -86,7 +80,7 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this@RegisterActivity, R.color.teal_700)))
 
         // Preparacion de los elementos
         setUp()
@@ -180,10 +174,10 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
         btnRegEma.setOnClickListener {
-            valiRegEma()
+            buscarUsBD()
         }
         btnRegGoo.setOnClickListener {
-            valiRegGoo()
+            buscarUsBD()
         }
     }
 
@@ -197,10 +191,10 @@ class RegisterActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de preguntas en la BD
                 ref = database.getReference("Preguntas")
                 // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
-                ref.get().addOnSuccessListener{
-                    for (objPreg in it.children){
-                        objPreg.ref.child("Val_Pregunta").get().addOnSuccessListener {
-                            arrPregs.add(it.value.toString())
+                ref.get().addOnSuccessListener{ taskGet ->
+                    for (objPreg in taskGet.children){
+                        objPreg.ref.child("Val_Pregunta").get().addOnSuccessListener { taskAdd ->
+                            arrPregs.add(taskAdd.value.toString())
                         }
                     }
                     // Estableciendo el adaptador para el rellenado del spinner
@@ -229,8 +223,8 @@ class RegisterActivity : AppCompatActivity() {
                 ref.addValueEventListener(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot){
                         for (objSis in dataSnapshot.children){
-                            objSis.ref.child("nombre_Sis").get().addOnSuccessListener {
-                                arrSists.add(it.value.toString())
+                            objSis.ref.child("nombre_Sis").get().addOnSuccessListener { taskGet ->
+                                arrSists.add(taskGet.value.toString())
                             }
                         }
                         // Estableciendo el adaptador para el rellenado del spinner
@@ -287,7 +281,7 @@ class RegisterActivity : AppCompatActivity() {
                 (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
                 else -> return true
             }
-        } else {
+        }else{
             when {
                 // Si la contraseña esta vacia
                 TextUtils.isEmpty(usuario) -> avisoReg("Error: Favor de introducir un nombre de usuario")
@@ -415,10 +409,65 @@ class RegisterActivity : AppCompatActivity() {
         return false
     }
 
+    private fun buscarUsBD(){
+        // Cuando se solicite el registro independientemente del metodo, primero se validara el user y luego se buscara en la BD
+        valiUser = validarUsuario(txtUsReg.text)
+        // Preparando variables para la obtencion de valores de los campos
+        val usuario = txtUsReg.text.toString().trim()
+        var busUser = false
+
+        if(valiUser){
+            // Buscando al usuario en la BD
+            ref = database.getReference("Usuarios")
+            ref.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (objUser in dataSnapshot.children) {
+                        if (objUser.key.toString() == usuario){
+                            busUser = true
+                            break
+                        }
+                    }
+                    if(!busUser){
+                        if(rbSelRegEma.isChecked)
+                            valiRegEma()
+                        else if(rbSelRegGoo.isChecked)
+                            valiRegGoo()
+                    }else{
+                        // Mostrar mensaje de error y limpiar los campos
+                        avisoReg("Error: El username que desea utilizar ya ha sido registrado, favor de ingresar otro")
+                        txtNomReg.text.clear()
+                        txtUsReg.text.clear()
+                        if(rbSelRegEma.isChecked)
+                            rbSelRegEma.isSelected = false
+                        if(rbSelRegGoo.isChecked)
+                            rbSelRegGoo.isSelected = false
+                        if(rbSelRegEma.isChecked && txtEmailReg.text.isNotEmpty())
+                            txtEmailReg.text.clear()
+                        if(rbSelRegEma.isChecked && txtPassReg.text.isNotEmpty())
+                            txtPassReg.text.clear()
+                        if(LinEmaReg.isGone)
+                            LinEmaReg.isGone = false
+                        spPregsSegur.setSelection(0)
+                        txtRespSeguri.text.clear()
+                        if(rbSelAdmin.isChecked && txtTel.text.isNotEmpty())
+                            txtTel.text.clear()
+                        rbSelAdmin.isSelected = false
+                        rbSelCli.isSelected = false
+                        spSisRel.setSelection(0)
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@RegisterActivity, "Busqueda sin exito", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }else{
+            avisoReg("El username no pudo ser validado correctamente")
+        }
+    }
+
     private fun valiRegEma(){
         // Validacion individual de los campos
         valiNam = validarNombre(txtNomReg.text)
-        valiUser = validarUsuario(txtUsReg.text)
         valiCorr = validarCorreo(txtEmailReg.text)
         valiPass = validarContra(txtPassReg.text)
         valiPreg = validarSelPreg(spPregsSegur)
@@ -433,14 +482,14 @@ class RegisterActivity : AppCompatActivity() {
         }
         // Verificacion de seleccion: Cliente
         if(valiTipUser && tipo=="Cliente"){
-            if(valiNam && valiUser && valiCorr && valiPass && valiPreg && valiResp && valiSis)
+            if(valiNam && valiCorr && valiPass && valiPreg && valiResp && valiSis)
                 registroEma(tipo)
             else
                 avisoReg("Error: No se ha podido validar la informacion del cliente")
         }else if(valiTipUser && tipo=="Administrador"){
             // Verificacion de seleccion: Administrador
             valiTel = validarTel(txtTel.text)
-            if(valiNam && valiUser && valiCorr && valiPass && valiPreg && valiResp && valiSis && valiTel)
+            if(valiNam && valiCorr && valiPass && valiPreg && valiResp && valiSis && valiTel)
                 registroEma(tipo)
             else
                 avisoReg("Error: No se ha podido validar la informacion del administrador")
@@ -450,9 +499,9 @@ class RegisterActivity : AppCompatActivity() {
     private fun valiRegGoo(){
         // Validacion individual de todos los campos
         valiNam = validarNombre(txtNomReg.text)
-        valiUser = validarUsuario(txtUsReg.text)
         valiPreg = validarSelPreg(spPregsSegur)
         valiResp = validarResp(txtRespSeguri.text)
+        valiTipUser = validarSelTipoUser(rbSelCli, rbSelAdmin)
         valiSis = validarSelSis(spSisRel)
         // Determinacion del tipo de usuario a registrar
         val tipo = when {
@@ -460,16 +509,18 @@ class RegisterActivity : AppCompatActivity() {
             rbSelAdmin.isChecked -> "Administrador"
             else -> ""
         }
+        // Anteponemos la solicitud de la peticion (preparacion)
+        crearPeticionGoogle()
         // Verificacion de seleccion: Cliente
         if(valiTipUser && tipo=="Cliente"){
-            if(valiNam && valiUser && valiPreg && valiResp && valiSis)
+            if(valiNam && valiPreg && valiResp && valiSis)
                 registroGoo()
             else
                 avisoReg("Error: No se ha podido validar la informacion del cliente")
         }else if(valiTipUser && tipo=="Administrador"){
             // Verificacion de seleccion: Administrador
             valiTel = validarTel(txtTel.text)
-            if(valiNam && valiUser && valiPreg && valiResp && valiSis && valiTel)
+            if(valiNam && valiPreg && valiResp && valiSis && valiTel)
                 registroGoo()
             else
                 avisoReg("Error: No se ha podido validar la informacion del administrador")
@@ -477,17 +528,16 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun registroEma(tipo: String){
-        // Preparando valores para guardado y procesamiento
+        // Preparando variables para la obtencion de valores de los campos
         val nombre = txtNomReg.text.toString()
-        val usuario = txtUsReg.text.toString()
+        val usuario = txtUsReg.text.toString().trim()
         val emaLimp = txtEmailReg.text.toString().trim()
         val pasLimp = txtPassReg.text.toString().trim()
         val pregunta = spPregsSegur.selectedItem.toString()
         val respuesta = txtRespSeguri.text.toString()
         val sistema = spSisRel.selectedItem.toString()
-        val telefono = txtTel.text.toString().toDouble()
 
-        auth.createUserWithEmailAndPassword(emaLimp, pasLimp).addOnCompleteListener { task ->
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(emaLimp, pasLimp).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Obteniendo la referencia del usuario generada por el objeto de autenticacion
                 val authUs = auth.currentUser
@@ -534,6 +584,7 @@ class RegisterActivity : AppCompatActivity() {
                         // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                         val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                             putExtra("username", usuario)
+                            putExtra("tipo", tipo)
                         }
                         startActivity(intentDash)
                     }
@@ -542,6 +593,7 @@ class RegisterActivity : AppCompatActivity() {
                         }
                 }else{
                     // Usuario administrador
+                    val telefono = txtTel.text.toString().toDouble()
                     val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta, num_Tel = telefono )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
@@ -551,6 +603,7 @@ class RegisterActivity : AppCompatActivity() {
                         // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                         val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                             putExtra("username", usuario)
+                            putExtra("tipo", tipo)
                         }
                         startActivity(intentDash)
                     }
@@ -564,52 +617,52 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun registroGoo(){
+    private fun crearPeticionGoogle(){
         // Bloque de codigo de la funcion crearPeticionGoogle() con el fin de optimizar las funciones
-            // Configuracion google
-            googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-            // Obteniendo el cliente de google
-            googleCli = GoogleSignIn.getClient(this@RegisterActivity, googleConf)
+        // Configuracion google
+        googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        // Obteniendo el cliente de google
+        googleCli = GoogleSignIn.getClient(this@RegisterActivity, googleConf)
         // Fin de crearPeticionGoogle() y preparar la peticion de google
-        // Lanzar la peticion de google con el activity result
-        signInGoo()
     }
 
-    private fun signInGoo() {
+    private fun registroGoo() {
         // Obteniendo el intent de google
         val intentGoo = googleCli.signInIntent
         // Implementando el launcher result posterior al haber obtenido el intent de google
-        startForResult.launch(intentGoo)
-        //startActivityForResult(intentGoo, GoogleAcces, bundle)
+        //startForResult.launch(intentGoo)
+        startActivityForResult(intentGoo, GoogleAcces)
     }
 
-    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
         // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
-        if (result.resultCode == GoogleAcces) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            // Preparando valores para guardado y procesamiento
-            val nombre = txtNomReg.text.toString()
-            val usuario = txtUsReg.text.toString()
+        if (requestCode == GoogleAcces) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             // Determinacion del tipo de usuario a registrar
             val tipo = when {
                 rbSelCli.isChecked -> "Cliente"
                 rbSelAdmin.isChecked -> "Administrador"
                 else -> ""
             }
+            // Preparando variables para la obtencion de valores de los campos
+            val nombre = txtNomReg.text.toString()
+            val usuario = txtUsReg.text.toString().trim()
             val pregunta = spPregsSegur.selectedItem.toString()
             val respuesta = txtRespSeguri.text.toString()
             val sistema = spSisRel.selectedItem.toString()
-            val telefono = txtTel.text.toString().toDouble()
 
             try {
                 val cuenta = task.getResult(ApiException::class.java)
                 // Obteniendo la credencial
                 val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
                 // Accediendo con los datos de la cuenta de google
-                auth.signInWithCredential(credencial).addOnCompleteListener {task2 ->
+                FirebaseAuth.getInstance().signInWithCredential(credencial).addOnCompleteListener {task2 ->
                     if(task2.isSuccessful){
                         // Obteniendo la referencia del usuario generada por el objeto de autenticacion
                         val authUs = auth.currentUser
@@ -661,6 +714,7 @@ class RegisterActivity : AppCompatActivity() {
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                                     val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                                         putExtra("username", usuario)
+                                        putExtra("tipo", tipo)
                                     }
                                     startActivity(intentDash)
                                 }
@@ -669,6 +723,7 @@ class RegisterActivity : AppCompatActivity() {
                                     }
                             }else{
                                 // Usuario administrador
+                                val telefono = txtTel.text.toString().toDouble()
                                 val nUser = nAcc?.let {
                                     UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = it, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta, num_Tel = telefono )
                                 }
@@ -680,6 +735,7 @@ class RegisterActivity : AppCompatActivity() {
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                                     val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                                         putExtra("username", usuario)
+                                        putExtra("tipo", tipo)
                                     }
                                     startActivity(intentDash)
                                 }
@@ -697,46 +753,4 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
     }
-
-    /*@Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Preparando valores para guardado y procesamiento
-        val nombre = data?.getStringExtra("nombre")
-        val usuario = data?.getStringExtra("usuario")
-        val pregunta = data?.getStringExtra("pregunta")
-        val respuesta = data?.getStringExtra("respuesta")
-        val tipo = data?.getStringExtra("tipo")
-        val sistema = data?.getStringExtra("sistema")
-        val telefono = data?.getDoubleExtra("telefono", 0.0)
-
-        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
-        if (requestCode == GoogleAcces) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val cuenta = task.getResult(ApiException::class.java)
-                // Obteniendo la credencial
-                val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
-                // Accediendo con los datos de la cuenta de google
-                auth.signInWithCredential(credencial).addOnCompleteListener {
-                    if(it.isSuccessful){
-                        Toast.makeText(this@LoginActivity, "Bienvenido", Toast.LENGTH_SHORT).show()
-                        val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java)
-                        startActivity(intentoDash)
-                    }else{
-                        // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                        Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
-                        txtEmail.text.clear()
-                        txtContra.text.clear()
-                    }
-                }
-            }catch (error: ApiException){
-                // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
-                txtEmail.text.clear()
-                txtContra.text.clear()
-            }
-        }
-    }*/
 }

@@ -34,10 +34,10 @@
     <!-- Strings de la vista dashboard -->
     <string name="headDash">Menú Principal</string>
     <string name="btnEsta">Estaciones</string>
-    <string name="btnGenRepo">Generar Reportes</string>
+    <string name="btnGenRepo">Reportes</string>
     <string name="btnAjus">Ajustes</string>
-    <string name="btnManu">Manual de Usuario</string>
-    <string name="btnGesSis">Gestionar Sistema</string>
+    <string name="btnManu">Manual de \n Usuario</string>
+    <string name="btnGesSis">Gestionar \n Sistema</string>
     <string name="btnCloSes">Cerrar Sesion</string>
     <!-- Strings de cada vista de estacion -->
     <string name="headEsta">Estaciones</string>

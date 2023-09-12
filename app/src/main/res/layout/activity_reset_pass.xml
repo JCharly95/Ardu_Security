@@ -127,6 +127,7 @@
             android:layout_height="45dp"
             app:strokeWidth="1dp"
             app:strokeColor="@color/negro"
+            app:cardBackgroundColor="@color/azulAlicia"
             app:cardCornerRadius="4dp">
 
             <androidx.appcompat.widget.AppCompatSpinner
