@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -21,12 +22,12 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MenuStationsActivity : AppCompatActivity() {
-    private lateinit var btnSta1: Button
-    private lateinit var btnSta2: Button
-    private lateinit var btnSta3: Button
-    private lateinit var btnSta4: Button
-    private lateinit var btnSta5: Button
-    private lateinit var btnAlarma: Button
+    private lateinit var btnSta1: ImageButton
+    private lateinit var btnSta2: ImageButton
+    private lateinit var btnSta3: ImageButton
+    private lateinit var btnSta4: ImageButton
+    private lateinit var btnSta5: ImageButton
+    private lateinit var btnAlarma: ImageButton
     // Objeto gson
     var gson = Gson()
 

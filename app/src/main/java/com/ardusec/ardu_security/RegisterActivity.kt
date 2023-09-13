@@ -575,7 +575,7 @@ class RegisterActivity : AppCompatActivity() {
                 val nUsSis = SistemasUser(sistema1 = sistema)
                 if(tipo == "Cliente") {
                     // Usuario cliente
-                    val nUser = UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta )
+                    val nUser = UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItem}", resp_Seguri = respuesta )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
                     ref.child(usuario).setValue(nUser).addOnCompleteListener {
@@ -594,7 +594,7 @@ class RegisterActivity : AppCompatActivity() {
                 }else{
                     // Usuario administrador
                     val telefono = txtTel.text.toString().toDouble()
-                    val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta, num_Tel = telefono )
+                    val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItem}", resp_Seguri = respuesta, num_Tel = telefono )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
                     ref.child(usuario).setValue(nUser).addOnCompleteListener {

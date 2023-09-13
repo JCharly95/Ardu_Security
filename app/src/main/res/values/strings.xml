@@ -46,7 +46,7 @@
     <string name="btnSta3">Estacion 3</string>
     <string name="btnSta4">Estacion 4</string>
     <string name="btnSta5">Estacion 5</string>
-    <string name="btnAlarma">Gestionar alarma</string>
+    <string name="btnAlarma">Gestionar \n alarma</string>
     <!-- Strings de la vista de registro -->
     <string name="headRegi">Registro</string>
     <string name="txtNam">Nombre Completo</string>

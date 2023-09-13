@@ -134,7 +134,7 @@ class StationActivity : AppCompatActivity() {
         btnSenGH.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 val setBtnEsta = async {
-                    data class SensorHG(val id_Sensor: String, val nom_Sen: String, val tipo: String, val co: Number, val lpg: Number, val propane: Number, val smoke: Number, val estacion_Nom: String)
+                    data class SensorHG(val id_Sensor: String, val nom_Sen: String, val tipo: String, val co: Double, val lpg: Double, val propane: Double, val smoke: Double, val estacion_Nom: String)
                     val refDB = Firebase.database.getReference("Sensor").orderByChild("estacion_Nom").equalTo(staFire)
                     refDB.addValueEventListener(object: ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot){

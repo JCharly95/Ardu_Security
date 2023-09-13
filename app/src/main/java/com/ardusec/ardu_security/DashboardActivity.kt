@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -42,9 +43,14 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_dashboard)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
         //Obteniendo los valores de acceso/registro
-        bundle = intent.extras!!
-        user = bundle.getString("username").toString()
-        tipo = bundle.getString("tipo").toString()
+        if(intent.extras == null){
+            tipo = "Cliente"
+            Toast.makeText(this@DashboardActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
+        }else{
+            bundle = intent.extras!!
+            user = bundle.getString("username").toString()
+            tipo = bundle.getString("tipo").toString()
+        }
 
         // Configurar el arranque de la interfaz
         setUp()
