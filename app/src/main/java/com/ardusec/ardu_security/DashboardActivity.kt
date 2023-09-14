@@ -24,7 +24,7 @@ import com.google.gson.Gson
 
 class DashboardActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
-    private lateinit var btnEstas: ImageButton
+    private lateinit var btnMenEsta: ImageButton
     private lateinit var btnGenRep: ImageButton
     private lateinit var btnMenAj: ImageButton
     private lateinit var btnManual: ImageButton
@@ -35,8 +35,6 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var user: String
     private lateinit var tipo: String
-    // Creando el objeto GSON
-    private var gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +68,7 @@ class DashboardActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Dashboard"
         // Relacionando los elementos con su objeto de la interfaz
-        btnEstas = findViewById(R.id.btnStats)
+        btnMenEsta = findViewById(R.id.btnStats)
         btnGenRep = findViewById(R.id.btnGenRep)
         btnMenAj = findViewById(R.id.btnAjuste)
         btnManual = findViewById(R.id.btnManUs)
@@ -85,7 +83,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun addListeners(){
         // Agregar los listener
-        btnEstas.setOnClickListener {
+        btnMenEsta.setOnClickListener {
             val statsActi = Intent(this, MenuStationsActivity::class.java)
             startActivity(statsActi)
         }
