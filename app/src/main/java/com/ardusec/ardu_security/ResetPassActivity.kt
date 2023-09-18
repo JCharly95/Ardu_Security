@@ -22,27 +22,30 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
 class ResetPassActivity : AppCompatActivity(){
     // Estableciendo los elementos de interaccion
-    private lateinit var txtNombre: EditText
-    private lateinit var btnHelp: ImageButton
-    private lateinit var txtDirEma: EditText
-    private lateinit var spPreguntas: AppCompatSpinner
-    private lateinit var txtResPreg: EditText
-    private lateinit var btnEnvCorr: Button
-    private lateinit var lblMsgSta: TextView
+    private lateinit var btnAyuda: ImageButton
+    private lateinit var txtUserRec: EditText
+    private lateinit var txtEmaRec: EditText
+    private lateinit var spPregsRec: AppCompatSpinner
+    private lateinit var txtRespRec: EditText
+    private lateinit var btnRecPass: Button
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var database: FirebaseDatabase
     private lateinit var ref: DatabaseReference
     private lateinit var auth: FirebaseAuth
-    // Creando el objeto GSON
-    private var gson = Gson()
     // Banderas de validacion
     private var valiNam = false
+    private var valiUser = false
     private var valiCorr = false
     private var valiPreg = false
     private var valiResp = false
+    // Creando el objeto GSON
+    private var gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?){
 
@@ -75,7 +78,7 @@ class ResetPassActivity : AppCompatActivity(){
                     // Estableciendo el adaptador para el rellenado del spinner
                     val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
                     adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spPreguntas.adapter = adapPregs
+                    spPregsRec.adapter = adapPregs
                 }
                     .addOnFailureListener {
                         //avisoReg("Error: Datos parcialmente obtenidos")
@@ -89,28 +92,21 @@ class ResetPassActivity : AppCompatActivity(){
         // Titulo de la pantalla
         title = "Recuperar Contraseña"
         // Relacionando los elementos con su objeto de la interfaz
-        txtNombre = findViewById(R.id.txtNomForPass)
-        btnHelp = findViewById(R.id.btnInfoRecPass)
-        txtDirEma = findViewById(R.id.txtEmaForPass)
-        spPreguntas = findViewById(R.id.spSafQuKy)
-        txtResPreg = findViewById(R.id.txtResPregKey)
-        btnEnvCorr = findViewById(R.id.btnEnviar)
-        lblMsgSta = findViewById(R.id.lblRespPeti)
-        // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
-        database = Firebase.database
-        auth = FirebaseAuth.getInstance()
+        btnAyuda = findViewById(R.id.btnInfoRecPass)
+        txtUserRec = findViewById(R.id.txtUserForPass)
+        txtEmaRec = findViewById(R.id.txtEmaForPass)
+        spPregsRec = findViewById(R.id.spPregsSegForPass)
+        txtRespRec = findViewById(R.id.txtResPregForPass)
+        btnRecPass = findViewById(R.id.btnSendRecPass)
 
         // Invocacion a la funcion para rellenar el spinner de las preguntas
         rellSpinPregs()
+        // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
+        database = Firebase.database
+        auth = FirebaseAuth.getInstance()
     }
 
-    private fun avisoForPass(){
-        val mensaje = "Consideraciones de campos: \n\n" +
-                "Nombre;\n" +
-                "* Su nombre no debe tener numeros\n" +
-                "* Su nombre debe tener al menos 10 caracteres\n\n" +
-                "Correo; Formato Aceptado:\n" +
-                "* usuario@dominio.com(.mx)"
+    private fun avisoForPass(mensaje: String){
         val aviso = AlertDialog.Builder(this)
         aviso.setTitle("Aviso")
         aviso.setMessage(mensaje)
@@ -120,115 +116,227 @@ class ResetPassActivity : AppCompatActivity(){
     }
 
     private fun addListeners(){
-        btnHelp.setOnClickListener {
-            avisoForPass()
+        val msg = "Consideraciones de campos: \n\n" +
+                "Nombre;\n" +
+                "* Su nombre no debe tener numeros\n" +
+                "* Su nombre debe tener al menos 10 caracteres\n\n" +
+                "Correo; Formato Aceptado:\n" +
+                "* usuario@dominio.com(.mx)"
+
+        btnAyuda.setOnClickListener {
+            avisoForPass(msg)
         }
         // Añadiendo el listener del boton de envio
-        btnEnvCorr.setOnClickListener {
-            validaciones()
+        btnRecPass.setOnClickListener {
+            buscarUsBD()
+        }
+    }
+
+    private fun validarNombre(nombre: Editable): Boolean{
+        when{
+            // Si el nombre esta vacio
+            TextUtils.isEmpty(nombre) -> avisoForPass("Error: Favor de introducir un nombre")
+            // Si se encuentra algun numero
+            (Regex("""\d+""").containsMatchIn(nombre)) -> avisoForPass("Error: Su nombre no puede contener numeros")
+            // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
+            (nombre.length < 10) -> avisoForPass("Error: Su nombre es muy corto, favor de agregar su nombre completo")
+            // Si se encuentran caracteres especiales
+            (Regex("""[^A-Za-z ]+""").containsMatchIn(nombre)) -> avisoForPass("Error: Su nombre no puede contener caracteres especiales")
+            else -> return true
+        }
+        return false
+    }
+    private fun validarUsuario(usuario: Editable): Boolean{
+        // Si se detectan espacios en el usuario, estos seran removidos
+        if (Regex("""\s+""").containsMatchIn(usuario)) {
+            val usuarioFil = usuario.replace("\\s".toRegex(), "")
+            when {
+                // Si la contraseña esta vacia
+                TextUtils.isEmpty(usuarioFil) -> avisoForPass("Error: Favor de introducir un nombre de usuario")
+                // Extension minima de 8 caracteres
+                (usuarioFil.length < 6) -> avisoForPass("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
+                // No se tiene al menos una mayuscula
+                (!Regex("[A-Z]+").containsMatchIn(usuarioFil)) -> avisoForPass("Error: El nombre de usuario debera tener al menos una letra mayuscula")
+                // No se tiene al menos un numero
+                (!Regex("""\d""").containsMatchIn(usuarioFil)) -> avisoForPass("Error: El nombre de usuario debera tener al menos un numero")
+                // No se tiene al menos un caracter especial
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil)) -> avisoForPass("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
+                else -> return true
+            }
+        }else{
+            when {
+                // Si la contraseña esta vacia
+                TextUtils.isEmpty(usuario) -> avisoForPass("Error: Favor de introducir un nombre de usuario")
+                // Extension minima de 8 caracteres
+                (usuario.length < 6) -> avisoForPass("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
+                // No se tiene al menos una mayuscula
+                (!Regex("[A-Z]+").containsMatchIn(usuario)) -> avisoForPass("Error: El nombre de usuario debera tener al menos una letra mayuscula")
+                // No se tiene al menos un numero
+                (!Regex("""\d""").containsMatchIn(usuario)) -> avisoForPass("Error: El nombre de usuario debera tener al menos un numero")
+                // No se tiene al menos un caracter especial
+                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuario)) -> avisoForPass("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
+                else -> return true
+            }
+        }
+        return false
+    }
+    private fun validarCorreo(correo: Editable): Boolean{
+        // Si se detectan espacios en el correo, estos seran removidos
+        if(Regex("""\s+""").containsMatchIn(correo)){
+            val correoFil = correo.replace("\\s".toRegex(), "")
+            when{
+                // Si el correo esta vacio
+                TextUtils.isEmpty(correoFil) -> avisoForPass("Error: Favor de introducir un correo")
+                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> avisoForPass("Error: Favor de introducir un correo valido")
+                else -> return true
+            }
+        }else{
+            when{
+                // Si el correo esta vacio
+                TextUtils.isEmpty(correo) -> avisoForPass("Error: Favor de introducir un correo")
+                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> avisoForPass("Error: Favor de introducir un correo valido")
+                else -> return true
+            }
+        }
+        return false
+    }
+    private fun validarSelPreg(lista: Spinner): Boolean{
+        if(lista.selectedItemPosition == 0){
+            avisoForPass("Error: Favor de seleccionar una pregunta")
+            return false
+        }
+        return true
+    }
+    private fun validarResp(respuesta: Editable): Boolean{
+        if(TextUtils.isEmpty(respuesta)){
+            avisoForPass("Error: Favor de introducir una respuesta para su pregunta")
+            return false
+        }
+        return true
+    }
+
+    private fun buscarUsBD(){
+        // Cuando se solicite el registro independientemente del metodo, primero se validara el user y luego se buscara en la BD
+        valiUser = validarUsuario(txtUserRec.text)
+        // Preparando variables para la obtencion de valores de los campos
+        val usuario = txtUserRec.text.toString().trim()
+        var busUser = false
+
+        if(valiUser){
+            // Buscando al usuario en la BD
+            ref = database.getReference("Usuarios")
+            ref.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (objUser in dataSnapshot.children) {
+                        if (objUser.key.toString() == usuario){
+                            busUser = true
+                            break
+                        }
+                    }
+                    if(busUser){
+                        validaciones()
+                    }else{
+                        // Mostrar mensaje de error y limpiar los campos
+                        avisoForPass("Error: El username que desea recuperar no existe, favor de ingresar otro")
+                        txtUserRec.text.clear()
+                        txtEmaRec.text.clear()
+                        spPregsRec.setSelection(0)
+                        txtRespRec.text.clear()
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@ResetPassActivity, "Busqueda sin exito", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }else{
+            avisoForPass("El username no pudo ser validado correctamente")
         }
     }
 
     private fun validaciones(){
-        if(ValiCampos.validarNombre(txtNombre.text, this)){
-            valiNam = true
-        }
-        if(ValiCampos.validarCorreo(txtDirEma.text, this)){
-            valiCorr = true
-        }
-        if(ValiCampos.validarSelPreg(spPreguntas, this)){
-            valiPreg = true
-        }
-        if(ValiCampos.validarResp(txtResPreg.text, this)){
-            valiResp = true
-        }
-        // Si todo fue validado de manera satisfactoria se procedera a buscar la informacion en la BD
-        if(valiNam && valiCorr && valiPreg && valiResp){
-            data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
-            ref = database.getReference("Usuarios")
-            ref.addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(dataSnapshot: DataSnapshot){
-                    for (objUser in dataSnapshot.children){
-                        val userJSON = gson.toJson(objUser.value)
-                        val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                        // Si el usuario es encontrado en la BD por todos los elementos solicitados en el formulario, se hace el envio del correo
-                        if(txtNombre.text.toString() == resUser.nombre && txtDirEma.text.toString() == resUser.correo && spPreguntas.selectedItem.toString() == resUser.preg_Seguri && txtResPreg.text.toString() == resUser.resp_Seguri){
-                            // Preparar el correo para su envio
-                            val emaLimp = txtDirEma.text.toString().trim()
-                            // Solicitar a firebase que mande el correo de recuperacion y establecer el idioma de envio
-                            auth.setLanguageCode("es_419")
-                            auth.sendPasswordResetEmail(emaLimp).addOnCompleteListener { task ->
-                                if(task.isSuccessful){
-                                    lblMsgSta.text = "Correo de recuperacion enviado, favor de revisar su correo"
-                                    lblMsgSta.isGone = false
-                                }else{
-                                    lblMsgSta.text = "Error: No se pudo enviar el correo de recuperacion"
-                                    lblMsgSta.isGone = false
-                                }
-                            }
-                            // Cuando ya se envio el correo de recuperacion, se le enviara a la pantalla de inicio
-                            val intentMain = Intent(applicationContext, MainActivity::class.java)
-                            startActivity(intentMain)
-                        }
-                    }
-                }
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                }
-            })
+        // Validacion individual de los campos
+        valiCorr = validarCorreo(txtEmaRec.text)
+        valiPreg = validarSelPreg(spPregsRec)
+        valiResp = validarResp(txtRespRec.text)
+
+        if(valiNam && valiCorr && valiPreg && valiResp) {
+            comproInfo()
+        }else if(!valiNam){
+            avisoForPass("Error: El nombre no cumplio con los parametros de validacion establecidos")
+        }else if(!valiCorr){
+            avisoForPass("Error: El correo no cumplio con los parametros de validacion establecidos")
+        }else if(!valiPreg){
+            avisoForPass("Error: Favor de seleccionar una pregunta")
+        }else{
+            avisoForPass("Error: La respuesta de seguridad no cumplio con los parametros de validacion establecidos")
         }
     }
 
-    object ValiCampos{
-        fun validarNombre(nombre: Editable, contexto: Context): Boolean{
-            when{
-                // Si el nombre esta vacio
-                TextUtils.isEmpty(nombre) -> Toast.makeText(contexto, "Error: Favor de introducir un nombre", Toast.LENGTH_SHORT).show()
-                // Si se encuentra algun numero
-                (Regex("""\d+""").containsMatchIn(nombre)) -> Toast.makeText(contexto, "Error: Su nombre no puede contener numeros", Toast.LENGTH_SHORT).show()
-                // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
-                (nombre.length < 10) -> Toast.makeText(contexto, "Error: Su nombre es muy corto, favor de agregar su nombre completo", Toast.LENGTH_SHORT).show()
-                // Si se encuentran caracteres especiales
-                (Regex("""[^A-Za-z ]+""").containsMatchIn(nombre)) -> Toast.makeText(contexto, "Error: Su nombre no puede contener caracteres especiales", Toast.LENGTH_SHORT).show()
-                else -> return true
+    private fun comproInfo(){
+        // Preparando variables para la comparacion de valores con lo almacenado en firebase
+        val usuario = txtUserRec.text.toString().trim()
+        val correo = txtEmaRec.text.toString().trim()
+        val pregunta = "pregunta${spPregsRec.selectedItemPosition}"
+        val respuesta = txtRespRec.text.toString()
+        var comproUser = false
+
+        // Buscando al usuario en la BD
+        ref = database.getReference("Usuarios")
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (objUser in dataSnapshot.children) {
+                    val userBus = objUser.key.toString()
+                    val acceso = objUser.child("accesos")
+                    val emaBus = acceso.child("correo").value
+                    val gooBus = acceso.child("google").value
+                    val pregBus = objUser.child("pregunta_Seg").value
+                    val respBus = objUser.child("resp_Seguri").value
+                    if (userBus == usuario && (emaBus == correo || gooBus == correo) && pregBus == pregunta && respBus == respuesta){
+                        comproUser = true
+                        break
+                    }
+                }
+                if(comproUser){
+                    recuPass(txtEmaRec.text.toString().trim())
+                }else{
+                    // Mostrar mensaje de error y limpiar los campos
+                    avisoForPass("Error: La informacion ingresada no coincide con nuestros registros, favor de corroborarla")
+                    txtUserRec.text.clear()
+                    txtEmaRec.text.clear()
+                    spPregsRec.setSelection(0)
+                    txtRespRec.text.clear()
+                }
             }
-            return false
-        }
-        fun validarCorreo(correo: Editable, contexto: Context): Boolean{
-            // Si se detectan espacios en el correo, estos seran removidos
-            if(Regex("""\s+""").containsMatchIn(correo)){
-                val correoFil = correo.replace("\\s".toRegex(), "")
-                when{
-                    // Si el correo esta vacio
-                    TextUtils.isEmpty(correoFil) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
-                    // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                    !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                    else -> return true
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@ResetPassActivity, "Busqueda sin exito", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun recuPass(correo: String){
+        // Solicitar a firebase que mande el correo de recuperacion y establecer el idioma de envio
+        auth.setLanguageCode("es_419")
+        auth.sendPasswordResetEmail(correo).addOnCompleteListener { task ->
+            if(task.isSuccessful){
+                // Si se cumpli el envio del correo satisfactoriamente, se procede al envio hacia la main activity despues de 2 segundos y medio
+                avisoForPass("Correo de recuperacion enviado, favor de revisar su correo")
+                Timer().schedule(2500){
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        // Cuando ya se envio el correo de recuperacion, se le enviara a la pantalla de inicio
+                        val intentMain = Intent(this@ResetPassActivity, MainActivity::class.java)
+                        startActivity(intentMain)
+                    }
                 }
             }else{
-                when{
-                    // Si el correo esta vacio
-                    TextUtils.isEmpty(correo) -> Toast.makeText(contexto, "Error: Favor de introducir un correo", Toast.LENGTH_SHORT).show()
-                    // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                    !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> Toast.makeText(contexto, "Error: Favor de introducir un correo valido", Toast.LENGTH_SHORT).show()
-                    else -> return true
-                }
+                // Si no se pudo mandar el correo se procedera a mostrar el error y borrar los campos en cuestion
+                avisoForPass("Error: No se pudo enviar el correo de recuperacion")
+                txtUserRec.text.clear()
+                txtEmaRec.text.clear()
+                spPregsRec.setSelection(0)
+                txtRespRec.text.clear()
             }
-            return false
-        }
-        fun validarSelPreg(lista: Spinner, contexto: Context): Boolean {
-            if(lista.selectedItemPosition == 0){
-                Toast.makeText(contexto, "Error: Favor de seleccionar una pregunta", Toast.LENGTH_SHORT).show()
-                return false
-            }
-            return true
-        }
-        fun validarResp(respuesta: Editable, contexto: Context): Boolean {
-            if(TextUtils.isEmpty(respuesta)){
-                Toast.makeText(contexto, "Error: Favor de introducir una respuesta para su pregunta", Toast.LENGTH_SHORT).show()
-                return false
-            }
-            return true
         }
     }
 }

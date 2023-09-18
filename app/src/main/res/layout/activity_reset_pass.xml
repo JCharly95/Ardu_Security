@@ -63,21 +63,6 @@
             android:layout_height="5dp" />
 
         <EditText
-            android:id="@+id/txtNomForPass"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="name"
-            android:hint="@string/txtNombre"
-            android:inputType="textPersonName"
-            android:textColor="@color/negro"
-            android:textColorHint="@color/darkgray"
-            android:visibility="visible" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="5dp" />
-
-        <EditText
             android:id="@+id/txtUserForPass"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -131,7 +116,7 @@
             app:cardCornerRadius="4dp">
 
             <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/spSafQuKy"
+                android:id="@+id/spPregsSegForPass"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:spinnerMode="dropdown"
@@ -146,7 +131,7 @@
             android:layout_height="5dp" />
 
         <EditText
-            android:id="@+id/txtResPregKey"
+            android:id="@+id/txtResPregForPass"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:autofillHints="text"
@@ -161,26 +146,11 @@
             android:layout_height="5dp" />
 
         <Button
-            android:id="@+id/btnEnviar"
+                android:id="@+id/btnSendRecPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/btnComproResp"
             android:visibility="visible"/>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="5dp" />
-
-        <TextView
-            android:id="@+id/lblRespPeti"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/msgRecEma"
-            android:textSize="20sp"
-            android:visibility="gone"
-            android:textColor="@color/negro"
-            tools:visibility="visible" />
-
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
