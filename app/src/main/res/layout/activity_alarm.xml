@@ -4,94 +4,149 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightGray"
+    android:background="@color/azulAlicia"
     tools:context=".AlarmActivity">
 
-    <TextView
-        android:id="@+id/lblHeadAlarma"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/headAlarma"
-        android:textSize="25sp"
-        android:textColor="@color/negro"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/swAlarma"
-        android:layout_width="130dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="40dp"
-        android:paddingLeft="9dp"
-        android:text="@string/lblEstaVal"
-        android:background="@color/azulAlicia"
-        android:textColor="@color/negro"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblHeadAlarma" />
+        <TextView
+            android:id="@+id/lblHeadAlarma"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/headAlarma"
+            android:textSize="25sp"
+            android:textColor="@color/negro" />
 
-    <RadioGroup
-        android:id="@+id/rbgCondAlarma"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:visibility="visible"
-        android:gravity="center"
-        android:padding="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/swAlarma">
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <Switch
+            android:id="@+id/swAlarma"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:paddingLeft="9dp"
+            android:text="@string/lblEstaVal"
+            android:textColor="@color/negro" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
 
         <TextView
             android:id="@+id/lblCondAla"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
+            android:gravity="center"
             android:text="@string/lblCondAla"
             android:textSize="20sp"
-            android:textColor="@color/negro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498" />
+            android:textColor="@color/negro"/>
 
-        <RadioButton
-            android:id="@+id/rbAlaActi"
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <RadioGroup
+            android:id="@+id/rbgCondAlarma"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/rojo"
-            android:textColor="@color/rojo"
-            android:layout_marginBottom="5dp"
-            android:text="@string/alCondActi"
-            android:textSize="16sp"
-            android:enabled="false"
-            android:visibility="visible" />
+            android:visibility="visible"
+            android:gravity="center">
 
-        <RadioButton
-            android:id="@+id/rbAlaOper"
+            <RadioButton
+                android:id="@+id/rbAlaActi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/rojo"
+                android:textColor="@color/rojo"
+                android:layout_marginBottom="5dp"
+                android:text="@string/alCondActi"
+                android:textSize="16sp"
+                android:enabled="false"
+                android:visibility="visible" />
+
+            <RadioButton
+                android:id="@+id/rbAlaOper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/verde"
+                android:textColor="@color/verde"
+                android:layout_marginBottom="5dp"
+                android:text="@string/alCondOper"
+                android:textSize="16sp"
+                android:enabled="false"
+                android:visibility="visible" />
+
+            <RadioButton
+                android:id="@+id/rbAlaInac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/gris"
+                android:textColor="@color/gris"
+                android:layout_marginBottom="5dp"
+                android:text="@string/alCondInac"
+                android:textSize="16sp"
+                android:enabled="false"
+                android:visibility="visible" />
+        </RadioGroup>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:id="@+id/lblSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/verde"
-            android:textColor="@color/verde"
-            android:layout_marginBottom="5dp"
-            android:text="@string/alCondOper"
-            android:textSize="16sp"
-            android:enabled="false"
-            android:visibility="visible" />
+            android:gravity="center"
+            android:text="Encender/Apagar Alarma"
+            android:textSize="20sp"
+            android:textColor="@color/negro"/>
 
-        <RadioButton
-            android:id="@+id/rbAlaInac"
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <RadioGroup
+            android:id="@+id/rbgAlarma"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/gris"
-            android:textColor="@color/gris"
-            android:layout_marginBottom="5dp"
-            android:text="@string/alCondInac"
-            android:textSize="16sp"
-            android:enabled="false"
-            android:visibility="visible" />
-    </RadioGroup>
+            android:visibility="visible"
+            android:orientation="horizontal"
+            android:gravity="center">
 
+            <RadioButton
+                android:id="@+id/rbEncenderAlarma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/coral"
+                android:textColor="@color/coral"
+                android:layout_marginBottom="5dp"
+                android:text="Encender Alarma"
+                android:textSize="16sp"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/rbApagarAlarma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/fireBrick"
+                android:textColor="@color/fireBrick"
+                android:layout_marginBottom="5dp"
+                android:text="Apagar Alarma"
+                android:textSize="16sp"/>
+        </RadioGroup>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -236,7 +236,9 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }
                         override fun onCancelled(error: DatabaseError) {
-                            Toast.makeText(this@LoginActivity, "Busqueda sin exito", Toast.LENGTH_SHORT).show()
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                Toast.makeText(this@LoginActivity, "Busqueda sin exito", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     })
                 }else{
@@ -263,7 +265,9 @@ class LoginActivity : AppCompatActivity() {
                         if(task.isSuccessful){
                             val user = Firebase.auth.currentUser
                             user?.let{
-                                Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
+                                lifecycleScope.launch(Dispatchers.Main){
+                                    Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
+                                }
                                 val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
                                     putExtra("username", usuario)
                                     putExtra("tipo", tipo)
@@ -272,7 +276,9 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }else{
                             // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                            Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                            lifecycleScope.launch(Dispatchers.Main){
+                                Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                            }
                             txtEmail.text.clear()
                             txtContra.text.clear()
                             txtUser.text.clear()
