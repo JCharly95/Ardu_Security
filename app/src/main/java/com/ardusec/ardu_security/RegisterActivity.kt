@@ -76,7 +76,6 @@ class RegisterActivity : AppCompatActivity() {
     data class UserCliente(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String)
     data class UserAdmin(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Double)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -217,7 +216,7 @@ class RegisterActivity : AppCompatActivity() {
                 val lstSists = resources.getStringArray(R.array.lstSistems)
                 var arrSists = ArrayList<String>()
                 arrSists.addAll(lstSists)
-                // Creando la referencia de la coleccion de preguntas en la BD
+                // Creando la referencia de la coleccion de sistemas en la BD
                 ref = database.getReference("Sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
                 ref.addValueEventListener(object: ValueEventListener{
@@ -265,92 +264,56 @@ class RegisterActivity : AppCompatActivity() {
         return false
     }
     private fun validarUsuario(usuario: Editable): Boolean{
-        // Si se detectan espacios en el usuario, estos seran removidos
-        if (Regex("""\s+""").containsMatchIn(usuario)) {
-            val usuarioFil = usuario.replace("\\s".toRegex(), "")
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(usuarioFil) -> avisoReg("Error: Favor de introducir un nombre de usuario")
-                // Extension minima de 8 caracteres
-                (usuarioFil.length < 6) -> avisoReg("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(usuarioFil)) -> avisoReg("Error: El nombre de usuario debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(usuarioFil)) -> avisoReg("Error: El nombre de usuario debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
-                else -> return true
-            }
-        }else{
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(usuario) -> avisoReg("Error: Favor de introducir un nombre de usuario")
-                // Extension minima de 8 caracteres
-                (usuario.length < 6) -> avisoReg("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(usuario)) -> avisoReg("Error: El nombre de usuario debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(usuario)) -> avisoReg("Error: El nombre de usuario debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuario)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
-                else -> return true
-            }
+        // Si se detectan espacios en blanco en el usuario, seran removidos
+        val usuarioFil1 = usuario.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val usuarioFil2 = usuarioFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si el usuario esta vacia
+            TextUtils.isEmpty(usuarioFil2) -> avisoReg("Error: Favor de introducir un nombre de usuario")
+            // Extension minima de 8 caracteres
+            (usuarioFil2.length < 6) -> avisoReg("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
+            // No se tiene al menos una mayuscula
+            (!Regex("[A-Z]+").containsMatchIn(usuarioFil2)) -> avisoReg("Error: El nombre de usuario debera tener al menos una letra mayuscula")
+            // No se tiene al menos un numero
+            (!Regex("""\d""").containsMatchIn(usuarioFil2)) -> avisoReg("Error: El nombre de usuario debera tener al menos un numero")
+            // No se tiene al menos un caracter especial
+            (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil2)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
+            else -> return true
         }
         return false
     }
     private fun validarCorreo(correo: Editable): Boolean{
         // Si se detectan espacios en el correo, estos seran removidos
-        if(Regex("""\s+""").containsMatchIn(correo)){
-            val correoFil = correo.replace("\\s".toRegex(), "")
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correoFil) -> avisoReg("Error: Favor de introducir un correo")
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> avisoReg("Error: Favor de introducir un correo valido")
-                else -> return true
-            }
-        }else{
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correo) -> avisoReg("Error: Favor de introducir un correo")
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> avisoReg("Error: Favor de introducir un correo valido")
-                else -> return true
-            }
+        val correoFil1 = correo.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val correoFil2 = correoFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si el correo esta vacio
+            TextUtils.isEmpty(correoFil2) -> avisoReg("Error: Favor de introducir un correo")
+            // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil2).matches() -> avisoReg("Error: Favor de introducir un correo valido")
+            else -> return true
         }
         return false
     }
     private fun validarContra(contra: Editable): Boolean{
         // Si se detectan espacios en la contraseña, estos seran removidos
-        if(Regex("""\s+""").containsMatchIn(contra)) {
-            val contraFil = contra.replace("\\s".toRegex(), "")
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(contraFil) -> avisoReg("Error: Favor de introducir una contraseña")
-                // Extension minima de 8 caracteres
-                (contraFil.length < 8) -> avisoReg("Error: La contraseña debera tener una extension minima de 8 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> avisoReg("Error: La contraseña debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contraFil)) -> avisoReg("Error: La contraseña debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su contraseña")
-                else -> return true
-            }
-        }else{
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(contra) -> avisoReg("Error: Favor de introducir una contraseña")
-                // Extension minima de 8 caracteres
-                (contra.length < 8) -> avisoReg("Error: La contraseña debera tener una extension minima de 8 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contra)) -> avisoReg("Error: La contraseña debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contra)) -> avisoReg("Error: La contraseña debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su contraseña")
-                else -> return true
-            }
+        val contraFil1 = contra.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val contraFil2 = contraFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si la contraseña esta vacia
+            TextUtils.isEmpty(contraFil2) -> avisoReg("Error: Favor de introducir una contraseña")
+            // Extension minima de 8 caracteres
+            (contraFil2.length < 8) -> avisoReg("Error: La contraseña debera tener una extension minima de 8 caracteres")
+            // No se tiene al menos una mayuscula
+            (!Regex("[A-Z]+").containsMatchIn(contraFil2)) -> avisoReg("Error: La contraseña debera tener al menos una letra mayuscula")
+            // No se tiene al menos un numero
+            (!Regex("""\d""").containsMatchIn(contraFil2)) -> avisoReg("Error: La contraseña debera tener al menos un numero")
+            // No se tiene al menos un caracter especial
+            (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil2)) -> avisoReg("Error: Favor de incluir al menos un caracter especial en su contraseña")
+            else -> return true
         }
         return false
     }
@@ -383,28 +346,18 @@ class RegisterActivity : AppCompatActivity() {
         return true
     }
     private fun validarTel(numTel: Editable): Boolean{
-        // Si se detectan espacios en el telefono, estos seran removidos
-        if(Regex("""\s+""").containsMatchIn(numTel)){
-            val telFil = numTel.replace("\\s".toRegex(), "")
-            when {
-                // Si el telefono esta vacio
-                TextUtils.isEmpty(telFil) -> avisoReg("Error: Favor de introducir un numero telefonico")
-                // Si se encuentra algun caracter ademas de numeros
-                (Regex("""\D""").containsMatchIn(telFil)) -> avisoReg("Error: El numero de telefono solo puede contener digitos")
-                // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
-                (telFil.length < 10) -> avisoReg("Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular")
-                else -> return true
-            }
-        }else{
-            when {
-                // Si el telefono esta vacio
-                TextUtils.isEmpty(numTel) -> avisoReg("Error: Favor de introducir un numero telefonico")
-                // Si se encuentra algun caracter ademas de numeros
-                (Regex("""\D""").containsMatchIn(numTel)) -> avisoReg("Error: El numero de telefono solo puede contener digitos")
-                // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
-                (numTel.length < 10) -> avisoReg("Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular")
-                else -> return true
-            }
+        // Si se detectan espacios en el numero, estos seran removidos
+        val numTelFil1 = numTel.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val numTelFil2 = numTelFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si el telefono esta vacio
+            TextUtils.isEmpty(numTelFil2) -> avisoReg("Error: Favor de introducir un numero telefonico")
+            // Si se encuentra algun caracter ademas de numeros
+            (Regex("""\D""").containsMatchIn(numTelFil2)) -> avisoReg("Error: El numero de telefono solo puede contener digitos")
+            // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
+            (numTelFil2.length < 10) -> avisoReg("Advertencia: Favor de introducir su numero telefonico fijo con lada o su celular")
+            else -> return true
         }
         return false
     }
@@ -572,7 +525,7 @@ class RegisterActivity : AppCompatActivity() {
                 })
                 // Preparando el objeto del usuario para el registro en la BD
                 val nAcc = Acceso(correo = emaLimp, google = "")
-                val nUsSis = SistemasUser(sistema1 = sistema)
+                val nUsSis = SistemasUser(sistema1 = "sistema${spSisRel.selectedItem}")
                 if(tipo == "Cliente") {
                     // Usuario cliente
                     val nUser = UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItem}", resp_Seguri = respuesta )
@@ -700,7 +653,7 @@ class RegisterActivity : AppCompatActivity() {
                             val correo = authUs?.email
                             // Preparando el objeto del usuario para el registro en la BD
                             val nAcc = correo?.let { Acceso(correo = "", google = it) }
-                            val nUsSis = SistemasUser(sistema1 = sistema)
+                            val nUsSis = SistemasUser(sistema1 = "sistema${spSisRel.selectedItem}")
                             if(tipo == "Cliente"){
                                 // Usuario cliente
                                 val nUser = nAcc?.let {

@@ -74,13 +74,13 @@
     <!-- Strings de la vistas de las camaras-->
     <string name="lblCamView">Camara</string>
     <!-- Strings de la vistas de los sensores-->
-    <string name="lblSensView">Sensor</string>
+    <string name="lblSensView">Sensor de Gas/Humo</string>
     <string name="lblGas">Nivel de Gas LP:</string>
     <string name="lblCo">Nivel de CO2:</string>
     <string name="lblPro">Nivel de Propano:</string>
     <string name="lblHum">Nivel de Humo:</string>
     <string name="lblUni">ppm</string>
-    <string name="lblCondMagne">Estado del Sensor:</string>
+    <string name="lblCondMagne">Sensor Magnetico</string>
     <string name="lblMagneAbi">Abierto</string>
     <string name="lblMagneCerr">Cerrado</string>
     <!-- Strings de la vista del perfil-->

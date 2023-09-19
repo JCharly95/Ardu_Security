@@ -43,7 +43,7 @@
                 android:gravity="center">
 
                 <LinearLayout
-                    android:id="@+id/LinBtnEstas"
+                    android:id="@+id/LinBtnEsta1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -73,7 +73,7 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/LinBtnRepo"
+                    android:id="@+id/LinBtnEsta2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -109,7 +109,7 @@
                 android:gravity="center">
 
                 <LinearLayout
-                    android:id="@+id/LinBtnAjus"
+                    android:id="@+id/LinBtnEsta3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -139,7 +139,7 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/LinBtnManUs"
+                    android:id="@+id/LinBtnEsta4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -175,7 +175,7 @@
                 android:gravity="center">
 
                 <LinearLayout
-                    android:id="@+id/LinBtnGesSis"
+                    android:id="@+id/LinBtnEsta5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -207,7 +207,7 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/LinBtnCerSes"
+                    android:id="@+id/LinBtnAlarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"

@@ -81,7 +81,7 @@ class ResetPassActivity : AppCompatActivity(){
                     spPregsRec.adapter = adapPregs
                 }
                     .addOnFailureListener {
-                        //avisoReg("Error: Datos parcialmente obtenidos")
+                        Toast.makeText(this@ResetPassActivity, "Error: Datos parcialmente obtenidos", Toast.LENGTH_SHORT).show()
                     }
             }
             rellPregs.await()
@@ -132,73 +132,37 @@ class ResetPassActivity : AppCompatActivity(){
         }
     }
 
-    private fun validarNombre(nombre: Editable): Boolean{
-        when{
-            // Si el nombre esta vacio
-            TextUtils.isEmpty(nombre) -> avisoForPass("Error: Favor de introducir un nombre")
-            // Si se encuentra algun numero
-            (Regex("""\d+""").containsMatchIn(nombre)) -> avisoForPass("Error: Su nombre no puede contener numeros")
-            // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
-            (nombre.length < 10) -> avisoForPass("Error: Su nombre es muy corto, favor de agregar su nombre completo")
-            // Si se encuentran caracteres especiales
-            (Regex("""[^A-Za-z ]+""").containsMatchIn(nombre)) -> avisoForPass("Error: Su nombre no puede contener caracteres especiales")
-            else -> return true
-        }
-        return false
-    }
     private fun validarUsuario(usuario: Editable): Boolean{
-        // Si se detectan espacios en el usuario, estos seran removidos
-        if (Regex("""\s+""").containsMatchIn(usuario)) {
-            val usuarioFil = usuario.replace("\\s".toRegex(), "")
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(usuarioFil) -> avisoForPass("Error: Favor de introducir un nombre de usuario")
-                // Extension minima de 8 caracteres
-                (usuarioFil.length < 6) -> avisoForPass("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(usuarioFil)) -> avisoForPass("Error: El nombre de usuario debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(usuarioFil)) -> avisoForPass("Error: El nombre de usuario debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil)) -> avisoForPass("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
-                else -> return true
-            }
-        }else{
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(usuario) -> avisoForPass("Error: Favor de introducir un nombre de usuario")
-                // Extension minima de 8 caracteres
-                (usuario.length < 6) -> avisoForPass("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(usuario)) -> avisoForPass("Error: El nombre de usuario debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(usuario)) -> avisoForPass("Error: El nombre de usuario debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuario)) -> avisoForPass("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
-                else -> return true
-            }
+        // Si se detectan espacios en blanco en el usuario, seran removidos
+        val usuarioFil1 = usuario.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val usuarioFil2 = usuarioFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si el usuario esta vacia
+            TextUtils.isEmpty(usuarioFil2) -> avisoForPass("Error: Favor de introducir un nombre de usuario")
+            // Extension minima de 8 caracteres
+            (usuarioFil2.length < 6) -> avisoForPass("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
+            // No se tiene al menos una mayuscula
+            (!Regex("[A-Z]+").containsMatchIn(usuarioFil2)) -> avisoForPass("Error: El nombre de usuario debera tener al menos una letra mayuscula")
+            // No se tiene al menos un numero
+            (!Regex("""\d""").containsMatchIn(usuarioFil2)) -> avisoForPass("Error: El nombre de usuario debera tener al menos un numero")
+            // No se tiene al menos un caracter especial
+            (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil2)) -> avisoForPass("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
+            else -> return true
         }
         return false
     }
     private fun validarCorreo(correo: Editable): Boolean{
         // Si se detectan espacios en el correo, estos seran removidos
-        if(Regex("""\s+""").containsMatchIn(correo)){
-            val correoFil = correo.replace("\\s".toRegex(), "")
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correoFil) -> avisoForPass("Error: Favor de introducir un correo")
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> avisoForPass("Error: Favor de introducir un correo valido")
-                else -> return true
-            }
-        }else{
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correo) -> avisoForPass("Error: Favor de introducir un correo")
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> avisoForPass("Error: Favor de introducir un correo valido")
-                else -> return true
-            }
+        val correoFil1 = correo.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val correoFil2 = correoFil1.replace("\\p{Zs}+".toRegex(), "")
+        when{
+            // Si el correo esta vacio
+            TextUtils.isEmpty(correoFil2) -> avisoForPass("Error: Favor de introducir un correo")
+            // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil2).matches() -> avisoForPass("Error: Favor de introducir un correo valido")
+            else -> return true
         }
         return false
     }

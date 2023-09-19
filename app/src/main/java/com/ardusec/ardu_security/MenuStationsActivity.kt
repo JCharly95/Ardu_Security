@@ -5,15 +5,14 @@ import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageButton
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -23,18 +22,36 @@ import kotlinx.coroutines.launch
 
 class MenuStationsActivity : AppCompatActivity() {
     private lateinit var btnSta1: ImageButton
+    private lateinit var linLayBtn1: LinearLayout
     private lateinit var btnSta2: ImageButton
+    private lateinit var linLayBtn2: LinearLayout
     private lateinit var btnSta3: ImageButton
+    private lateinit var linLayBtn3: LinearLayout
     private lateinit var btnSta4: ImageButton
+    private lateinit var linLayBtn4: LinearLayout
     private lateinit var btnSta5: ImageButton
+    private lateinit var linLayBtn5: LinearLayout
     private lateinit var btnAlarma: ImageButton
-    // Objeto gson
-    var gson = Gson()
+    // Elementos del bundle de acceso/registro
+    private lateinit var bundle: Bundle
+    private lateinit var user: String
+    private lateinit var tipo: String
+    // Instancias de Firebase; Database y ReferenciaDB
+    private lateinit var ref: DatabaseReference
+    private lateinit var database: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu_stations)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        //Obteniendo los valores de acceso/registro
+        if(intent.extras == null){
+            tipo = "Cliente"
+            Toast.makeText(this@MenuStationsActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
+        }else{
+            bundle = intent.extras!!
+            user = bundle.getString("username").toString()
+        }
 
         // Configurar el arranque de la interfaz
         setUp()
@@ -52,104 +69,183 @@ class MenuStationsActivity : AppCompatActivity() {
         btnSta4 = findViewById(R.id.btnStat4)
         btnSta5 = findViewById(R.id.btnStat5)
         btnAlarma = findViewById(R.id.btnAlarma)
+        linLayBtn1 = findViewById(R.id.LinBtnEsta1)
+        linLayBtn2 = findViewById(R.id.LinBtnEsta2)
+        linLayBtn3 = findViewById(R.id.LinBtnEsta3)
+        linLayBtn4 = findViewById(R.id.LinBtnEsta4)
+        linLayBtn5 = findViewById(R.id.LinBtnEsta5)
+        // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
+        database = Firebase.database
+
         // Habilitando solo los botones adecuados de acuerdo al plan del sistema
         setupBtn()
-        //btnSta1.isGone = false
-        //btnSta2.isGone = false
-        //btnSta3.isGone = false
-        //btnSta4.isGone = false
-        //btnSta5.isGone = false
     }
 
     private fun addListeners() {
         // Agregando los listener
         btnSta1.setOnClickListener {
-            val intActEst1 = Intent(this,StationActivity::class.java)
-            intActEst1.putExtra("name_station", "Estacion 1")
-            startActivity(intActEst1)
+            lanzarEstacion(1)
         }
         btnSta2.setOnClickListener {
-            val intActEst2 = Intent(this,StationActivity::class.java)
-            intActEst2.putExtra("name_station", "Estacion 2")
-            startActivity(intActEst2)
+            lanzarEstacion(2)
         }
         btnSta3.setOnClickListener {
-            val intActEst3 = Intent(this,StationActivity::class.java)
-            intActEst3.putExtra("name_station", "Estacion 3")
-            startActivity(intActEst3)
+            lanzarEstacion(3)
         }
         btnSta4.setOnClickListener {
-            val intActEst4 = Intent(this,StationActivity::class.java)
-            intActEst4.putExtra("name_station", "Estacion 4")
-            startActivity(intActEst4)
+            lanzarEstacion(4)
         }
         btnSta5.setOnClickListener {
-            val intActEst5 = Intent(this,StationActivity::class.java)
-            intActEst5.putExtra("name_station", "Estacion 5")
-            startActivity(intActEst5)
+            lanzarEstacion(5)
         }
         btnAlarma.setOnClickListener {
-            val intentAlarma = Intent(this, AlarmActivity::class.java)
-            startActivity(intentAlarma)
+            lanzarAlarma()
         }
     }
 
-    private fun setupBtn(){
+    private fun avisoMenSta(){
+        val mensaje = "Error: No se pudieron obtener los valores solicitados"
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Aviso")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
+    private fun setupBtn() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val setBtnEsta = async {
-                data class Sistema(val id_Sistema: String, val nombre_Sis: String, val tipo: String, val ulti_Cam_Nom: String)
-                data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
-                // Obteniendo el correo del usuario
-                val user = Firebase.auth.currentUser
-                user?.let { task ->
-                    val correo = task.email.toString()
-                    // Obtener la referencia de User_Sistem
-                    val refDB = Firebase.database.getReference("User_Sistems")
-                    refDB.addValueEventListener(object: ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                            for (objUsSis in dataSnapshot.children){
-                                val userSisJSON = gson.toJson(objUsSis.value)
-                                val resUserSis = gson.fromJson(userSisJSON, UserSistem::class.java)
-                                if(resUserSis.user_Email == correo){
-                                    val sistema = resUserSis.sistema_Nom
-                                    // Obtener la referencia del sistema para saber que botones mostrar
-                                    val sisRef = Firebase.database.getReference("Sistema")
-                                    sisRef.addValueEventListener(object: ValueEventListener{
-                                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                                            for (objSis in dataSnapshot.children){
-                                                val sisJSON = gson.toJson(objSis.value)
-                                                val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                                                if(resSis.nombre_Sis == sistema){
-                                                    if(resSis.tipo == "Standard"){
-                                                        btnSta1.isGone = false
-                                                        btnSta2.isGone = false
-                                                        btnSta3.isGone = false
-                                                        btnSta4.isGone = true
-                                                        btnSta5.isGone = true
-                                                    }else{
-                                                        btnSta1.isGone = false
-                                                        btnSta2.isGone = false
-                                                        btnSta3.isGone = false
-                                                        btnSta4.isGone = false
-                                                        btnSta5.isGone = false
-                                                    }
-                                                }
+            val setBtnsEstas = async {
+                // Creando la referencia de la coleccion de sistemas en la BD
+                ref = database.getReference("Sistemas")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objSis in dataSnapshot.children) {
+                            val refUser = objSis.child("usuarios").ref
+                            refUser.addValueEventListener(object: ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    for(usSis in snapshot.children) {
+                                        if(usSis.key.toString() == user) {
+                                            if(objSis.child("tipo").value == "Avanzado") {
+                                                linLayBtn1.isGone = false
+                                                linLayBtn2.isGone = false
+                                                linLayBtn3.isGone = false
+                                                linLayBtn4.isGone = false
+                                                linLayBtn5.isGone = false
+                                                break
+                                            }else{
+                                                linLayBtn1.isGone = false
+                                                linLayBtn2.isGone = false
+                                                linLayBtn3.isGone = false
+                                                linLayBtn4.isGone = true
+                                                linLayBtn5.isGone = true
+                                                break
                                             }
                                         }
-                                        override fun onCancelled(databaseError: DatabaseError) {
-                                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                                        }
-                                    })
+                                    }
                                 }
+                                override fun onCancelled(error: DatabaseError) {
+                                    avisoMenSta()
+                                }
+                            })
+                            break
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        avisoMenSta()
+                    }
+                })
+            }
+            setBtnsEstas.await()
+        }
+    }
+    private fun lanzarEstacion(numBtn: Int){
+        lifecycleScope.launch(Dispatchers.IO) {
+            val setBtnEsta5 = async {
+                // Creando la referencia de la coleccion de usuarios en la BD
+                ref = database.getReference("Usuarios").child(user).child("sistemas")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for(sisUs in dataSnapshot.children){
+                            if(dataSnapshot.childrenCount.toInt() == 1){
+                                val sistema = sisUs.key.toString()
+                                var contEsta = 1
+                                val refEsta = database.getReference("Estaciones")
+                                refEsta.addValueEventListener(object: ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for(sisRel in snapshot.children){
+                                            if(sisRel.child("sistema_Rel").value == sistema && contEsta == numBtn){
+                                                val intActEst5 = Intent(this@MenuStationsActivity,StationActivity::class.java).apply {
+                                                    putExtra("username", user)
+                                                    putExtra("name_station", sisRel.key.toString())
+                                                }
+                                                startActivity(intActEst5)
+                                            }
+                                            contEsta++
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                        avisoMenSta()
+                                    }
+                                })
+                                break
+                            }else{
+                                // Preparar algo aqui para cuando se tenga mas de un sistema
+                                break
                             }
                         }
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                        }
-                    })
-                }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        avisoMenSta()
+                    }
+                })
             }
-            setBtnEsta.await()
+            setBtnEsta5.await()
+        }
+    }
+    private fun lanzarAlarma(){
+        lifecycleScope.launch(Dispatchers.IO) {
+            val setBtnAla = async {
+                // Creando la referencia de la coleccion de usuarios en la BD
+                ref = database.getReference("Usuarios").child(user).child("sistemas")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for(sisUs in dataSnapshot.children){
+                            if(dataSnapshot.childrenCount.toInt() == 1){
+                                val sistema = sisUs.key.toString()
+                                val refAla = database.getReference("Alarmas")
+                                refAla.addValueEventListener(object: ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for(sisRel in snapshot.children){
+                                            if(sisRel.child("sistema_Rel").value == sistema){
+                                                val intentAlarma = Intent(this@MenuStationsActivity, AlarmActivity::class.java).apply {
+                                                    putExtra("sistema", sistema)
+                                                }
+                                                startActivity(intentAlarma)
+                                                break
+                                            }
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                        avisoMenSta()
+                                    }
+                                })
+                                break
+                            }else{
+                                // Preparar algo aqui para cuando se tenga mas de un sistema
+                                break
+                            }
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        avisoMenSta()
+                    }
+                })
+            }
+            setBtnAla.await()
         }
     }
 }

@@ -4,8 +4,6 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -14,13 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 
 class DashboardActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
@@ -72,7 +63,7 @@ class DashboardActivity : AppCompatActivity() {
         btnGenRep = findViewById(R.id.btnGenRep)
         btnMenAj = findViewById(R.id.btnAjuste)
         btnManual = findViewById(R.id.btnManUs)
-        linLayGesSis = findViewById(R.id.LinBtnGesSis)
+        linLayGesSis = findViewById(R.id.LinBtnEsta5)
         btnMenSis = findViewById(R.id.btnGesSis)
         btnCerSes = findViewById(R.id.btnCerrSes)
 
@@ -84,14 +75,18 @@ class DashboardActivity : AppCompatActivity() {
     private fun addListeners(){
         // Agregar los listener
         btnMenEsta.setOnClickListener {
-            val statsActi = Intent(this, MenuStationsActivity::class.java)
+            val statsActi = Intent(this, MenuStationsActivity::class.java).apply {
+                putExtra("username", user)
+            }
             startActivity(statsActi)
         }
         btnGenRep.setOnClickListener {
 
         }
         btnMenAj.setOnClickListener {
-            val settingActi = Intent(this, SettingsActivity::class.java)
+            val settingActi = Intent(this, SettingsActivity::class.java).apply {
+                putExtra("username", user)
+            }
             startActivity(settingActi)
         }
         btnManual.setOnClickListener {

@@ -158,92 +158,56 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun validarUsuario(usuario: Editable): Boolean{
-        // Si se detectan espacios en el usuario, estos seran removidos
-        if (Regex("""\s+""").containsMatchIn(usuario)) {
-            val usuarioFil = usuario.replace("\\s".toRegex(), "")
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(usuarioFil) -> avisoLog("Error: Favor de introducir un nombre de usuario")
-                // Extension minima de 8 caracteres
-                (usuarioFil.length < 6) -> avisoLog("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(usuarioFil)) -> avisoLog("Error: El nombre de usuario debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(usuarioFil)) -> avisoLog("Error: El nombre de usuario debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil)) -> avisoLog("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
-                else -> return true
-            }
-        } else {
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(usuario) -> avisoLog("Error: Favor de introducir un nombre de usuario")
-                // Extension minima de 8 caracteres
-                (usuario.length < 6) -> avisoLog("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(usuario)) -> avisoLog("Error: El nombre de usuario debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(usuario)) -> avisoLog("Error: El nombre de usuario debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuario)) -> avisoLog("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
-                else -> return true
-            }
+        // Si se detectan espacios en blanco en el usuario, seran removidos
+        val usuarioFil1 = usuario.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val usuarioFil2 = usuarioFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si el usuario esta vacia
+            TextUtils.isEmpty(usuarioFil2) -> avisoLog("Error: Favor de introducir un nombre de usuario")
+            // Extension minima de 8 caracteres
+            (usuarioFil2.length < 6) -> avisoLog("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
+            // No se tiene al menos una mayuscula
+            (!Regex("[A-Z]+").containsMatchIn(usuarioFil2)) -> avisoLog("Error: El nombre de usuario debera tener al menos una letra mayuscula")
+            // No se tiene al menos un numero
+            (!Regex("""\d""").containsMatchIn(usuarioFil2)) -> avisoLog("Error: El nombre de usuario debera tener al menos un numero")
+            // No se tiene al menos un caracter especial
+            (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil2)) -> avisoLog("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
+            else -> return true
         }
         return false
     }
     private fun validarCorreo(correo: Editable): Boolean{
         // Si se detectan espacios en el correo, estos seran removidos
-        if(Regex("""\s+""").containsMatchIn(correo)){
-            val correoFil = correo.replace("\\s".toRegex(), "")
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correoFil) -> avisoLog("Error: Favor de introducir un correo")
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil).matches() -> avisoLog("Error: Favor de introducir un correo valido")
-                else -> return true
-            }
-        }else{
-            when{
-                // Si el correo esta vacio
-                TextUtils.isEmpty(correo) -> avisoLog("Error: Favor de introducir un correo")
-                // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> avisoLog("Error: Favor de introducir un correo valido")
-                else -> return true
-            }
+        val correoFil1 = correo.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val correoFil2 = correoFil1.replace("\\p{Zs}+".toRegex(), "")
+        when{
+            // Si el correo esta vacio
+            TextUtils.isEmpty(correoFil2) -> avisoLog("Error: Favor de introducir un correo")
+            // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil2).matches() -> avisoLog("Error: Favor de introducir un correo valido")
+            else -> return true
         }
         return false
     }
     private fun validarContra(contra: Editable): Boolean{
         // Si se detectan espacios en la contraseña, estos seran removidos
-        if(Regex("""\s+""").containsMatchIn(contra)) {
-            val contraFil = contra.replace("\\s".toRegex(), "")
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(contraFil) -> avisoLog("Error: Favor de introducir una contraseña")
-                // Extension minima de 8 caracteres
-                (contraFil.length < 8) -> avisoLog("Error: La contraseña debera tener una extension minima de 8 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contraFil)) -> avisoLog("Error: La contraseña debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contraFil)) -> avisoLog("Error: La contraseña debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil)) -> avisoLog("Error: Favor de incluir al menos un caracter especial en su contraseña")
-                else -> return true
-            }
-        }else{
-            when {
-                // Si la contraseña esta vacia
-                TextUtils.isEmpty(contra) -> avisoLog("Error: Favor de introducir una contraseña")
-                // Extension minima de 8 caracteres
-                (contra.length < 8) -> avisoLog("Error: La contraseña debera tener una extension minima de 8 caracteres")
-                // No se tiene al menos una mayuscula
-                (!Regex("[A-Z]+").containsMatchIn(contra)) -> avisoLog("Error: La contraseña debera tener al menos una letra mayuscula")
-                // No se tiene al menos un numero
-                (!Regex("""\d""").containsMatchIn(contra)) -> avisoLog("Error: La contraseña debera tener al menos un numero")
-                // No se tiene al menos un caracter especial
-                (!Regex("""[^A-Za-z ]+""").containsMatchIn(contra)) -> avisoLog("Error: Favor de incluir al menos un caracter especial en su contraseña")
-                else -> return true
-            }
+        val contraFil1 = contra.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val contraFil2 = contraFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si la contraseña esta vacia
+            TextUtils.isEmpty(contraFil2) -> avisoLog("Error: Favor de introducir una contraseña")
+            // Extension minima de 8 caracteres
+            (contraFil2.length < 8) -> avisoLog("Error: La contraseña debera tener una extension minima de 8 caracteres")
+            // No se tiene al menos una mayuscula
+            (!Regex("[A-Z]+").containsMatchIn(contraFil2)) -> avisoLog("Error: La contraseña debera tener al menos una letra mayuscula")
+            // No se tiene al menos un numero
+            (!Regex("""\d""").containsMatchIn(contraFil2)) -> avisoLog("Error: La contraseña debera tener al menos un numero")
+            // No se tiene al menos un caracter especial
+            (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil2)) -> avisoLog("Error: Favor de incluir al menos un caracter especial en su contraseña")
+            else -> return true
         }
         return false
     }
@@ -251,7 +215,6 @@ class LoginActivity : AppCompatActivity() {
     private fun buscarUsBD(){
         lifecycleScope.launch(Dispatchers.IO){
             val busUser = async {
-                // Cuando se solicite el registro independientemente del metodo, primero se validara el user y luego se buscara en la BD
                 valiUser = validarUsuario(txtUser.text)
                 // Preparando variables para la obtencion de valores de los campos
                 val usuario = txtUser.text.toString().trim()
@@ -300,7 +263,7 @@ class LoginActivity : AppCompatActivity() {
                         if(task.isSuccessful){
                             val user = Firebase.auth.currentUser
                             user?.let{
-                                Toast.makeText(applicationContext, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
                                 val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
                                     putExtra("username", usuario)
                                     putExtra("tipo", tipo)
@@ -362,7 +325,7 @@ class LoginActivity : AppCompatActivity() {
                 // Obteniendo la credencial
                 val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
                 // Accediendo con los datos de la cuenta de google
-                FirebaseAuth.getInstance().signInWithCredential(credencial).addOnCompleteListener {task ->
+                FirebaseAuth.getInstance().signInWithCredential(credencial).addOnCompleteListener { task ->
                     if(task.isSuccessful){
                         val user = Firebase.auth.currentUser
                         user?.let{
@@ -394,7 +357,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             }catch (error: ApiException){
-                avisoLog("Error: No se pudo acceder con la informacion ingresada")
+                avisoLog("Error: No se pudo acceder con la informacion ingresada; informacion ${error}")
             }
         }
     }

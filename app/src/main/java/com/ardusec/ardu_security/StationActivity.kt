@@ -2,17 +2,18 @@ package com.ardusec.ardu_security
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -21,167 +22,194 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class StationActivity : AppCompatActivity() {
-    private lateinit var encaSta: TextView
+    // Seccion de la camara
+    private lateinit var linLayCam: LinearLayout
+    private lateinit var camara: ImageView
+    // Seccion del sensor de gases
+    private lateinit var linLaySenGas: LinearLayout
+    private lateinit var senGasLplbl: TextView
+    private lateinit var senGasLp: TextView
+    private lateinit var senCo2lbl: TextView
+    private lateinit var senCo2: TextView
+    private lateinit var senProplbl: TextView
+    private lateinit var senProp: TextView
+    private lateinit var senHumolbl: TextView
+    private lateinit var senHumo: TextView
+    // Seccion del sensor magnetico
+    private lateinit var linLaySenMagne: LinearLayout
+    private lateinit var rbgMagne: RadioGroup
+    private lateinit var rbMagneOp: RadioButton
+    private lateinit var rbMagneCl: RadioButton
+    // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
-    private lateinit var staHead: String
-    private lateinit var staFire: String
-    private lateinit var btnCam: Button
-    private lateinit var btnSenGH: Button
-    private lateinit var btnSenMagne: Button
-    // Objeto gson
-    var gson = Gson()
+    private lateinit var user: String
+    private lateinit var estacion: String
+    // Instancias de Firebase; Database y ReferenciaDB
+    private lateinit var ref: DatabaseReference
+    private lateinit var database: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_station)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+
+        //Obteniendo los valores del usuario y estacion
+        if(intent.extras != null){
+            bundle = intent.extras!!
+            user = bundle.getString("username").toString()
+            estacion = bundle.getString("name_station").toString()
+        }else{
+            Toast.makeText(this@StationActivity, "Error: no se pudo obtener la informacion del sistema", Toast.LENGTH_SHORT).show()
+        }
+
         // Configurar el arranque de la interfaz
         setUp()
-        // Agregar los listeners
-        addListeners()
     }
 
     private fun setUp() {
-        // Obteniendo el encabezado textual de la activity
-        encaSta = findViewById(R.id.lblStaHead)
-        // Obteniendo la estacion seleccionada por el boton
-        bundle = intent.extras!!
-        staHead = bundle.getString("name_station").toString()
-        // Estableciendo el encabezado de la estacion segun la seleccion hecha
-        encaSta.text = "Accesos de la \n"+ staHead
-        // Obteniendo los botones de la actividad
-        btnCam = findViewById(R.id.btnCam)
-        btnSenGH = findViewById(R.id.btnSenGH)
-        btnSenMagne = findViewById(R.id.btnSenMagne)
-        title = staHead
+        // Titulo de la ventana
+        title = estacion
+        // Seccion de la camara
+        linLayCam = findViewById(R.id.LinLayCam)
+        camara = findViewById(R.id.vidViewCam)
+        // Seccion del sensor de gases
+        linLaySenGas = findViewById(R.id.LinLaySenGas)
+        senGasLplbl = findViewById(R.id.lblGas)
+        senGasLp = findViewById(R.id.lblGasVal)
+        senCo2lbl = findViewById(R.id.lblCo)
+        senCo2 = findViewById(R.id.lblCoVal)
+        senProplbl = findViewById(R.id.lblPro)
+        senProp = findViewById(R.id.lblProVal)
+        senHumolbl = findViewById(R.id.lblHum)
+        senHumo = findViewById(R.id.lblHumVal)
+        // Seccion del sensor magnetico
+        linLaySenMagne = findViewById(R.id.LinLaySenMagne)
+        rbgMagne = findViewById(R.id.rbgCondMagne)
+        rbMagneOp = findViewById(R.id.rbMagneAbi)
+        rbMagneCl = findViewById(R.id.rbMagneCerr)
+        // Inicializando instancia hacia el nodo raiz de la BD
+        database = Firebase.database
 
-        // Determinar el nombre de la estacion a buscar en firebase
-        staFire = when (staHead){
-            "Estacion 1" -> {
-                "EstGen1"
-            }
-            "Estacion 2" -> {
-                "EstGen2"
-            }
-            "Estacion 3" -> {
-                "EstGen3"
-            }
-            "Estacion 4" -> {
-                "EstGen4"
-            }
-            else -> {
-                "EstGen5"
-            }
-        }
-        // Determinar que botones estaran visibles acorde a la relacion con la estacion
-        btnCam.isGone = false
-        setBtnSen()
+        // Preparacion de la camara
+        establecerCamara()
+        // Establecer el sensor segun la estacion
+        setSensor()
     }
 
-    private fun setBtnSen(){
-        // Preparando el boton acorde al sensor relacionado con la estacion
+    private fun avisoStation(){
+        val mensaje = "Error: No se pudieron obtener los valores solicitados"
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Aviso")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
+    private fun setSensor(){
         lifecycleScope.launch(Dispatchers.IO) {
-            val setBtnEsta = async {
-                val refDB = Firebase.database.getReference("Sensor").orderByChild("estacion_Nom").equalTo(staFire)
-                refDB.addValueEventListener(object: ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot){
-                        for (objSens in dataSnapshot.children){
-                            val sensorJSON = gson.toJson(objSens.value)
-                            if(sensorJSON.contains("Magnetico")){
-                                btnSenMagne.isGone = false
+            val setSen = async {
+                // Creando la referencia de la coleccion de sensores en la BD
+                ref = database.getReference("Sensores")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objSen in dataSnapshot.children) {
+                            val estaBus = objSen.child("estacion_Rel").value.toString()
+                            val tipo = objSen.child("tipo").value.toString()
+
+                            if(estaBus == estacion && tipo == "Humo/Gas"){
+                                linLaySenGas.isGone = false
+                                establecerSensorGas()
                             }else{
-                                btnSenGH.isGone = false
+                                linLaySenMagne.isGone = false
+                                establecerSensorMagne()
                             }
                         }
                     }
                     override fun onCancelled(databaseError: DatabaseError) {
-                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                        avisoStation()
                     }
                 })
             }
-            setBtnEsta.await()
+            setSen.await()
         }
     }
 
-    private fun addListeners(){
-        // Agregando los listener
-        btnCam.setOnClickListener {
-            // Preparando el boton de la camara
-            lifecycleScope.launch(Dispatchers.IO) {
-                val setBtnEsta = async {
-                    data class Camara(val id_Camara: String, val nom_Cam: String, val ip_Transmi: String, val estacion_Nom: String)
-                    val refDB = Firebase.database.getReference("Camara").orderByChild("estacion_Nom").equalTo(staFire)
-                    refDB.addValueEventListener(object: ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                            for (objCam in dataSnapshot.children){
-                                val camJSON = gson.toJson(objCam.value)
-                                val resCam = gson.fromJson(camJSON, Camara::class.java)
-                                Intent(this@StationActivity, CameraGenActivity::class.java).apply {
-                                    this.putExtra("name_station", staHead +";"+staFire)
-                                    this.putExtra("nom_cam", resCam.nom_Cam)
-                                    startActivity(this)
-                                }
+    private fun establecerCamara(){
+        val videoURL = "url de la raspberry"
+        Glide.with(this).load(Uri.parse(videoURL)).into(camara)
+    }
+
+    private fun establecerSensorGas(){
+        lifecycleScope.launch(Dispatchers.IO) {
+            val getGasVal = async {
+                // Creando la referencia de la coleccion de sensores en la BD
+                ref = database.getReference("Sensores")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objSen in dataSnapshot.children) {
+                            val estaBus = objSen.child("estacion_Rel").value.toString()
+                            val tipo = objSen.child("tipo").value.toString()
+
+                            if(estaBus == estacion && tipo == "Humo/Gas"){
+                                val refVals = objSen.child("valores").ref
+                                refVals.addValueEventListener(object: ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for(valsSen in snapshot.children) {
+                                            when(valsSen.key.toString()){
+                                                "co" -> senCo2.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                                "lpg" -> senGasLp.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                                "propane" -> senProp.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                                "smoke" -> senHumo.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                            }
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                        avisoStation()
+                                    }
+                                })
                             }
                         }
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                        }
-                    })
-                }
-                setBtnEsta.await()
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        avisoStation()
+                    }
+                })
             }
+            getGasVal.await()
         }
-        btnSenGH.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                val setBtnEsta = async {
-                    data class SensorHG(val id_Sensor: String, val nom_Sen: String, val tipo: String, val co: Double, val lpg: Double, val propane: Double, val smoke: Double, val estacion_Nom: String)
-                    val refDB = Firebase.database.getReference("Sensor").orderByChild("estacion_Nom").equalTo(staFire)
-                    refDB.addValueEventListener(object: ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                            for (objSens in dataSnapshot.children){
-                                val sensorJSON = gson.toJson(objSens.value)
-                                val resSenHG = gson.fromJson(sensorJSON, SensorHG::class.java)
-                                Intent(this@StationActivity, SensorGenActivity::class.java).apply {
-                                    this.putExtra("name_station", staHead +";"+staFire)
-                                    this.putExtra("nom_sensor", resSenHG.nom_Sen)
-                                    this.putExtra("tipo", resSenHG.tipo)
-                                    startActivity(this)
+    }
+
+    private fun establecerSensorMagne(){
+        lifecycleScope.launch(Dispatchers.IO) {
+            val getMagneSta = async {
+                // Creando la referencia de la coleccion de sensores en la BD
+                ref = database.getReference("Sensores")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addValueEventListener(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objSen in dataSnapshot.children) {
+                            val estaBus = objSen.child("estacion_Rel").value.toString()
+                            val tipo = objSen.child("tipo").value.toString()
+                            if(estaBus == estacion && tipo == "Magnetico") {
+                                val estado = objSen.child("estado").value.toString().toBoolean()
+                                if(estado){
+                                    rbMagneOp.isChecked = true
+                                }else{
+                                    rbMagneCl.isChecked = true
                                 }
+                                break
                             }
                         }
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                        }
-                    })
-                }
-                setBtnEsta.await()
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        avisoStation()
+                    }
+                })
             }
-        }
-        btnSenMagne.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                val setBtnEsta = async {
-                    data class SensorMagne(val id_Sensor: String, val nom_Sen: String, val tipo: String, val estado: Boolean, val estacion_Nom: String)
-                    val refDB = Firebase.database.getReference("Sensor").orderByChild("estacion_Nom").equalTo(staFire)
-                    refDB.addValueEventListener(object: ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                            for (objSens in dataSnapshot.children){
-                                val sensorJSON = gson.toJson(objSens.value)
-                                val resSenMagne = gson.fromJson(sensorJSON, SensorMagne::class.java)
-                                Intent(this@StationActivity, SensorGenActivity::class.java).apply {
-                                    this.putExtra("name_station", staHead +";"+staFire)
-                                    this.putExtra("nom_sensor", resSenMagne.nom_Sen)
-                                    this.putExtra("tipo", resSenMagne.tipo)
-                                    startActivity(this)
-                                }
-                            }
-                        }
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                        }
-                    })
-                }
-                setBtnEsta.await()
-            }
+            getMagneSta.await()
         }
     }
 }

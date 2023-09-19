@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         // Si el usuario salio de la app pero no finalizo su sesion, sera enviado directamente a su dashboard
         val user = auth.currentUser
         if(user != null){
-            user.let {usuario ->
+            user.let { usuario ->
                 val correo = usuario.email
                 // Buscando al usuario en la BD
                 ref = database.getReference("Usuarios")
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                             val refEma = objUser.child("accesos")
                             val refTipo = objUser.child("tipo_Usuario")
 
-                            if(refEma.child("correo").value==correo || refEma.child("google").value==correo) {
+                            if(refEma.child("correo").value == correo || refEma.child("google").value == correo) {
                                 val intentDash = Intent(this@MainActivity, DashboardActivity::class.java).apply {
                                         putExtra("username", objUser.key.toString())
                                         putExtra("tipo", refTipo.value.toString())

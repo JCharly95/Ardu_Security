@@ -35,11 +35,13 @@
             android:gravity="center">
 
             <LinearLayout
-                android:id="@+id/LinBtnEstas"
+                android:id="@+id/LinBtnEsta1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <ImageButton
                     android:id="@+id/btnStat1"
@@ -52,11 +54,11 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:gravity="center"
                     android:clickable="false"
+                    android:gravity="center"
                     android:text="@string/btnSta1"
-                    android:textColor="@color/negro"/>
+                    android:textColor="@color/negro"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <Space
@@ -65,11 +67,13 @@
                 android:layout_weight="1" />
 
             <LinearLayout
-                android:id="@+id/LinBtnRepo"
+                android:id="@+id/LinBtnEsta2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <ImageButton
                     android:id="@+id/btnStat2"
@@ -82,11 +86,11 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:gravity="center"
                     android:clickable="false"
+                    android:gravity="center"
                     android:text="@string/btnSta2"
-                    android:textColor="@color/negro" />
+                    android:textColor="@color/negro"
+                    android:textSize="20sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -101,11 +105,13 @@
             android:gravity="center">
 
             <LinearLayout
-                android:id="@+id/LinBtnAjus"
+                android:id="@+id/LinBtnEsta3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <ImageButton
                     android:id="@+id/btnStat3"
@@ -118,11 +124,11 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:gravity="center"
                     android:clickable="false"
+                    android:gravity="center"
                     android:text="@string/btnSta3"
-                    android:textColor="@color/negro" />
+                    android:textColor="@color/negro"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <Space
@@ -131,11 +137,13 @@
                 android:layout_weight="1" />
 
             <LinearLayout
-                android:id="@+id/LinBtnManUs"
+                android:id="@+id/LinBtnEsta4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <ImageButton
                     android:id="@+id/btnStat4"
@@ -148,11 +156,11 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:gravity="center"
                     android:clickable="false"
+                    android:gravity="center"
                     android:text="@string/btnSta4"
-                    android:textColor="@color/negro" />
+                    android:textColor="@color/negro"
+                    android:textSize="20sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -167,11 +175,13 @@
             android:gravity="center">
 
             <LinearLayout
-                android:id="@+id/LinBtnGesSis"
+                android:id="@+id/LinBtnEsta5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <ImageButton
                     android:id="@+id/btnStat5"
@@ -197,7 +207,7 @@
                 android:layout_weight="1" />
 
             <LinearLayout
-                android:id="@+id/LinBtnCerSes"
+                android:id="@+id/LinBtnAlarm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
