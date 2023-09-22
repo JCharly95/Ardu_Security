@@ -119,11 +119,11 @@ class MenuStationsActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de sistemas en la BD
                 ref = database.getReference("Sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSis in dataSnapshot.children) {
                             val refUser = objSis.child("usuarios").ref
-                            refUser.addValueEventListener(object: ValueEventListener {
+                            refUser.addListenerForSingleValueEvent(object: ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     for(usSis in snapshot.children) {
                                         if(usSis.key.toString() == user) {
@@ -166,14 +166,14 @@ class MenuStationsActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de usuarios en la BD
                 ref = database.getReference("Usuarios").child(user).child("sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(sisUs in dataSnapshot.children){
                             if(dataSnapshot.childrenCount.toInt() == 1){
                                 val sistema = sisUs.key.toString()
                                 var contEsta = 1
                                 val refEsta = database.getReference("Estaciones")
-                                refEsta.addValueEventListener(object: ValueEventListener{
+                                refEsta.addListenerForSingleValueEvent(object: ValueEventListener{
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         for(sisRel in snapshot.children){
                                             if(sisRel.child("sistema_Rel").value == sistema && contEsta == numBtn){
@@ -211,13 +211,13 @@ class MenuStationsActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de usuarios en la BD
                 ref = database.getReference("Usuarios").child(user).child("sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(sisUs in dataSnapshot.children){
                             if(dataSnapshot.childrenCount.toInt() == 1){
                                 val sistema = sisUs.key.toString()
                                 val refAla = database.getReference("Alarmas")
-                                refAla.addValueEventListener(object: ValueEventListener{
+                                refAla.addListenerForSingleValueEvent(object: ValueEventListener{
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         for(sisRel in snapshot.children){
                                             if(sisRel.child("sistema_Rel").value == sistema){

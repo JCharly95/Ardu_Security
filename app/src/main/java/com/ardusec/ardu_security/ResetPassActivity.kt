@@ -44,11 +44,8 @@ class ResetPassActivity : AppCompatActivity(){
     private var valiCorr = false
     private var valiPreg = false
     private var valiResp = false
-    // Creando el objeto GSON
-    private var gson = Gson()
 
-    override fun onCreate(savedInstanceState: Bundle?){
-
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_pass)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
@@ -76,7 +73,7 @@ class ResetPassActivity : AppCompatActivity(){
                         }
                     }
                     // Estableciendo el adaptador para el rellenado del spinner
-                    val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
+                    val adapPregs = ArrayAdapter(this@ResetPassActivity, android.R.layout.simple_spinner_item, arrPregs)
                     adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spPregsRec.adapter = adapPregs
                 }
@@ -191,7 +188,7 @@ class ResetPassActivity : AppCompatActivity(){
         if(valiUser){
             // Buscando al usuario en la BD
             ref = database.getReference("Usuarios")
-            ref.addValueEventListener(object : ValueEventListener {
+            ref.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for (objUser in dataSnapshot.children) {
                         if (objUser.key.toString() == usuario){
@@ -248,7 +245,7 @@ class ResetPassActivity : AppCompatActivity(){
 
         // Buscando al usuario en la BD
         ref = database.getReference("Usuarios")
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (objUser in dataSnapshot.children) {
                     val userBus = objUser.key.toString()

@@ -112,7 +112,7 @@ class SensorGenActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             val setElemsSen = async {
                 val refDB = Firebase.database.getReference("Sensor").orderByChild("estacion_Nom").equalTo(staFire)
-                refDB.addValueEventListener(object: ValueEventListener {
+                refDB.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot){
                         for (objSens in dataSnapshot.children){
                             val sensorJSON = gson.toJson(objSens.value)
@@ -146,7 +146,7 @@ class SensorGenActivity : AppCompatActivity() {
             val getGasVal = async {
                 data class SensorHG(val id_Sensor: String, val nom_Sen: String, val tipo: String, val co: Double, val lpg: Double, val propane: Double, val smoke: Double, val estacion_Nom: String)
                 val refDB = Firebase.database.getReference("Sensor").orderByChild("estacion_Nom").equalTo(staFire)
-                refDB.addValueEventListener(object: ValueEventListener {
+                refDB.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot){
                         for (objSens in dataSnapshot.children){
                             val sensorJSON = gson.toJson(objSens.value)
@@ -173,7 +173,7 @@ class SensorGenActivity : AppCompatActivity() {
             val setSenMagne = async {
                 data class SensorMagne(val id_Sensor: String, val nom_Sen: String, val tipo: String, val estado: Boolean, val estacion_Nom: String)
                 val refDB = Firebase.database.getReference("Sensor").orderByChild("estacion_Nom").equalTo(staFire)
-                refDB.addValueEventListener(object: ValueEventListener {
+                refDB.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot){
                         for (objSens in dataSnapshot.children){
                             val sensorJSON = gson.toJson(objSens.value)

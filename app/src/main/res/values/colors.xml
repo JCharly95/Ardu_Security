@@ -22,6 +22,8 @@
     <color name="verde">#008000</color>
     <color name="fucsia">#800080</color>
     <color name="blanco">#FFFFFF</color>
+    <color name="cafe">#6F4E37</color>
+    <color name="canela">#945D31</color>
     <!--Colores peculiares o unicos-->
     <color name="azulAlicia">#F0F8FF</color>
     <color name="coral">#FF7F50</color>

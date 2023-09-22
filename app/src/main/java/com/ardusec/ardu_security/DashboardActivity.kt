@@ -75,7 +75,7 @@ class DashboardActivity : AppCompatActivity() {
     private fun addListeners(){
         // Agregar los listener
         btnMenEsta.setOnClickListener {
-            val statsActi = Intent(this, MenuStationsActivity::class.java).apply {
+            val statsActi = Intent(this@DashboardActivity, MenuStationsActivity::class.java).apply {
                 putExtra("username", user)
             }
             startActivity(statsActi)
@@ -84,7 +84,7 @@ class DashboardActivity : AppCompatActivity() {
 
         }
         btnMenAj.setOnClickListener {
-            val settingActi = Intent(this, SettingsActivity::class.java).apply {
+            val settingActi = Intent(this@DashboardActivity, SettingsActivity::class.java).apply {
                 putExtra("username", user)
             }
             startActivity(settingActi)

@@ -35,27 +35,21 @@ class MainActivity : AppCompatActivity() {
         database = Firebase.database
         auth = FirebaseAuth.getInstance()
 
-        // Mensaje de bienvenida a la App
-        Timer().schedule(1000){
-            lifecycleScope.launch(Dispatchers.Main) {
-                Toast.makeText(this@MainActivity, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
-            }
-        }
-
         // Si el usuario salio de la app pero no finalizo su sesion, sera enviado directamente a su dashboard
         val user = auth.currentUser
         if(user != null){
             user.let { usuario ->
                 val correo = usuario.email
+                val nombre = usuario.displayName
                 // Buscando al usuario en la BD
                 ref = database.getReference("Usuarios")
-                ref.addValueEventListener(object : ValueEventListener {
+                ref.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objUser in dataSnapshot.children) {
                             val refEma = objUser.child("accesos")
                             val refTipo = objUser.child("tipo_Usuario")
-
                             if(refEma.child("correo").value == correo || refEma.child("google").value == correo) {
+                                Toast.makeText(this@MainActivity, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
                                 val intentDash = Intent(this@MainActivity, DashboardActivity::class.java).apply {
                                         putExtra("username", objUser.key.toString())
                                         putExtra("tipo", refTipo.value.toString())
@@ -72,7 +66,10 @@ class MainActivity : AppCompatActivity() {
             }
         }else{
             // En caso de que no haya una sesion iniciada se hara un retardo de 2 segundos y se enviara al login
-            Timer().schedule(2000) {
+            Timer().schedule(1000) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+                }
                 val intentLogin = Intent(this@MainActivity, LoginActivity::class.java)
                 startActivity(intentLogin)
             }

@@ -112,7 +112,7 @@ class StationActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de sensores en la BD
                 ref = database.getReference("Sensores")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSen in dataSnapshot.children) {
                             val estaBus = objSen.child("estacion_Rel").value.toString()
@@ -121,7 +121,8 @@ class StationActivity : AppCompatActivity() {
                             if(estaBus == estacion && tipo == "Humo/Gas"){
                                 linLaySenGas.isGone = false
                                 establecerSensorGas()
-                            }else{
+                            }
+                            if(estaBus == estacion && tipo == "Magnetico"){
                                 linLaySenMagne.isGone = false
                                 establecerSensorMagne()
                             }
@@ -147,15 +148,14 @@ class StationActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de sensores en la BD
                 ref = database.getReference("Sensores")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSen in dataSnapshot.children) {
                             val estaBus = objSen.child("estacion_Rel").value.toString()
                             val tipo = objSen.child("tipo").value.toString()
-
                             if(estaBus == estacion && tipo == "Humo/Gas"){
                                 val refVals = objSen.child("valores").ref
-                                refVals.addValueEventListener(object: ValueEventListener {
+                                refVals.addListenerForSingleValueEvent(object: ValueEventListener {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         for(valsSen in snapshot.children) {
                                             when(valsSen.key.toString()){
@@ -188,7 +188,7 @@ class StationActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de sensores en la BD
                 ref = database.getReference("Sensores")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSen in dataSnapshot.children) {
                             val estaBus = objSen.child("estacion_Rel").value.toString()

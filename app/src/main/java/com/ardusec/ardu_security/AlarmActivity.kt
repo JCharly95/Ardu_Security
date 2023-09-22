@@ -4,13 +4,17 @@ import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.RadioButton
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -21,12 +25,12 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class AlarmActivity : AppCompatActivity() {
-    private lateinit var swAlarma: Switch
-    private lateinit var rbCondAlaActi: RadioButton
-    private lateinit var rbCondAlaOper: RadioButton
-    private lateinit var rbCondAlaInac: RadioButton
     private lateinit var rbPrendeAla: RadioButton
     private lateinit var rbApagaAla: RadioButton
+    private lateinit var btnSetEstado: Button
+    private lateinit var adAlaActi: MaterialCardView
+    private lateinit var adAlaOper: MaterialCardView
+    private lateinit var adAlaInac: MaterialCardView
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var sistema: String
@@ -57,151 +61,82 @@ class AlarmActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Gestionar Alarma"
         // Relacionando los elementos con su objeto de la interfaz
-        swAlarma = findViewById(R.id.swAlarma)
-        rbCondAlaActi = findViewById(R.id.rbAlaActi)
-        rbCondAlaOper = findViewById(R.id.rbAlaOper)
-        rbCondAlaInac = findViewById(R.id.rbAlaInac)
         rbPrendeAla = findViewById(R.id.rbEncenderAlarma)
         rbApagaAla = findViewById(R.id.rbApagarAlarma)
+        btnSetEstado = findViewById(R.id.btnSetEstaAl)
+        adAlaActi = findViewById(R.id.alaActiAd)
+        adAlaOper = findViewById(R.id.alaOperAd)
+        adAlaInac = findViewById(R.id.alaInacAd)
         // Inicializando instancia hacia el nodo raiz de la BD
         database = Firebase.database
 
         // Estableciendo el estado del switch acorde a la info de firebase
-        setSwitch()
+        setAlarma()
+        // Agregar los listeners
+        addListeners()
     }
 
-    private fun setSwitch(){
-        lifecycleScope.launch(Dispatchers.IO) {
-            val setEstAla = async {
+    private fun avisoAl(mensaje: String){
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Aviso")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
+    private fun setAlarma(){
+        lifecycleScope.launch(Dispatchers.IO){
+            val setAla = async {
                 // Establecer el estado del switch acorde al valor de la entidad en firebase
                 ref = database.getReference("Alarmas")
-                ref.get().addOnSuccessListener { taskGet ->
-                    for (objAla in taskGet.children) {
-                        if(objAla.child("sistema_Rel").value.toString() == sistema) {
-                            val condicion = objAla.child("condicion").value.toString()
-                            val estado = objAla.child("estado").value.toString()
+                ref.get().addOnCompleteListener {taskGet ->
+                    if(taskGet.isSuccessful){
+                        for (objAla in taskGet.result.children) {
+                            if(objAla.child("sistema_Rel").value.toString() == sistema) {
+                                val condicion = objAla.child("condicion").value.toString()
+                                val estado = objAla.child("estado").value.toString()
 
-                            if(condicion == "true" && estado == "true"){
-                                rbCondAlaActi.isChecked = true
+                                if(condicion == "true" && estado == "true"){
+                                    adAlaActi.isGone = false
+                                    adAlaOper.isGone = true
+                                    adAlaInac.isGone = true
+                                }
+                                if(condicion == "false" && estado == "true"){
+                                    adAlaActi.isGone = true
+                                    adAlaOper.isGone = false
+                                    adAlaInac.isGone = true
+                                }
+                                if(condicion == "false" && estado == "false"){
+                                    adAlaActi.isGone = true
+                                    adAlaOper.isGone = true
+                                    adAlaInac.isGone = false
+                                }
                             }
-                            if(condicion == "false" && estado == "true"){
-                                rbCondAlaOper.isChecked = true
-                            }
-                            if(condicion == "false" && estado == "false"){
-                                rbCondAlaInac.isChecked = true
-                            }
-                            break
                         }
+                    }else{
+                        Log.w("FirebaseError","Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados")
                     }
                 }
-                    .addOnFailureListener {
-                        Log.w(
-                            "FirebaseError",
-                            "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados"
-                        )
-                    }
             }
-            setEstAla.await()
+            setAla.await()
         }
     }
 
     private fun addListeners(){
-        rbPrendeAla.setOnClickListener {
+        btnSetEstado.setOnClickListener {
             if(rbPrendeAla.isChecked){
-                // Establecer el estado de la alarma en firebase
-                ref = database.getReference("Alarmas")
-                ref.addValueEventListener(object: ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot){
-                        for(objAla in dataSnapshot.children){
-                            if(objAla.child("sistema_Rel").value.toString() == sistema){
-                                ref.child(objAla.key.toString()).child("estado").setValue(true)
-                                rbCondAlaOper.isChecked = true
-                                /*val estado = objAla.child("estado").value.toString().toBoolean()
-                                if(estado){
-                                    rbCondAlaActi.isChecked = true
-                                }else{
-                                    rbCondAlaOper.isChecked = true
-                                }*/
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                    }
-                })
-            }
-        }
-
-        rbApagaAla.setOnClickListener {
-            if(rbApagaAla.isChecked){
-                // Establecer el estado de la alarma en firebase
-                ref = database.getReference("Alarmas")
-                ref.addValueEventListener(object: ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot){
-                        for(objAla in dataSnapshot.children){
-                            if(objAla.child("sistema_Rel").value.toString() == sistema){
-                                ref.child(objAla.key.toString()).child("estado").setValue(false)
-                                rbCondAlaInac.isChecked = true
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                    }
-                })
-            }
-        }
-
-        /*lifecycleScope.launch(Dispatchers.IO){
-            val changeAla = async {
-                swAlarma.setOnClickListener {
-                    if(swAlarma.isChecked) {
-                        swAlarma.text = resources.getString(R.string.alEstaAct)
+                lifecycleScope.launch(Dispatchers.IO){
+                    val alaEstaPren = async {
                         // Establecer el estado de la alarma en firebase
                         ref = database.getReference("Alarmas")
-                        ref.addValueEventListener(object: ValueEventListener {
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot){
                                 for(objAla in dataSnapshot.children){
                                     if(objAla.child("sistema_Rel").value.toString() == sistema){
-                                        ref.child(objAla.key.toString()).child("estado").setValue(true)
-                                    }
-                                }
-                            }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                            }
-                        })
-                        // Establecer el estado del switch acorde al valor de la entidad en firebase
-                        ref = database.getReference("Alarmas")
-                        ref.addValueEventListener(object: ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot){
-                                for(objAla in dataSnapshot.children){
-                                    if(objAla.child("sistema_Rel").value.toString() == sistema){
-                                        val estado = objAla.child("estado").value.toString().toBoolean()
-                                        if(estado){
-                                            rbCondAlaActi.isChecked = true
-                                        }else{
-                                            rbCondAlaOper.isChecked = true
-                                        }
-                                    }
-                                }
-                            }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                            }
-                        })
-                    }else{
-                        rbCondAlaInac.isChecked = true
-                        swAlarma.text = resources.getString(R.string.alEstaDesa)
-                        // Establecer el estado de la alarma en firebase
-                        ref = database.getReference("Alarmas")
-                        ref.addValueEventListener(object: ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot){
-                                for(objAla in dataSnapshot.children){
-                                    if(objAla.child("sistema_Rel").value.toString() == sistema){
-                                        ref.child(objAla.key.toString()).child("estado").setValue(false)
+                                        objAla.ref.child("estado").setValue(true)
+                                        Toast.makeText(this@AlarmActivity, "Su alarma ha sido encendida", Toast.LENGTH_SHORT).show()
+                                        this@AlarmActivity.finish()
                                     }
                                 }
                             }
@@ -210,9 +145,31 @@ class AlarmActivity : AppCompatActivity() {
                             }
                         })
                     }
+                    alaEstaPren.await()
+                }
+            }else if(rbApagaAla.isChecked){
+                lifecycleScope.launch(Dispatchers.IO){
+                    val alaEstaApa = async {
+                        // Establecer el estado de la alarma en firebase
+                        ref = database.getReference("Alarmas")
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot){
+                                for(objAla in dataSnapshot.children){
+                                    if(objAla.child("sistema_Rel").value.toString() == sistema){
+                                        objAla.ref.child("estado").setValue(false)
+                                        Toast.makeText(this@AlarmActivity, "Su alarma ha sido apagada", Toast.LENGTH_SHORT).show()
+                                        this@AlarmActivity.finish()
+                                    }
+                                }
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                            }
+                        })
+                    }
+                    alaEstaApa.await()
                 }
             }
-            changeAla.await()
-        }*/
+        }
     }
 }

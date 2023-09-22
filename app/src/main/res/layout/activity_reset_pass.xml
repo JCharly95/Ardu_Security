@@ -40,6 +40,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:backgroundTint="@color/teal_200"
+                android:contentDescription="@string/btnHelp"
                 app:srcCompat="@android:drawable/ic_menu_help" />
 
         </LinearLayout>

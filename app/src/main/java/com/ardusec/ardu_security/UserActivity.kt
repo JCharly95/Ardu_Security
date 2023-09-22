@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -18,7 +20,7 @@ import com.google.gson.Gson
 class UserActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblNom: TextView
-    private lateinit var lblCor: TextView
+    private lateinit var lblUser: TextView
     private lateinit var btnEditNom: Button
     private lateinit var btnEditEma: Button
     private lateinit var btnEditPass: Button
@@ -27,14 +29,24 @@ class UserActivity : AppCompatActivity() {
     private lateinit var btnEditSis: Button
     private lateinit var btnEditPin: Button
     private lateinit var btnEditTel: Button
-    // Creando el objeto GSON
-    private var gson = Gson()
+    // Elementos del bundle de usuario
+    private lateinit var bundle: Bundle
+    private lateinit var user: String
+    // Instancias de Firebase; Database y ReferenciaDB
+    private lateinit var database: FirebaseDatabase
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
-
+        //Obteniendo el usuario
+        if(intent.extras == null){
+            Toast.makeText(this@UserActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
+        }else{
+            bundle = intent.extras!!
+            user = bundle.getString("username").toString()
+        }
         // Configurar el arranque de la interfaz
         setUp()
         // Agregar los listeners
@@ -45,8 +57,8 @@ class UserActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Editar Informacion"
         // Relacionando los elementos con su objeto de la interfaz
-        lblNom = findViewById(R.id.lblNombre)
-        lblCor = findViewById(R.id.lblCorreo)
+        lblNom = findViewById(R.id.lblNomVal)
+        lblUser = findViewById(R.id.lblUserVal)
         btnEditNom = findViewById(R.id.btnEditNam)
         btnEditEma = findViewById(R.id.btnEditCorr)
         btnEditPass = findViewById(R.id.btnEditContra)
@@ -55,95 +67,71 @@ class UserActivity : AppCompatActivity() {
         btnEditSis = findViewById(R.id.btnEditSisRel)
         btnEditPin = findViewById(R.id.btnEditPin)
         btnEditTel = findViewById(R.id.btnEditTele)
+        // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
+        database = Firebase.database
+        auth = FirebaseAuth.getInstance()
 
-        // Obtener el correo del usuario desde Firebase auth y enviarlo a la funcion de la vista del boton
-        val corrAcc = getEmail()
-        rellDatPerf(corrAcc)
+        // Establecer los valores a mostrar en la pantalla con respecto al usuario
+        setFormulario()
     }
-
-    private fun getEmail(): String {
-        val user = Firebase.auth.currentUser
-        var email = ""
-        user?.let {task ->
-            email = task.email.toString()
+    private fun setFormulario(){
+        val userAuth = auth.currentUser
+        userAuth?.let {
+            lblNom.text = userAuth.displayName
+            lblUser.text = user
         }
-        return email
-    }
-
-    private fun rellDatPerf(correo: String){
-        val ref = Firebase.database.getReference("Usuarios")
-        data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val preg_Seguri: String, val resp_Seguri: String, val pin_Pass: Int)
-        ref.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for (objUs in dataSnapshot.children){
-                    val userJSON = gson.toJson(objUs.value)
-                    val resUser = gson.fromJson(userJSON, Usuario::class.java)
-                    if(resUser.correo == correo){
-                        lblNom.text = "Nombre: "+ resUser.nombre
-                        lblCor.text = "Correo: "+ resUser.correo
-                        if(resUser.tipo_Usuario == "Administrador"){
-                            btnEditTel.isGone = false
-                        }
-                        break
-                    }
-                }
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-            }
-        })
     }
 
     private fun addListeners(){
         // Toda la edicion de campos se lanzara hacia la misma actividad,
         // solo que dependera del campo a editar, los valores que seran mostrados
         btnEditNom.setOnClickListener {
-            Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editNom = Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Nombre")
-                startActivity(this)
             }
+            startActivity(editNom)
         }
         btnEditEma.setOnClickListener {
-            Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editEma = Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Correo")
-                startActivity(this)
             }
+            startActivity(editEma)
         }
         btnEditPass.setOnClickListener {
-            Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editPass = Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Contraseña")
-                startActivity(this)
             }
+            startActivity(editPass)
         }
         btnEditPreg.setOnClickListener {
-            Intent(this, EditDataUsSpActivity::class.java).apply {
+            val editPreg = Intent(this, EditDataUsSpActivity::class.java).apply {
                 putExtra("campo", "Pregunta")
-                startActivity(this)
             }
+            startActivity(editPreg)
         }
         btnEditResp.setOnClickListener {
-            Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editResp = Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Respuesta")
-                startActivity(this)
             }
+            startActivity(editResp)
         }
         btnEditSis.setOnClickListener {
-            Intent(this, EditDataUsSpActivity::class.java).apply {
+            val editSis = Intent(this, EditDataUsSpActivity::class.java).apply {
                 putExtra("campo", "Sistema")
-                startActivity(this)
             }
+            startActivity(editSis)
         }
         btnEditPin.setOnClickListener {
-            Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editPin = Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Pin")
-                startActivity(this)
             }
+            startActivity(editPin)
         }
         btnEditTel.setOnClickListener {
-            Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editTel = Intent(this, EditDataUsTxtActivity::class.java).apply {
                 putExtra("campo", "Telefono")
-                startActivity(this)
             }
+            startActivity(editTel)
         }
     }
 }

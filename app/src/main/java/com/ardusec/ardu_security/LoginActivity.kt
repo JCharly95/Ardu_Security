@@ -222,7 +222,7 @@ class LoginActivity : AppCompatActivity() {
                 if(valiUser){
                     // Buscando al usuario en la BD
                     ref = database.getReference("Usuarios")
-                    ref.addValueEventListener(object : ValueEventListener {
+                    ref.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for (objUser in dataSnapshot.children) {
                                 if (objUser.key.toString() == usuario){
@@ -337,7 +337,7 @@ class LoginActivity : AppCompatActivity() {
                         user?.let{
                             // Buscando al usuario en la BD
                             ref = database.getReference("Usuarios")
-                            ref.addValueEventListener(object : ValueEventListener {
+                            ref.addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     for (objUser in dataSnapshot.children) {
                                         if (objUser.key.toString() == usuario){

@@ -18,7 +18,7 @@
     <string name="btnRegGoo">Google</string>
     <string name="lblCopyright">Ardu Security 2023\n Copyright © Todos los derechos reservados</string>
     <!-- Botones de ayuda -->
-    <string name="btnHelp">¿?</string>
+    <string name="btnHelp">Boton Ayuda</string>
     <!-- Strings de la vista de olvido su contraseña -->
     <string name="LblForPass">Recuperar Contraseña</string>
     <string name="headLblForPass">Ingrese los datos solicitados:</string>
@@ -86,7 +86,9 @@
     <!-- Strings de la vista del perfil-->
     <string name="headPerfi">Datos del Usuario</string>
     <string name="lblName">Nombre: </string>
-    <string name="lblCorr">Correo: </string>
+    <string name="lblUser">Usuario: </string>
+    <string name="lblNameVal">Nombre del usuario</string>
+    <string name="lblUserVal">Username </string>
     <string name="btnEditNombre">Cambiar Nombre</string>
     <string name="btnEditCorreo">Cambiar Correo</string>
     <string name="btnEditContra">Cambiar Contraseña</string>
@@ -112,13 +114,12 @@
     <string name="txtConfCamb">Ingrese su contraseña</string>
     <string name="btnConfEdit">Actualizar </string>
     <!-- Strings de la vista de alarma-->
-    <string name="headAlarma">Activar ó Desactivar Alarma</string>
-    <string name="lblEsta">Estado Actual:</string>
-    <string name="lblEstaVal">Cargando estado…</string>
-    <string name="alEstaAct">Apagar</string>
-    <string name="alEstaDesa">Encender</string>
+    <string name="lblEncaAla">Encender / Apagar</string>
+    <string name="rbPrendeAl">Prender Alarma</string>
+    <string name="rbApagaAl">Apagar Alarma</string>
+    <string name="btnChgEstAl">Establecer estado</string>
     <string name="lblCondAla">Condicion de Alarma:</string>
-    <string name="alCondActi">Accionada</string>
-    <string name="alCondOper">Operando</string>
-    <string name="alCondInac">Inhabilitada</string>
+    <string name="condActiAl">Accionada</string>
+    <string name="condOperAl">Operando</string>
+    <string name="condInacAl">Inhabilitada</string>
 </resources>

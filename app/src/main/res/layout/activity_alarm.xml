@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,26 +17,67 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/lblHeadAlarma"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/headAlarma"
-            android:textSize="25sp"
-            android:textColor="@color/negro" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            <TextView
+                android:id="@+id/lblSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/lblEncaAla"
+                android:textColor="@color/negro"
+                android:textSize="25sp" />
 
-        <Switch
-            android:id="@+id/swAlarma"
-            android:layout_width="130dp"
-            android:layout_height="50dp"
-            android:paddingLeft="9dp"
-            android:text="@string/lblEstaVal"
-            android:textColor="@color/negro" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <RadioButton
+                    android:id="@+id/rbEncenderAlarma"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:buttonTint="@color/naranja"
+                    android:text="@string/rbPrendeAl"
+                    android:textColor="@color/naranja"
+                    android:textSize="16sp" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/rbApagarAlarma"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:buttonTint="@color/darkgray"
+                    android:text="@string/rbApagaAl"
+                    android:textColor="@color/darkgray"
+                    android:textSize="16sp" />
+            </RadioGroup>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5dp" />
+
+            <Button
+                android:id="@+id/btnSetEstaAl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btnChgEstAl"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
@@ -47,106 +89,79 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/lblCondAla"
-            android:textSize="20sp"
-            android:textColor="@color/negro"/>
+            android:textColor="@color/negro"
+            android:textSize="25sp" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="10dp" />
 
-        <RadioGroup
-            android:id="@+id/rbgCondAlarma"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/alaActiAd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
-            android:gravity="center">
+            android:backgroundTint="@color/fireBrick"
+            android:visibility="gone"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp"
+            tools:visibility="visible">
 
-            <RadioButton
-                android:id="@+id/rbAlaActi"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/rojo"
-                android:textColor="@color/rojo"
-                android:layout_marginBottom="5dp"
-                android:text="@string/alCondActi"
-                android:textSize="16sp"
-                android:enabled="false"
-                android:visibility="visible" />
-
-            <RadioButton
-                android:id="@+id/rbAlaOper"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/verde"
-                android:textColor="@color/verde"
-                android:layout_marginBottom="5dp"
-                android:text="@string/alCondOper"
-                android:textSize="16sp"
-                android:enabled="false"
-                android:visibility="visible" />
-
-            <RadioButton
-                android:id="@+id/rbAlaInac"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/gris"
-                android:textColor="@color/gris"
-                android:layout_marginBottom="5dp"
-                android:text="@string/alCondInac"
-                android:textSize="16sp"
-                android:enabled="false"
-                android:visibility="visible" />
-        </RadioGroup>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <TextView
-            android:id="@+id/lblSwitch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Encender/Apagar Alarma"
-            android:textSize="20sp"
-            android:textColor="@color/negro"/>
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/condActiAl"
+                android:textColor="@color/blanco"
+                android:textSize="30sp"
+                app:drawableLeftCompat="@android:drawable/ic_dialog_info" />
+        </com.google.android.material.card.MaterialCardView>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="10dp" />
 
-        <RadioGroup
-            android:id="@+id/rbgAlarma"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/alaOperAd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:backgroundTint="@color/verde"
+            android:visibility="gone"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp"
+            tools:visibility="visible">
 
-            <RadioButton
-                android:id="@+id/rbEncenderAlarma"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/coral"
-                android:textColor="@color/coral"
-                android:layout_marginBottom="5dp"
-                android:text="Encender Alarma"
-                android:textSize="16sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/condOperAl"
+                android:textColor="@color/blanco"
+                android:textSize="30sp"
+                app:drawableLeftCompat="@android:drawable/ic_dialog_info" />
+        </com.google.android.material.card.MaterialCardView>
 
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
-            <RadioButton
-                android:id="@+id/rbApagarAlarma"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/fireBrick"
-                android:textColor="@color/fireBrick"
-                android:layout_marginBottom="5dp"
-                android:text="Apagar Alarma"
-                android:textSize="16sp"/>
-        </RadioGroup>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/alaInacAd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/gris"
+            android:visibility="gone"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/condInacAl"
+                android:textColor="@color/blanco"
+                android:textSize="30sp"
+                app:drawableLeftCompat="@android:drawable/ic_dialog_info" />
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

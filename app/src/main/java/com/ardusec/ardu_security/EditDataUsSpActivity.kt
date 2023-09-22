@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -24,11 +26,15 @@ import kotlin.concurrent.schedule
 class EditDataUsSpActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblHeadSp: TextView
-    private lateinit var btnAyuda: Button
-    private lateinit var txtValVie: EditText
-    private lateinit var spNPreg: Spinner
-    private lateinit var spNSis: Spinner
+    private lateinit var btnAyuda: ImageButton
+    private lateinit var txtValVie: TextView
+    private lateinit var spNPreg: AppCompatSpinner
+    private lateinit var spNSis: AppCompatSpinner
     private lateinit var btnConfCamb: Button
+    // Instancias de Firebase; Database y ReferenciaDB
+    private lateinit var auth: FirebaseAuth
+    private lateinit var ref: DatabaseReference
+    private lateinit var database: FirebaseDatabase
     // Creando el objeto GSON
     private var gson = Gson()
     // Variable del correo para la busqueda del usuario en firebase auth
@@ -59,10 +65,14 @@ class EditDataUsSpActivity : AppCompatActivity() {
         // Relacionando los elementos con su objeto de la interfaz
         lblHeadSp = findViewById(R.id.lblHeadEditSp)
         btnAyuda = findViewById(R.id.btnInfoActuSp)
-        txtValVie = findViewById(R.id.txtOldEditDatSp)
-        spNPreg = findViewById(R.id.spNewPregKey)
-        spNSis = findViewById(R.id.spNewSis)
-        btnConfCamb = findViewById(R.id.btnConfEditDataSp)
+        txtValVie = findViewById(R.id.txtValVieSp)
+        spNPreg = findViewById(R.id.spUpdPregSegu)
+        spNSis = findViewById(R.id.spUpdSis)
+        btnConfCamb = findViewById(R.id.btnConfChgSp)
+        // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
+        database = Firebase.database
+        auth = FirebaseAuth.getInstance()
+
         // Estableciendo la variable de correo
         email = ""
         // Obteniendo el extra enviado para saber que campo actualizar
@@ -74,65 +84,61 @@ class EditDataUsSpActivity : AppCompatActivity() {
 
     private fun rellSpinPregs(){
         lifecycleScope.launch(Dispatchers.IO) {
-            val getPregs = async {
+            val rellPregs = async {
                 // Obtener el arreglo de strings establecido para las preguntas
                 val lstPregs = resources.getStringArray(R.array.lstSavQues)
                 var arrPregs = ArrayList<String>()
-                val database = Firebase.database
                 arrPregs.addAll(lstPregs)
                 // Creando la referencia de la coleccion de preguntas en la BD
-                val ref = database.getReference("Pregunta")
-                // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener{
-                    override fun onDataChange(dataSnapshot: DataSnapshot){
-                        for (objPreg in dataSnapshot.children){
-                            val pregJSON = gson.toJson(objPreg.value)
-                            val resPreg = gson.fromJson(pregJSON, Pregunta::class.java)
-                            arrPregs.add(resPreg.Val_Pregunta!!)
+                ref = database.getReference("Preguntas")
+                // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
+                ref.get().addOnSuccessListener{ taskGet ->
+                    for (objPreg in taskGet.children){
+                        objPreg.ref.child("Val_Pregunta").get().addOnSuccessListener { taskAdd ->
+                            arrPregs.add(taskAdd.value.toString())
                         }
-                        // Estableciendo el adaptador para el rellenado del spinner
-                        val adapPregs = ArrayAdapter(this@EditDataUsSpActivity, android.R.layout.simple_spinner_item, arrPregs)
-                        adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        spNPreg.adapter = adapPregs
                     }
-                    override fun onCancelled(databaseError: DatabaseError){
-                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                    // Estableciendo el adaptador para el rellenado del spinner
+                    val adapPregs = ArrayAdapter(this@EditDataUsSpActivity, android.R.layout.simple_spinner_item, arrPregs)
+                    adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spNPreg.adapter = adapPregs
+                }
+                    .addOnFailureListener {
+                        Toast.makeText(this@EditDataUsSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                     }
-                })
             }
-            getPregs.await()
+            rellPregs.await()
         }
     }
 
     private fun rellSpinSis(){
         lifecycleScope.launch(Dispatchers.IO) {
-            val getSis = async {
+            val rellSis = async {
                 // Obtener el arreglo de strings establecido para los sistemas
                 val lstSists = resources.getStringArray(R.array.lstSistems)
                 var arrSists = ArrayList<String>()
-                val database = Firebase.database
                 arrSists.addAll(lstSists)
-                // Creando la referencia de la coleccion de preguntas en la BD
-                val ref = database.getReference("Sistema")
+                // Creando la referencia de la coleccion de sistemas en la BD
+                ref = database.getReference("Sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot){
                         for (objSis in dataSnapshot.children){
-                            val sisJSON = gson.toJson(objSis.value)
-                            val resSis = gson.fromJson(sisJSON, Sistema::class.java)
-                            arrSists.add(resSis.nombre_Sis!!)
+                            objSis.ref.child("nombre_Sis").get().addOnSuccessListener { taskGet ->
+                                arrSists.add(taskGet.value.toString())
+                            }
                         }
                         // Estableciendo el adaptador para el rellenado del spinner
-                        val adapSis = ArrayAdapter(this@EditDataUsSpActivity, android.R.layout.simple_spinner_item, arrSists)
+                        val adapSis = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrSists)
                         adapSis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spNSis.adapter = adapSis
                     }
                     override fun onCancelled(databaseError: DatabaseError) {
-                        Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                        Toast.makeText(this@EditDataUsSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
-            getSis.await()
+            rellSis.await()
         }
     }
 

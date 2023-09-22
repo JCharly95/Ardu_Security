@@ -197,7 +197,7 @@ class RegisterActivity : AppCompatActivity() {
                         }
                     }
                     // Estableciendo el adaptador para el rellenado del spinner
-                    val adapPregs = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrPregs)
+                    val adapPregs = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_item, arrPregs)
                     adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spPregsSegur.adapter = adapPregs
                 }
@@ -219,7 +219,7 @@ class RegisterActivity : AppCompatActivity() {
                 // Creando la referencia de la coleccion de sistemas en la BD
                 ref = database.getReference("Sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addValueEventListener(object: ValueEventListener{
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot){
                         for (objSis in dataSnapshot.children){
                             objSis.ref.child("nombre_Sis").get().addOnSuccessListener { taskGet ->
@@ -227,7 +227,7 @@ class RegisterActivity : AppCompatActivity() {
                             }
                         }
                         // Estableciendo el adaptador para el rellenado del spinner
-                        val adapSis = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_item, arrSists)
+                        val adapSis = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_item, arrSists)
                         adapSis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spSisRel.adapter = adapSis
                     }
@@ -372,7 +372,7 @@ class RegisterActivity : AppCompatActivity() {
         if(valiUser){
             // Buscando al usuario en la BD
             ref = database.getReference("Usuarios")
-            ref.addValueEventListener(object : ValueEventListener {
+            ref.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for (objUser in dataSnapshot.children) {
                         if (objUser.key.toString() == usuario){
@@ -390,22 +390,20 @@ class RegisterActivity : AppCompatActivity() {
                         avisoReg("Error: El username que desea utilizar ya ha sido registrado, favor de ingresar otro")
                         txtNomReg.text.clear()
                         txtUsReg.text.clear()
-                        if(rbSelRegEma.isChecked)
-                            rbSelRegEma.isSelected = false
-                        if(rbSelRegGoo.isChecked)
-                            rbSelRegGoo.isSelected = false
                         if(rbSelRegEma.isChecked && txtEmailReg.text.isNotEmpty())
                             txtEmailReg.text.clear()
                         if(rbSelRegEma.isChecked && txtPassReg.text.isNotEmpty())
                             txtPassReg.text.clear()
-                        if(LinEmaReg.isGone)
-                            LinEmaReg.isGone = false
+                        if(!LinEmaReg.isGone)
+                            LinEmaReg.isGone = true
+                        rbSelRegEma.isChecked = false
+                        rbSelRegGoo.isChecked = false
                         spPregsSegur.setSelection(0)
                         txtRespSeguri.text.clear()
                         if(rbSelAdmin.isChecked && txtTel.text.isNotEmpty())
                             txtTel.text.clear()
-                        rbSelAdmin.isSelected = false
-                        rbSelCli.isSelected = false
+                        rbSelAdmin.isChecked = false
+                        rbSelCli.isChecked = false
                         spSisRel.setSelection(0)
                     }
                 }
@@ -499,7 +497,7 @@ class RegisterActivity : AppCompatActivity() {
                 authUs?.updateProfile(actPerfil)
                 // Creando la relacion del usuario con la pregunta en la entidad Preguntas
                 ref = database.getReference("Preguntas")
-                ref.addValueEventListener(object : ValueEventListener {
+                ref.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objPreg in dataSnapshot.children) {
                             if (objPreg.child("Val_Pregunta").value.toString() == pregunta)
@@ -512,7 +510,7 @@ class RegisterActivity : AppCompatActivity() {
                 })
                 // Creando la relacion del usuario con el sistema en la entidad Sistemas
                 ref = database.getReference("Sistemas")
-                ref.addValueEventListener(object : ValueEventListener {
+                ref.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSis in dataSnapshot.children) {
                             if (objSis.child("nombre_Sis").value.toString() == sistema)
@@ -624,7 +622,7 @@ class RegisterActivity : AppCompatActivity() {
                         authUs?.updateProfile(actPerfil)
                         // Creando la relacion del usuario con la pregunta en la entidad Preguntas
                         ref = database.getReference("Preguntas")
-                        ref.addValueEventListener(object : ValueEventListener {
+                        ref.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 for (objPreg in dataSnapshot.children) {
                                     if (objPreg.child("Val_Pregunta").value.toString() == pregunta)
@@ -637,7 +635,7 @@ class RegisterActivity : AppCompatActivity() {
                         })
                         // Creando la relacion del usuario con el sistema en la entidad Sistemas
                         ref = database.getReference("Sistemas")
-                        ref.addValueEventListener(object : ValueEventListener {
+                        ref.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 for (objSis in dataSnapshot.children) {
                                     if (objSis.child("nombre_Sis").value.toString() == sistema)
