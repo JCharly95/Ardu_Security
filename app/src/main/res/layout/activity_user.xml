@@ -178,10 +178,10 @@
                 android:layout_height="10dp" />
 
             <Button
-                android:id="@+id/btnEditPin"
+                android:id="@+id/btnEditTipUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/btnEditPin"
+                android:text="@string/btnEditTipUser"
                 android:textSize="20sp" />
 
             <Space

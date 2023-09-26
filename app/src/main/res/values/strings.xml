@@ -95,6 +95,7 @@
     <string name="btnEditPregun">Cambiar Pregunta</string>
     <string name="btnEditRespu">Cambiar Respuesta</string>
     <string name="btnEditSisRel">Cambiar Sistema</string>
+    <string name="btnEditTipUser">Cambiar Tipo de Usuario</string>
     <string name="btnEditPin">Cambiar Pin</string>
     <string name="btnEditTele">Cambiar Telefono</string>
     <!-- Strings de la vista de ajustes-->
@@ -109,8 +110,15 @@
     <string name="lblOldVal">Valor Previo: </string>
     <string name="txtViejo">Valor Guardado</string>
     <string name="lblNewVal">Nuevo Valor: </string>
+    <string name="txtNuevo">Ingrese su nuevo dato</string>
+    <string name="lblEmaActu">Seleccione el acceso que desea actualizar:</string>
+    <string name="lblRbCorr">Correo</string>
+    <string-array name="lstTipUs">
+        <item>Seleccione su tipo de usuario</item>
+        <item>Cliente</item>
+        <item>Administrador</item>
+    </string-array>
     <string name="lblConfCamb">Confirmar Cambio: </string>
-    <string name="txtNuevo">Ingrese su nuevo valor</string>
     <string name="txtConfCamb">Ingrese su contraseña</string>
     <string name="btnConfEdit">Actualizar </string>
     <!-- Strings de la vista de alarma-->

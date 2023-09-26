@@ -9,6 +9,7 @@
     tools:context=".EditDataUsSpActivity">
 
     <LinearLayout
+        android:id="@+id/ActuInfoUsSpView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="40dp"
@@ -33,7 +34,7 @@
                 android:textSize="25sp" />
 
             <Space
-                android:layout_width="70dp"
+                android:layout_width="83dp"
                 android:layout_height="wrap_content" />
 
             <ImageButton
@@ -43,7 +44,6 @@
                 android:backgroundTint="@color/teal_200"
                 android:contentDescription="@string/btnHelp"
                 app:srcCompat="@android:drawable/ic_menu_help" />
-
         </LinearLayout>
 
         <Space
@@ -103,7 +103,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/linLayNewPreg"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             app:strokeWidth="1dp"
             android:visibility="gone"
             app:strokeColor="@color/negro"
@@ -128,7 +128,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/linLayNewSis"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             app:strokeWidth="1dp"
             android:visibility="gone"
             app:strokeColor="@color/negro"
@@ -144,6 +144,31 @@
                 android:textColor="@color/negro"
                 android:dropDownWidth="wrap_content"
                 android:entries="@array/lstSistems"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="10dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/linLayNewTipo"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            app:strokeWidth="1dp"
+            android:visibility="gone"
+            app:strokeColor="@color/negro"
+            app:cardBackgroundColor="@color/azulAlicia"
+            app:cardCornerRadius="4dp"
+            tools:visibility="visible">
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spUpdTipoUser"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:spinnerMode="dropdown"
+                android:textColor="@color/negro"
+                android:dropDownWidth="wrap_content"
+                android:entries="@array/lstTipUs"/>
         </com.google.android.material.card.MaterialCardView>
 
         <Space

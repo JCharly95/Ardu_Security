@@ -1,210 +1,296 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollPerfilTxt"
+    android:background="@color/azulAlicia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightGray">
+    tools:context=".EditDataUsTxtActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
+        android:id="@+id/ActuInfoUsTxtView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        tools:context=".EditDataUsTxtActivity"
-        android:background="@color/lightGray">
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:background="@color/azulAlicia">
 
-        <TextView
-            android:id="@+id/lblHeadEditTxt"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/headEdit"
-            android:textSize="30sp"
-            android:visibility="visible"
-            android:textColor="@color/negro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnInfoActuTxt"
-            android:layout_width="51dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="18dp"
-            android:layout_marginEnd="25dp"
-            android:text="¿?"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
-        <TextView
-            android:id="@+id/lblOldDatTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/lblOldVal"
-            android:textSize="16sp"
-            android:visibility="visible"
-            android:textColor="@color/negro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.242"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblHeadEditTxt" />
+                <TextView
+                    android:id="@+id/lblHeadEditTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/headEdit"
+                    android:textColor="@color/negro"
+                    android:textSize="25sp" />
 
-        <EditText
-            android:id="@+id/txtOldEditDatTxt"
-            android:layout_width="256dp"
-            android:layout_height="65dp"
-            android:layout_marginTop="10dp"
-            android:autofillHints="emailAddress"
-            android:ems="10"
-            android:enabled="false"
-            android:hint="@string/txtViejo"
-            android:inputType="none"
-            android:visibility="gone"
-            android:textColor="@color/negro"
-            android:background="@color/azulAlicia"
-            android:textColorHint="@color/darkgray"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblOldDatTxt"
-            tools:visibility="visible" />
+                <Space
+                    android:layout_width="83dp"
+                    android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/lblNewDatTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="@string/lblNewVal"
-            android:textSize="16sp"
-            android:visibility="visible"
-            android:textColor="@color/negro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.242"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtOldEditDatTxt" />
+                <ImageButton
+                    android:id="@+id/btnInfoActuTxt"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:backgroundTint="@color/teal_200"
+                    android:contentDescription="@string/btnHelp"
+                    app:srcCompat="@android:drawable/ic_menu_help" />
+            </LinearLayout>
 
-        <EditText
-            android:ems="10"
-            android:id="@+id/txtNewEditDat"
-            android:layout_width="256dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:inputType="text"
-            android:visibility="gone"
-            android:autofillHints="text"
-            android:textColor="@color/negro"
-            android:hint="@string/txtNuevo"
-            android:background="@color/azulAlicia"
-            android:textColorHint="@color/darkgray"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblNewDatTxt"
-            tools:visibility="visible" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
 
-        <EditText
-            android:id="@+id/txtNewEditDatNum"
-            android:layout_width="256dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:autofillHints="text"
-            android:ems="10"
-            android:hint="@string/txtNuevo"
-            android:inputType="number"
-            android:visibility="gone"
-            android:textColor="@color/negro"
-            android:background="@color/azulAlicia"
-            android:textColorHint="@color/darkgray"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtNewEditDat"
-            tools:visibility="visible" />
+            <TextView
+                android:id="@+id/lblOldDatTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblOldVal"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:visibility="visible"
+                android:textColor="@color/negro"/>
 
-        <EditText
-            android:id="@+id/txtNewEditDatPas"
-            android:ems="10"
-            android:visibility="gone"
-            android:layout_width="256dp"
-            android:layout_height="48dp"
-            android:autofillHints="text"
-            android:layout_marginTop="10dp"
-            android:hint="Ingrese su nueva contraseña"
-            android:inputType="textPassword"
-            android:textColor="@color/negro"
-            android:background="@color/azulAlicia"
-            android:textColorHint="@color/darkgray"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtNewEditDatNum"
-            tools:visibility="visible" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
 
-        <TextView
-            android:id="@+id/lblConfChg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="@string/lblConfCamb"
-            android:textSize="16sp"
-            android:visibility="gone"
-            android:textColor="@color/negro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.242"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtNewEditDatPas"
-            tools:visibility="visible" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/canela"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="4dp">
 
-        <EditText
-            android:id="@+id/txtConfChg"
-            android:layout_width="256dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:autofillHints="emailAddress"
-            android:ems="10"
-            android:hint="@string/txtConfCamb"
-            android:visibility="gone"
-            android:inputType="textPassword"
-            android:textColor="@color/negro"
-            android:background="@color/azulAlicia"
-            android:textColorHint="@color/darkgray"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblConfChg"
-            tools:visibility="visible" />
+                <TextView
+                    android:id="@+id/txtOldEditDatTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:gravity="center"
+                    android:text="@string/txtViejo"
+                    android:textColor="@color/blanco"
+                    app:drawableLeftCompat="@android:drawable/ic_dialog_alert" />
+            </com.google.android.material.card.MaterialCardView>
 
-        <CheckBox
-            android:id="@+id/chbConfPass"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/chbPass"
-            android:textSize="14sp"
-            android:visibility="gone"
-            android:textColor="@color/negro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtConfChg"
-            tools:visibility="visible" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
 
-        <Button
-            android:id="@+id/btnConfEditDataTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/btnConfEdit"
-            android:textSize="20sp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chbConfPass"
-            tools:visibility="visible" />
+            <TextView
+                android:id="@+id/lblNewDatTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblNewVal"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:visibility="visible"
+                android:textColor="@color/negro"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <LinearLayout
+                android:id="@+id/linLayActuEma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/lblActuCorr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/lblEmaActu"
+                    android:textColor="@color/negro"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <RadioButton
+                        android:id="@+id/rbSelEmaActu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@android:drawable/sym_action_email"
+                        android:text="@string/lblRbCorr"
+                        android:textColor="@color/negro" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <RadioButton
+                        android:id="@+id/rbSelGooActu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/common_google_signin_btn_icon_dark"
+                        android:text="@string/btnAccGoogle"
+                        android:textColor="@color/negro" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <EditText
+                android:id="@+id/txtNewDatGen"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:inputType="text"
+                android:visibility="gone"
+                android:autofillHints="text"
+                android:textColor="@color/negro"
+                android:hint="@string/txtNuevo"
+                android:textColorHint="@color/darkgray"
+                tools:visibility="visible" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <EditText
+                android:id="@+id/txtEmailActu"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:autofillHints="emailAddress"
+                android:hint="@string/txtNuevo"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/negro"
+                android:textColorHint="@color/darkgray"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <EditText
+                android:id="@+id/txtNewDatNum"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:autofillHints="number"
+                android:ems="10"
+                android:hint="@string/txtNuevo"
+                android:inputType="number"
+                android:visibility="gone"
+                android:textColor="@color/negro"
+                android:textColorHint="@color/darkgray"
+                tools:visibility="visible" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <EditText
+                android:id="@+id/txtNewDatPass"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:visibility="gone"
+                android:autofillHints="password"
+                android:hint="@string/txtNuevo"
+                android:inputType="textPassword"
+                android:textColor="@color/negro"
+                android:textColorHint="@color/darkgray"
+                tools:visibility="visible" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="30dp" />
+
+                <LinearLayout
+                    android:id="@+id/linLayConfChg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/lblConfChg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lblConfCamb"
+                        android:textSize="18sp"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:textColor="@color/negro"
+                        tools:visibility="visible" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="10dp" />
+
+                    <EditText
+                        android:id="@+id/txtConfChg"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:autofillHints="password"
+                        android:ems="10"
+                        android:hint="@string/txtConfCamb"
+                        android:visibility="gone"
+                        android:inputType="textPassword"
+                        android:textColor="@color/negro"
+                        android:textColorHint="@color/darkgray"
+                        android:background="@color/azulAlicia"
+                        tools:visibility="visible" />
+
+                    <CheckBox
+                        android:id="@+id/chbConfPass"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/chbPass"
+                        android:textSize="14sp"
+                        android:visibility="gone"
+                        android:textColor="@color/negro"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.498"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtConfChg"
+                        tools:visibility="visible" />
+                </LinearLayout>
+
+            <Button
+                android:id="@+id/btnConfEditDataTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/btnConfEdit"
+                android:textSize="20sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chbConfPass"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -137,9 +137,9 @@ class StationActivity : AppCompatActivity() {
         }
     }
 
-    private fun establecerCamara(){
-        val videoURL = "url de la raspberry"
-        Glide.with(this).load(Uri.parse(videoURL)).into(camara)
+    private fun establecerCamara() {
+        val videoURL = "http://192.168.1.66:5000/video_feed"
+        Glide.with(this@StationActivity).load(Uri.parse(videoURL)).into(camara)
     }
 
     private fun establecerSensorGas(){

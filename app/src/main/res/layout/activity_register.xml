@@ -85,44 +85,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp" />
 
-            <TextView
-                android:id="@+id/lblTipReg"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/lblTipReg"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible" />
+                android:orientation="vertical">
 
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <RadioButton
-                    android:id="@+id/rbSelEmaReg"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/lblTipReg"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@android:drawable/sym_action_email"
-                    android:drawableEnd="@drawable/key"
-                    android:text="@string/btnAccUsPass"
-                    android:textColor="@color/negro" />
+                    android:gravity="center"
+                    android:text="@string/lblTipReg"
+                    android:textColor="@color/negro"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
-                <RadioButton
-                    android:id="@+id/rbSelGooReg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/common_google_signin_btn_icon_dark"
-                    android:text="@string/btnAccGoogle"
-                    android:textColor="@color/negro" />
-            </RadioGroup>
+                    <RadioButton
+                        android:id="@+id/rbSelEmaReg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@android:drawable/sym_action_email"
+                        android:drawableEnd="@drawable/key"
+                        android:text="@string/btnAccUsPass"
+                        android:textColor="@color/negro" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <RadioButton
+                        android:id="@+id/rbSelGooReg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/common_google_signin_btn_icon_dark"
+                        android:text="@string/btnAccGoogle"
+                        android:textColor="@color/negro" />
+                </RadioGroup>
+            </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"

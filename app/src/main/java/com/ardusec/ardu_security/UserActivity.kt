@@ -27,7 +27,7 @@ class UserActivity : AppCompatActivity() {
     private lateinit var btnEditPreg: Button
     private lateinit var btnEditResp: Button
     private lateinit var btnEditSis: Button
-    private lateinit var btnEditPin: Button
+    private lateinit var btnEditTipUser: Button
     private lateinit var btnEditTel: Button
     // Elementos del bundle de usuario
     private lateinit var bundle: Bundle
@@ -65,7 +65,7 @@ class UserActivity : AppCompatActivity() {
         btnEditPreg = findViewById(R.id.btnEditPreg)
         btnEditResp = findViewById(R.id.btnEditResp)
         btnEditSis = findViewById(R.id.btnEditSisRel)
-        btnEditPin = findViewById(R.id.btnEditPin)
+        btnEditTipUser = findViewById(R.id.btnEditTipUser)
         btnEditTel = findViewById(R.id.btnEditTele)
         // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
         database = Firebase.database
@@ -86,49 +86,57 @@ class UserActivity : AppCompatActivity() {
         // Toda la edicion de campos se lanzara hacia la misma actividad,
         // solo que dependera del campo a editar, los valores que seran mostrados
         btnEditNom.setOnClickListener {
-            val editNom = Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editNom = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+                putExtra("usuario", user)
                 putExtra("campo", "Nombre")
             }
             startActivity(editNom)
         }
         btnEditEma.setOnClickListener {
-            val editEma = Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editEma = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+                putExtra("usuario", user)
                 putExtra("campo", "Correo")
             }
             startActivity(editEma)
         }
         btnEditPass.setOnClickListener {
-            val editPass = Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editPass = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+                putExtra("usuario", user)
                 putExtra("campo", "Contraseña")
             }
             startActivity(editPass)
         }
         btnEditPreg.setOnClickListener {
-            val editPreg = Intent(this, EditDataUsSpActivity::class.java).apply {
+            val editPreg = Intent(this@UserActivity, EditDataUsSpActivity::class.java).apply {
+                putExtra("usuario", user)
                 putExtra("campo", "Pregunta")
             }
             startActivity(editPreg)
         }
         btnEditResp.setOnClickListener {
-            val editResp = Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editResp = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+                putExtra("usuario", user)
                 putExtra("campo", "Respuesta")
             }
             startActivity(editResp)
         }
         btnEditSis.setOnClickListener {
-            val editSis = Intent(this, EditDataUsSpActivity::class.java).apply {
+            val editSis = Intent(this@UserActivity, EditDataUsSpActivity::class.java).apply {
+                putExtra("usuario", user)
                 putExtra("campo", "Sistema")
             }
             startActivity(editSis)
         }
-        btnEditPin.setOnClickListener {
-            val editPin = Intent(this, EditDataUsTxtActivity::class.java).apply {
-                putExtra("campo", "Pin")
+        btnEditTipUser.setOnClickListener {
+            val editTipo = Intent(this@UserActivity, EditDataUsSpActivity::class.java).apply {
+                putExtra("usuario", user)
+                putExtra("campo", "Tipo")
             }
-            startActivity(editPin)
+            startActivity(editTipo)
         }
         btnEditTel.setOnClickListener {
-            val editTel = Intent(this, EditDataUsTxtActivity::class.java).apply {
+            val editTel = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+                putExtra("usuario", user)
                 putExtra("campo", "Telefono")
             }
             startActivity(editTel)

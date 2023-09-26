@@ -31,11 +31,14 @@ import kotlin.concurrent.schedule
 class EditDataUsTxtActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblHeadSec: TextView
-    private lateinit var btnAyuda: Button
-    private lateinit var txtValVie: EditText
-    private lateinit var txtValNue: EditText
+    private lateinit var btnAyuda: ImageButton
+    private lateinit var txtValVie: TextView
+    private lateinit var txtValNueGen: EditText
+    private lateinit var linLaySelEma: LinearLayout
+    private lateinit var txtValNueEma: EditText
     private lateinit var txtValNueNum: EditText
     private lateinit var txtValNuePas: EditText
+    private lateinit var linLayConfChg: LinearLayout
     private lateinit var lblConfChg: TextView
     private lateinit var txtConfChg: EditText
     private lateinit var chbConfChg: CheckBox
@@ -44,9 +47,16 @@ class EditDataUsTxtActivity : AppCompatActivity() {
     private var gson = Gson()
     // Variable del correo para la busqueda del usuario en firebase auth
     private lateinit var email: String
+    // Instancias de Firebase; Database y ReferenciaDB
+    private lateinit var auth: FirebaseAuth
+    private lateinit var ref: DatabaseReference
+    private lateinit var database: FirebaseDatabase
     // Bundle para extras y saber que campo sera actualizado
     private lateinit var bundle: Bundle
     private lateinit var campo: String
+    private lateinit var user: String
+    // Variable para obtener la key vieja, tanto sistema como pregunta
+    private lateinit var keyVieja: String
     // Dataclases
     data class Usuario(val id_Usuario: String, val nombre: String, val correo: String, val tipo_Usuario: String, val num_Tel: Long, val pregunta_Seg: String, val respuesta_Seg: String, val pin_Pass: Int)
     data class UserSistem(val id_User_Sis: String, val sistema_Nom: String, val user_Email: String)
@@ -55,6 +65,14 @@ class EditDataUsTxtActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_data_us_txt)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        //Obteniendo el campo
+        if(intent.extras == null){
+            Toast.makeText(this@EditDataUsTxtActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
+        }else{
+            bundle = intent.extras!!
+            campo = bundle.getString("campo").toString()
+            user = bundle.getString("usuario").toString()
+        }
 
         // Configurar el arranque de la interfaz
         setUp()
@@ -65,22 +83,28 @@ class EditDataUsTxtActivity : AppCompatActivity() {
     private fun setUp(){
         // Titulo de la pantalla
         title = "Actualizar Informacion"
+
         // Relacionando los elementos con su objeto de la interfaz
         lblHeadSec = findViewById(R.id.lblHeadEditTxt)
         btnAyuda = findViewById(R.id.btnInfoActuTxt)
         txtValVie = findViewById(R.id.txtOldEditDatTxt)
-        txtValNue = findViewById(R.id.txtNewEditDat)
-        txtValNueNum = findViewById(R.id.txtNewEditDatNum)
-        txtValNuePas = findViewById(R.id.txtNewEditDatPas)
+        txtValNueGen = findViewById(R.id.txtNewDatGen)
+        linLaySelEma = findViewById(R.id.linLayActuEma)
+        txtValNueEma = findViewById(R.id.txtEmailActu)
+        txtValNueNum = findViewById(R.id.txtNewDatNum)
+        txtValNuePas = findViewById(R.id.txtNewDatPass)
+        linLayConfChg = findViewById(R.id.linLayConfChg)
         lblConfChg = findViewById(R.id.lblConfChg)
         txtConfChg = findViewById(R.id.txtConfChg)
         chbConfChg = findViewById(R.id.chbConfPass)
         btnConfCamb = findViewById(R.id.btnConfEditDataTxt)
-        // Estableciendo la variable de correo
-        email = ""
-        // Obteniendo el extra enviado para saber que campo actualizar
-        bundle = intent.extras!!
-        campo = bundle.getString("campo").toString()
+        // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
+        auth = FirebaseAuth.getInstance()
+        database = Firebase.database
+        // Establecer el encabezado y el boton, acorde al campo a actualizar
+        lblHeadSec.text = lblHeadSec.text.toString()+"\n"+campo
+        btnConfCamb.text = btnConfCamb.text.toString()+"\n"+campo
+
         // Actualizar los elementos del formulario acorde al cambio solicitado
         setFormulario()
     }
@@ -115,9 +139,25 @@ class EditDataUsTxtActivity : AppCompatActivity() {
     }
 
     private fun setFormulario(){
-        // Establecer el encabezado y el boton, acorde al campo a actualizar
-        lblHeadSec.text = lblHeadSec.text.toString()+"\n"+campo
-        btnConfCamb.text = btnConfCamb.text.toString()+"\n"+campo
+        when(campo){
+            "Nombre" -> {
+
+            }
+            "Correo" -> {
+
+            }
+            "Contraseña" -> {
+
+            }
+            "Respuesta" -> {
+
+            }
+            "Telefono" -> {
+
+            }
+        }
+
+
         lifecycleScope.launch(Dispatchers.IO) {
             val getUs = async {
                 val user = Firebase.auth.currentUser!!
@@ -129,7 +169,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 user.let { task ->
                                     email = task.email.toString()
                                     txtValVie.isGone = false
-                                    txtValNue.isGone = false
+                                    txtValNueGen.isGone = false
                                     btnConfCamb.isGone = false
                                     // Creando la referencia de la coleccion de usuarios en la BD
                                     val refDB = database.getReference("Usuarios")
@@ -137,7 +177,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                         override fun onDataChange(dataSnapshot: DataSnapshot){
                                             for (objUs in dataSnapshot.children){
                                                 val userJSON = gson.toJson(objUs.value)
-                                                val resUser = gson.fromJson(userJSON, EditDataUsSpActivity.Usuario::class.java)
+                                                val resUser = gson.fromJson(userJSON, Usuario::class.java)
                                                 if(resUser.correo == email){
                                                     txtValVie.setText(resUser.nombre)
                                                     break
@@ -156,13 +196,13 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                     "Correo" -> {
                         lifecycleScope.launch(Dispatchers.IO) {
                             val setCor = async {
-                                user.let { task ->
+                               user.let { task ->
                                     email = task.email.toString()
                                     lblConfChg.isGone = false
                                     txtConfChg.isGone = false
                                     chbConfChg.isGone = false
                                     txtValVie.isGone = false
-                                    txtValNue.isGone = false
+                                    txtValNueEma.isGone = false
                                     btnConfCamb.isGone = false
                                     // Creando la referencia de la coleccion de usuarios en la BD
                                     val refDB = database.getReference("Usuarios")
@@ -170,7 +210,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                         override fun onDataChange(dataSnapshot: DataSnapshot){
                                             for (objUs in dataSnapshot.children){
                                                 val userJSON = gson.toJson(objUs.value)
-                                                val resUser = gson.fromJson(userJSON, EditDataUsSpActivity.Usuario::class.java)
+                                                val resUser = gson.fromJson(userJSON, Usuario::class.java)
                                                 if(resUser.correo == email){
                                                     txtValVie.setText(resUser.correo)
                                                     break
@@ -207,7 +247,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 user.let { task ->
                                     email = task.email.toString()
                                     txtValVie.isGone = false
-                                    txtValNue.isGone = false
+                                    txtValNueGen.isGone = false
                                     btnConfCamb.isGone = false
                                     // Creando la referencia de la coleccion de usuarios en la BD
                                     val refDB = database.getReference("Usuarios")
@@ -215,7 +255,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                         override fun onDataChange(dataSnapshot: DataSnapshot){
                                             for (objUs in dataSnapshot.children){
                                                 val userJSON = gson.toJson(objUs.value)
-                                                val resUser = gson.fromJson(userJSON, EditDataUsSpActivity.Usuario::class.java)
+                                                val resUser = gson.fromJson(userJSON, Usuario::class.java)
                                                 if(resUser.correo == email){
                                                     txtValVie.setText(resUser.respuesta_Seg)
                                                     break
@@ -229,36 +269,6 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 }
                             }
                             setResp.await()
-                        }
-                    }
-                    "Pin" -> {
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            val setPin = async {
-                                user.let { task ->
-                                    email = task.email.toString()
-                                    txtValVie.isGone = false
-                                    txtValNueNum.isGone = false
-                                    btnConfCamb.isGone = false
-                                    // Creando la referencia de la coleccion de usuarios en la BD
-                                    val refDB = database.getReference("Usuarios")
-                                    refDB.addValueEventListener(object: ValueEventListener{
-                                        override fun onDataChange(dataSnapshot: DataSnapshot){
-                                            for (objUs in dataSnapshot.children){
-                                                val userJSON = gson.toJson(objUs.value)
-                                                val resUser = gson.fromJson(userJSON, EditDataUsSpActivity.Usuario::class.java)
-                                                if(resUser.correo == email){
-                                                    txtValVie.setText(resUser.pin_Pass.toString())
-                                                    break
-                                                }
-                                            }
-                                        }
-                                        override fun onCancelled(databaseError: DatabaseError) {
-                                            Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
-                                        }
-                                    })
-                                }
-                            }
-                            setPin.await()
                         }
                     }
                     "Telefono" -> {
@@ -275,7 +285,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                         override fun onDataChange(dataSnapshot: DataSnapshot){
                                             for (objUs in dataSnapshot.children){
                                                 val userJSON = gson.toJson(objUs.value)
-                                                val resUser = gson.fromJson(userJSON, EditDataUsSpActivity.Usuario::class.java)
+                                                val resUser = gson.fromJson(userJSON, Usuario::class.java)
                                                 if(resUser.correo == email){
                                                     txtValVie.setText(resUser.num_Tel.toString())
                                                     break
@@ -321,24 +331,16 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         "Nombre" -> {
                             user.let { task ->
                                 email = task.email.toString()
-                                if(validarNombre(txtValNue.text)) {
-                                    actNombre(txtValNue.text.toString(), email, gson)
+                                if(validarNombre(txtValNueGen.text)) {
+                                    actNombre(txtValNueGen.text.toString(), email, gson)
                                 }
                             }
                         }
                         "Respuesta" -> {
                             user.let { task ->
                                 email = task.email.toString()
-                                if(validarResp(txtValNue.text)) {
-                                    actResp(txtValNue.text.toString(), email, gson)
-                                }
-                            }
-                        }
-                        "Pin" -> {
-                            user.let { task ->
-                                email = task.email.toString()
-                                if(validarPin(txtValNueNum.text)) {
-                                    actPin(txtValNueNum.text.toString(), email, gson)
+                                if(validarResp(txtValNueGen.text)) {
+                                    actResp(txtValNueGen.text.toString(), email, gson)
                                 }
                             }
                         }
@@ -353,8 +355,8 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         "Correo" -> {
                             user.let { task ->
                                 email = task.email.toString()
-                                if(validarCorreo(txtValNue.text) && validarContra(txtConfChg.text)) {
-                                    actCorreo(txtValNue.text.toString(), email, txtConfChg.text.toString(), gson)
+                                if(validarCorreo(txtValNueEma.text) && validarContra(txtConfChg.text)) {
+                                    actCorreo(txtValNueEma.text.toString(), email, txtConfChg.text.toString(), gson)
                                 }
                             }
                         }

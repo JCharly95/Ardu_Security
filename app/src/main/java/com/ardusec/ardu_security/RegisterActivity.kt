@@ -523,10 +523,10 @@ class RegisterActivity : AppCompatActivity() {
                 })
                 // Preparando el objeto del usuario para el registro en la BD
                 val nAcc = Acceso(correo = emaLimp, google = "")
-                val nUsSis = SistemasUser(sistema1 = "sistema${spSisRel.selectedItem}")
+                val nUsSis = SistemasUser(sistema1 = "sistema${spSisRel.selectedItemPosition}")
                 if(tipo == "Cliente") {
                     // Usuario cliente
-                    val nUser = UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItem}", resp_Seguri = respuesta )
+                    val nUser = UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
                     ref.child(usuario).setValue(nUser).addOnCompleteListener {
@@ -545,7 +545,7 @@ class RegisterActivity : AppCompatActivity() {
                 }else{
                     // Usuario administrador
                     val telefono = txtTel.text.toString().toDouble()
-                    val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItem}", resp_Seguri = respuesta, num_Tel = telefono )
+                    val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
                     ref.child(usuario).setValue(nUser).addOnCompleteListener {
@@ -651,11 +651,11 @@ class RegisterActivity : AppCompatActivity() {
                             val correo = authUs?.email
                             // Preparando el objeto del usuario para el registro en la BD
                             val nAcc = correo?.let { Acceso(correo = "", google = it) }
-                            val nUsSis = SistemasUser(sistema1 = "sistema${spSisRel.selectedItem}")
+                            val nUsSis = SistemasUser(sistema1 = "sistema${spSisRel.selectedItemPosition}")
                             if(tipo == "Cliente"){
                                 // Usuario cliente
                                 val nUser = nAcc?.let {
-                                    UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = it, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta )
+                                    UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta )
                                 }
                                 // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                                 ref = database.getReference("Usuarios")
@@ -676,7 +676,7 @@ class RegisterActivity : AppCompatActivity() {
                                 // Usuario administrador
                                 val telefono = txtTel.text.toString().toDouble()
                                 val nUser = nAcc?.let {
-                                    UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = it, sistemas = nUsSis, pregunta_Seg = pregunta, resp_Seguri = respuesta, num_Tel = telefono )
+                                    UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
                                 }
                                 // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                                 ref = database.getReference("Usuarios")
