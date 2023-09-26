@@ -33,7 +33,7 @@ class CameraGenActivity : AppCompatActivity() {
         estacion = bundle.getString("name_station").toString()
         nombre = bundle.getString("nom_cam").toString()
         camara = findViewById(R.id.vidViewCam)
-        val videoURL = "url de la raspberry"
+        val videoURL = "localhost"
 
         // Titulo de la pantalla
         title = nombre
