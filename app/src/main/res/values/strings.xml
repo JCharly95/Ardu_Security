@@ -57,10 +57,6 @@
     <string name="lblTipUser">Seleccione el tipo de usuario:</string>
     <string name="rbUserGen">Cliente</string>
     <string name="rbUserAdmin">Administrador</string>
-    <string name="lblIngrePin">¿Desea ingresar un PIN?</string>
-    <string name="rbIngrePinSi">Si, deseo ingresar un pin</string>
-    <string name="rbIngrePinNo">No deseo ingresar un pin</string>
-    <string name="txtPin">Pin de Acceso Numerico</string>
     <string name="txtPhone">Numero Telefonico</string>
     <string-array name="lstSistems">
         <item>Seleccione su Sistema</item>
@@ -91,6 +87,7 @@
     <string name="lblUserVal">Username </string>
     <string name="btnEditNombre">Cambiar Nombre</string>
     <string name="btnEditCorreo">Cambiar Correo</string>
+    <string name="btnEditUsername">Cambiar Username</string>
     <string name="btnEditContra">Cambiar Contraseña</string>
     <string name="btnEditPregun">Cambiar Pregunta</string>
     <string name="btnEditRespu">Cambiar Respuesta</string>
@@ -112,6 +109,7 @@
     <string name="lblNewVal">Nuevo Valor: </string>
     <string name="txtNuevo">Ingrese su nuevo dato</string>
     <string name="lblEmaActu">Seleccione el acceso que desea actualizar:</string>
+    <string name="lblSelProv">Seleccione el proveedor para actualizar:</string>
     <string name="lblRbCorr">Correo</string>
     <string-array name="lstTipUs">
         <item>Seleccione su tipo de usuario</item>
@@ -119,6 +117,7 @@
         <item>Administrador</item>
     </string-array>
     <string name="lblConfCamb">Confirmar Cambio: </string>
+    <string name="txtConfEma">Ingrese su correo</string>
     <string name="txtConfCamb">Ingrese su contraseña</string>
     <string name="btnConfEdit">Actualizar </string>
     <!-- Strings de la vista de alarma-->

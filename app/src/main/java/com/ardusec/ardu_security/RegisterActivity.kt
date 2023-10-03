@@ -74,7 +74,7 @@ class RegisterActivity : AppCompatActivity() {
     data class Acceso(val correo: String, val google: String)
     data class SistemasUser(val sistema1: String)
     data class UserCliente(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String)
-    data class UserAdmin(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Double)
+    data class UserAdmin(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Long)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -544,7 +544,7 @@ class RegisterActivity : AppCompatActivity() {
                         }
                 }else{
                     // Usuario administrador
-                    val telefono = txtTel.text.toString().toDouble()
+                    val telefono = txtTel.text.toString().toLong()
                     val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
@@ -568,7 +568,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun crearPeticionGoogle(){
+    private fun crearPeticionGoogle() {
         // Bloque de codigo de la funcion crearPeticionGoogle() con el fin de optimizar las funciones
         // Configuracion google
         googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -674,7 +674,7 @@ class RegisterActivity : AppCompatActivity() {
                                     }
                             }else{
                                 // Usuario administrador
-                                val telefono = txtTel.text.toString().toDouble()
+                                val telefono = txtTel.text.toString().toLong()
                                 val nUser = nAcc?.let {
                                     UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
                                 }
