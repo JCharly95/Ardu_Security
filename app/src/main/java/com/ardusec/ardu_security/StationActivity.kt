@@ -1,30 +1,33 @@
 package com.ardusec.ardu_security
 
-import android.content.Intent
 import android.graphics.drawable.ColorDrawable
+import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
+
 class StationActivity : AppCompatActivity() {
     // Seccion de la camara
     private lateinit var linLayCam: LinearLayout
-    private lateinit var camara: ImageView
+    private lateinit var camara: WebView
     // Seccion del sensor de gases
     private lateinit var linLaySenGas: LinearLayout
     private lateinit var senGasLplbl: TextView
@@ -137,9 +140,13 @@ class StationActivity : AppCompatActivity() {
         }
     }
 
-    private fun establecerCamara() {
-        val videoURL = "http://192.168.1.66:5000/video_feed"
-        Glide.with(this@StationActivity).load(Uri.parse(videoURL)).into(camara)
+    private fun establecerCamara(){
+        //val videoURL = "http://192.168.100.66:5000/video_feed"
+        val videoURL = "http://192.168.137.148:5000/video_feed"
+        //camara.settings.javaScriptEnabled = true
+        camara.settings.loadWithOverviewMode = true
+        camara.settings.useWideViewPort = true
+        camara.loadUrl(videoURL)
     }
 
     private fun establecerSensorGas(){
