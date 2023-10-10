@@ -27,6 +27,7 @@ class UserActivity : AppCompatActivity() {
     private lateinit var lblUser: TextView
     private lateinit var btnEditNom: Button
     private lateinit var btnEditEma: Button
+    private lateinit var btnEditUsernam: Button
     private lateinit var btnEditPass: Button
     private lateinit var btnEditPreg: Button
     private lateinit var btnEditResp: Button
@@ -122,6 +123,13 @@ class UserActivity : AppCompatActivity() {
                 putExtra("campo", "Correo")
             }
             startActivity(editEma)
+        }
+        btnEditUsernam.setOnClickListener {
+            val editUser = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+                putExtra("usuario", user)
+                putExtra("campo", "Username")
+            }
+            startActivity(editUser)
         }
         btnEditPass.setOnClickListener {
             val editPass = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {

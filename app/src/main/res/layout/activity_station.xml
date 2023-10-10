@@ -47,7 +47,7 @@
                     android:id="@+id/vidViewCam"
                     android:layout_width="match_parent"
                     android:layout_height="350dp"
-                    android:background="@color/darkgray"/>
+                    android:background="@color/darkgray" />
             </LinearLayout>
 
             <Space
