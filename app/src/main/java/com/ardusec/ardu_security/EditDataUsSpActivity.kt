@@ -198,8 +198,19 @@ class EditDataUsSpActivity : AppCompatActivity() {
     }
 
     private fun rellTipos() {
-        val adapter = ArrayAdapter.createFromResource(this@EditDataUsSpActivity, R.array.lstTipUs, android.R.layout.simple_spinner_item)
-        spNTipo.adapter = adapter
+        lifecycleScope.launch(Dispatchers.IO){
+            val setTipos = async {
+                // Obtener el arreglo de strings establecido para los tipos y agregarlos a un ArrayList de Strings
+                val lstTipos = resources.getStringArray(R.array.lstTipUs)
+                val arrTipos = ArrayList<String>()
+                arrTipos.addAll(lstTipos)
+                // Estableciendo el adaptador para el rellenado del spinner
+                val adadTipos = ArrayAdapter(this@EditDataUsSpActivity, android.R.layout.simple_spinner_item, arrTipos)
+                adadTipos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spNSis.adapter = adadTipos
+            }
+            setTipos.await()
+        }
     }
 
     private fun avisoActu(mensaje: String) {

@@ -178,6 +178,17 @@
                 android:layout_height="10dp" />
 
             <Button
+                android:id="@+id/btnEditUsNam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btnEditUsername"
+                android:textSize="20sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Button
                 android:id="@+id/btnEditTipUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -196,6 +207,10 @@
                 android:textSize="20sp"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
 
         </LinearLayout>
     </ScrollView>

@@ -81,7 +81,10 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(statsActi)
         }
         btnGenRep.setOnClickListener {
-
+            val reportActi = Intent(this@DashboardActivity, GenReportsActivity::class.java).apply {
+                putExtra("username", user)
+            }
+            startActivity(reportActi)
         }
         btnMenAj.setOnClickListener {
             val settingActi = Intent(this@DashboardActivity, SettingsActivity::class.java).apply {

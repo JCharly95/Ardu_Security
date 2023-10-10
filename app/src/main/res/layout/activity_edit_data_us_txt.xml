@@ -56,11 +56,10 @@
                 android:layout_height="10dp" />
 
             <TextView
-                android:id="@+id/lblOldDatTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/lblOldVal"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:gravity="center"
                 android:visibility="visible"
                 android:textColor="@color/negro"/>
@@ -70,6 +69,7 @@
                 android:layout_height="10dp" />
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/letrero1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/canela"
@@ -77,10 +77,35 @@
                 app:cardElevation="4dp">
 
                 <TextView
-                    android:id="@+id/txtOldEditDatTxt"
+                    android:id="@+id/txtValorPrevGuarda1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:text="@string/txtViejo"
+                    android:textColor="@color/blanco"
+                    app:drawableLeftCompat="@android:drawable/ic_dialog_alert" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/letrero2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/canela"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="4dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/txtValorPrevGuarda2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
                     android:gravity="center"
                     android:text="@string/txtViejo"
                     android:textColor="@color/blanco"
@@ -92,12 +117,11 @@
                 android:layout_height="10dp" />
 
             <TextView
-                android:id="@+id/lblNewDatTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/lblNewVal"
                 android:gravity="center"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:visibility="visible"
                 android:textColor="@color/negro"/>
 
@@ -106,7 +130,7 @@
                 android:layout_height="10dp" />
 
             <LinearLayout
-                android:id="@+id/linLayActuEma"
+                android:id="@+id/linLaySelProv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -114,13 +138,12 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/lblActuCorr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/lblEmaActu"
+                    android:text="@string/lblSelProv"
                     android:textColor="@color/negro"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:visibility="visible" />
 
                 <RadioGroup
@@ -162,11 +185,11 @@
                 android:layout_height="48dp"
                 android:ems="10"
                 android:inputType="text"
-                android:visibility="gone"
                 android:autofillHints="text"
                 android:textColor="@color/negro"
-                android:hint="@string/txtNuevo"
+                android:hint="@string/txtNuevoGen"
                 android:textColorHint="@color/darkgray"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <Space
@@ -174,11 +197,11 @@
                 android:layout_height="10dp" />
 
             <EditText
-                android:id="@+id/txtEmailActu"
+                android:id="@+id/txtNewDatEma"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:autofillHints="emailAddress"
-                android:hint="@string/txtNuevo"
+                android:hint="@string/txtNuevoCorr"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/negro"
                 android:textColorHint="@color/darkgray"
@@ -195,11 +218,11 @@
                 android:layout_height="48dp"
                 android:autofillHints="number"
                 android:ems="10"
-                android:hint="@string/txtNuevo"
+                android:hint="@string/txtNuevoTel"
                 android:inputType="number"
-                android:visibility="gone"
                 android:textColor="@color/negro"
                 android:textColorHint="@color/darkgray"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <Space
@@ -211,36 +234,74 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:ems="10"
-                android:visibility="gone"
                 android:autofillHints="password"
-                android:hint="@string/txtNuevo"
+                android:hint="@string/txtNuevaPass"
                 android:inputType="textPassword"
                 android:textColor="@color/negro"
                 android:textColorHint="@color/darkgray"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <Space
                 android:layout_width="wrap_content"
-                android:layout_height="30dp" />
+                android:layout_height="20dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mateCardConfChg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/negro"
+                app:cardBackgroundColor="@color/azulAlicia"
+                app:cardCornerRadius="4dp"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <LinearLayout
-                    android:id="@+id/linLayConfChg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:visibility="gone"
-                    tools:visibility="visible"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/lblConfChg"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/lblConfCamb"
-                        android:textSize="18sp"
-                        android:visibility="gone"
+                        android:textSize="20sp"
                         android:gravity="center"
+                        android:textColor="@color/negro"/>
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="10dp" />
+
+                    <TextView
+                        android:id="@+id/lblPregConf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/lblPregunta"
                         android:textColor="@color/negro"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        tools:visibility="visible"  />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="10dp" />
+
+                    <EditText
+                        android:id="@+id/txtConfResp"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:ems="10"
+                        android:inputType="text"
+                        android:autofillHints="text"
+                        android:textColor="@color/negro"
+                        android:hint="@string/txtRespuesta"
+                        android:textColorHint="@color/darkgray"
+                        android:visibility="gone"
                         tools:visibility="visible" />
 
                     <Space
@@ -248,17 +309,32 @@
                         android:layout_height="10dp" />
 
                     <EditText
-                        android:id="@+id/txtConfChg"
+                        android:id="@+id/txtConfEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:autofillHints="emailAddress"
+                        android:hint="@string/txtConfEma"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/negro"
+                        android:textColorHint="@color/darkgray"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="10dp" />
+
+                    <EditText
+                        android:id="@+id/txtConfPass"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:autofillHints="password"
                         android:ems="10"
                         android:hint="@string/txtConfCamb"
-                        android:visibility="gone"
                         android:inputType="textPassword"
                         android:textColor="@color/negro"
                         android:textColorHint="@color/darkgray"
-                        android:background="@color/azulAlicia"
+                        android:visibility="gone"
                         tools:visibility="visible" />
 
                     <CheckBox
@@ -268,28 +344,26 @@
                         android:layout_marginTop="5dp"
                         android:text="@string/chbPass"
                         android:textSize="14sp"
-                        android:visibility="gone"
                         android:textColor="@color/negro"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.498"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txtConfChg"
+                        android:visibility="gone"
                         tools:visibility="visible" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="5dp" />
 
             <Button
                 android:id="@+id/btnConfEditDataTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:text="@string/btnConfEdit"
-                android:textSize="20sp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/chbConfPass"
-                tools:visibility="visible" />
+                android:textSize="20sp"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
 
         </LinearLayout>
     </ScrollView>

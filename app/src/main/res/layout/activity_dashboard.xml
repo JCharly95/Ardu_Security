@@ -93,7 +93,7 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnGenRepo"
+                        android:text="@string/btnReportes"
                         android:textColor="@color/negro" />
                 </LinearLayout>
             </LinearLayout>

@@ -78,7 +78,10 @@ class SettingsActivity : AppCompatActivity() {
 
         }
         btnComent.setOnClickListener {
-
+            val commActi = Intent(this@SettingsActivity, CommentsActivity::class.java).apply {
+                putExtra("username", user)
+            }
+            startActivity(commActi)
         }
         btnAcerca.setOnClickListener {
             acerca()

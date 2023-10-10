@@ -34,7 +34,7 @@
     <!-- Strings de la vista dashboard -->
     <string name="headDash">Menú Principal</string>
     <string name="btnEsta">Estaciones</string>
-    <string name="btnGenRepo">Reportes</string>
+    <string name="btnReportes">Reportes</string>
     <string name="btnAjus">Ajustes</string>
     <string name="btnManu">Manual de \n Usuario</string>
     <string name="btnGesSis">Gestionar \n Sistema</string>
@@ -57,10 +57,6 @@
     <string name="lblTipUser">Seleccione el tipo de usuario:</string>
     <string name="rbUserGen">Cliente</string>
     <string name="rbUserAdmin">Administrador</string>
-    <string name="lblIngrePin">¿Desea ingresar un PIN?</string>
-    <string name="rbIngrePinSi">Si, deseo ingresar un pin</string>
-    <string name="rbIngrePinNo">No deseo ingresar un pin</string>
-    <string name="txtPin">Pin de Acceso Numerico</string>
     <string name="txtPhone">Numero Telefonico</string>
     <string-array name="lstSistems">
         <item>Seleccione su Sistema</item>
@@ -91,6 +87,7 @@
     <string name="lblUserVal">Username </string>
     <string name="btnEditNombre">Cambiar Nombre</string>
     <string name="btnEditCorreo">Cambiar Correo</string>
+    <string name="btnEditUsername">Cambiar Nombre de Usuario</string>
     <string name="btnEditContra">Cambiar Contraseña</string>
     <string name="btnEditPregun">Cambiar Pregunta</string>
     <string name="btnEditRespu">Cambiar Respuesta</string>
@@ -110,8 +107,11 @@
     <string name="lblOldVal">Valor Previo: </string>
     <string name="txtViejo">Valor Guardado</string>
     <string name="lblNewVal">Nuevo Valor: </string>
-    <string name="txtNuevo">Ingrese su nuevo dato</string>
-    <string name="lblEmaActu">Seleccione el acceso que desea actualizar:</string>
+    <string name="txtNuevoGen">Ingrese su nuevo dato</string>
+    <string name="txtNuevoCorr">Ingrese su nuevo correo</string>
+    <string name="txtNuevoTel">Ingrese su nuevo telefono</string>
+    <string name="txtNuevaPass">Ingrese su nueva contraseña</string>
+    <string name="lblSelProv">Seleccione el proveedor con el que desea operar:</string>
     <string name="lblRbCorr">Correo</string>
     <string-array name="lstTipUs">
         <item>Seleccione su tipo de usuario</item>
@@ -119,8 +119,11 @@
         <item>Administrador</item>
     </string-array>
     <string name="lblConfCamb">Confirmar Cambio: </string>
-    <string name="txtConfCamb">Ingrese su contraseña</string>
-    <string name="btnConfEdit">Actualizar </string>
+    <string name="txtConfEma">Ingrese su correo actual</string>
+    <string name="txtConfCamb">Ingrese su contraseña actual</string>
+    <string name="lblPregunta">Pregunta de Seguridad</string>
+    <string name="txtRespuesta">Ingrese su respuesta</string>
+    <string name="btnConfEdit">Actualizar</string>
     <!-- Strings de la vista de alarma-->
     <string name="lblEncaAla">Encender / Apagar</string>
     <string name="rbPrendeAl">Prender Alarma</string>
@@ -130,4 +133,26 @@
     <string name="condActiAl">Accionada</string>
     <string name="condOperAl">Operando</string>
     <string name="condInacAl">Inhabilitada</string>
+    <!-- Strings de la vista de generar reportes-->
+    <string name="headRepo">Generar Reportes</string>
+    <string name="lblEstaciones">Seleccione su estacion:</string>
+    <string name="rbEsta1">1</string>
+    <string name="rbEsta2">2</string>
+    <string name="rbEsta3">3</string>
+    <string name="rbEsta4">4</string>
+    <string name="rbEsta5">5</string>
+    <string name="lblSensor">Seleccione el sensor:</string>
+    <string name="rbSenGLP">Gas LP</string>
+    <string name="rbSCO2">Dioxido de Carbono (CO2)</string>
+    <string name="rbSenProp">Gas Propano</string>
+    <string name="rbSenHumo">Humo</string>
+    <string name="lblRango">Seleccione su rango de monitoreo deseado:</string>
+    <string name="calIni">Inicio:</string>
+    <string name="calFin">Fin:</string>
+    <string name="btnGenRepo">Generar Reporte</string>
+    <!-- Strings de la vista comentarios-->
+    <string name="headComms">Generar Opinion</string>
+    <string name="lblComm">Comentario</string>
+    <string name="txtArComm">Comentario:</string>
+    <string name="btnSendComm">Enviar Opinion</string>
 </resources>

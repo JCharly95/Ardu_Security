@@ -1,22 +1,17 @@
 package com.ardusec.ardu_security
 
-import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -24,7 +19,7 @@ import kotlinx.coroutines.launch
 class StationActivity : AppCompatActivity() {
     // Seccion de la camara
     private lateinit var linLayCam: LinearLayout
-    private lateinit var camara: ImageView
+    private lateinit var camara: WebView
     // Seccion del sensor de gases
     private lateinit var linLaySenGas: LinearLayout
     private lateinit var senGasLplbl: TextView
@@ -44,6 +39,7 @@ class StationActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var user: String
     private lateinit var estacion: String
+    private lateinit var camURL: String
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
@@ -90,8 +86,30 @@ class StationActivity : AppCompatActivity() {
         // Inicializando instancia hacia el nodo raiz de la BD
         database = Firebase.database
 
-        // Preparacion de la camara
-        establecerCamara()
+        // Obtener la direccion IP de la estacion y lanzar la camara segun la solicitada
+        when(estacion){
+            "estacion1" -> {
+                camURL = "http://192.168.137.148:5000"
+                establecerCamara(camURL)
+            }
+            "estacion2" -> {
+                camURL = "http://192.168.137.148:5000"
+                establecerCamara(camURL)
+            }
+            "estacion3" -> {
+                camURL = "http://192.168.137.148:5000"
+                establecerCamara(camURL)
+            }
+            "estacion4" -> {
+                camURL = "http://192.168.137.148:5000"
+                establecerCamara(camURL)
+            }
+            "estacion5" -> {
+                camURL = "http://192.168.137.148:5000"
+                establecerCamara(camURL)
+            }
+        }
+
         // Establecer el sensor segun la estacion
         setSensor()
     }
@@ -137,9 +155,13 @@ class StationActivity : AppCompatActivity() {
         }
     }
 
-    private fun establecerCamara() {
-        val videoURL = "http://192.168.1.66:5000/video_feed"
-        Glide.with(this@StationActivity).load(Uri.parse(videoURL)).into(camara)
+    private fun establecerCamara(dirUrl: String){
+        val videoURL = dirUrl + "/video_feed"
+        //val videoURL = "http://192.168.100.66:5000/video_feed"
+        //camara.settings.javaScriptEnabled = true
+        camara.settings.loadWithOverviewMode = true
+        camara.settings.useWideViewPort = true
+        camara.loadUrl(videoURL)
     }
 
     private fun establecerSensorGas(){
@@ -158,11 +180,23 @@ class StationActivity : AppCompatActivity() {
                                 refVals.addListenerForSingleValueEvent(object: ValueEventListener {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         for(valsSen in snapshot.children) {
-                                            when(valsSen.key.toString()){
-                                                "co" -> senCo2.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
-                                                "lpg" -> senGasLp.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
-                                                "propane" -> senProp.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
-                                                "smoke" -> senHumo.text = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                            when(valsSen.key.toString()) {
+                                                "co" -> {
+                                                    val resCo = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                                    senCo2.text = resCo
+                                                }
+                                                "lpg" -> {
+                                                    val resGLP = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                                    senGasLp.text = resGLP
+                                                }
+                                                "propane" -> {
+                                                    val resProp = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                                    senProp.text = resProp
+                                                }
+                                                "smoke" -> {
+                                                    val resHumo = "%.4f".format(valsSen.value.toString().toFloat()) + " ppm"
+                                                    senHumo.text = resHumo
+                                                }
                                             }
                                         }
                                     }
