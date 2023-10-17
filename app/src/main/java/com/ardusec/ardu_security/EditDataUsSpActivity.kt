@@ -169,10 +169,10 @@ class EditDataUsSpActivity : AppCompatActivity() {
     private fun rellSpinSis() {
         lifecycleScope.launch(Dispatchers.IO) {
             val rellSis = async {
-                // Obtener el arreglo de strings establecido para los sistemas
-                val lstSists = resources.getStringArray(R.array.lstSistems)
-                var arrSists = ArrayList<String>()
-                arrSists.addAll(lstSists)
+                    // Obtener el arreglo de strings establecido para los sistemas
+                    val lstSists = resources.getStringArray(R.array.lstSistems)
+                    var arrSists = ArrayList<String>()
+                    arrSists.addAll(lstSists)
                 // Creando la referencia de la coleccion de sistemas en la BD
                 ref = database.getReference("Sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
@@ -363,7 +363,6 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         for (objUs in snapshot.children) {
                                             if(objUs.key.toString() == user) {
-                                                Log.w("Key del Usuario en la pregunta", objUs.key.toString())
                                                 objUs.ref.removeValue()
                                             }
                                         }

@@ -147,12 +147,13 @@
     <string name="rbSenProp">Gas Propano</string>
     <string name="rbSenHumo">Humo</string>
     <string name="lblRango">Seleccione su rango de monitoreo deseado:</string>
+    <string name="lblRanIni">Rango Inicio…</string>
+    <string name="lblRanFin">Rango Fin…</string>
     <string name="calIni">Inicio:</string>
     <string name="calFin">Fin:</string>
     <string name="btnGenRepo">Generar Reporte</string>
     <!-- Strings de la vista comentarios-->
     <string name="headComms">Generar Opinion</string>
-    <string name="lblComm">Comentario</string>
-    <string name="txtArComm">Comentario:</string>
+    <string name="lblOp">Opinion:</string>
     <string name="btnSendComm">Enviar Opinion</string>
 </resources>

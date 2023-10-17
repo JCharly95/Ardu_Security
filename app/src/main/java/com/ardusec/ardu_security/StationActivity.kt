@@ -89,23 +89,23 @@ class StationActivity : AppCompatActivity() {
         // Obtener la direccion IP de la estacion y lanzar la camara segun la solicitada
         when(estacion){
             "estacion1" -> {
-                camURL = "http://192.168.137.148:5000"
+                camURL = "http://192.168.1.79:5000"
                 establecerCamara(camURL)
             }
             "estacion2" -> {
-                camURL = "http://192.168.137.148:5000"
+                camURL = "http://192.168.1.79:5000"
                 establecerCamara(camURL)
             }
             "estacion3" -> {
-                camURL = "http://192.168.137.148:5000"
+                camURL = "http://192.168.1.79:5000"
                 establecerCamara(camURL)
             }
             "estacion4" -> {
-                camURL = "http://192.168.137.148:5000"
+                camURL = "http://192.168.1.79:5000"
                 establecerCamara(camURL)
             }
             "estacion5" -> {
-                camURL = "http://192.168.137.148:5000"
+                camURL = "http://192.168.1.79:5000"
                 establecerCamara(camURL)
             }
         }

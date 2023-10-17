@@ -12,8 +12,9 @@
         android:id="@+id/ReportsView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:background="@color/azulAlicia">
+        android:background="@color/azulAlicia"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="-182dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,7 +44,7 @@
                     android:layout_height="wrap_content" />
 
                 <ImageButton
-                    android:id="@+id/btnInfoGenRepo"
+                    android:id="@+id/btnHelpGenRepo"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:backgroundTint="@color/teal_200"
@@ -111,7 +112,9 @@
                         android:id="@+id/spaEsta4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
                     <RadioButton
                         android:id="@+id/rbSelEsta4"
@@ -120,13 +123,15 @@
                         android:text="@string/rbEsta4"
                         android:textColor="@color/negro"
                         android:visibility="gone"
-                        tools:visibility="visible"/>
+                        tools:visibility="visible" />
 
                     <Space
                         android:id="@+id/spaEsta5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
                     <RadioButton
                         android:id="@+id/rbSelEsta5"
@@ -135,7 +140,7 @@
                         android:text="@string/rbEsta5"
                         android:textColor="@color/negro"
                         android:visibility="gone"
-                        tools:visibility="visible"/>
+                        tools:visibility="visible" />
                 </RadioGroup>
             </LinearLayout>
 
@@ -161,7 +166,7 @@
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="visible">
+                    android:paddingStart="70dp">
 
                     <RadioButton
                         android:id="@+id/rbSelSenGLP"
@@ -204,7 +209,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/rbSenHumo"
-                        android:textColor="@color/negro"/>
+                        android:textColor="@color/negro" />
                 </RadioGroup>
             </LinearLayout>
 
@@ -229,30 +234,26 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/calIni"
-                android:textSize="16sp"
                 android:gravity="center"
-                android:visibility="visible"
-                android:textColor="@color/negro"/>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="5dp" />
+                android:text="@string/calIni"
+                android:textColor="@color/negro"
+                android:textSize="16sp"
+                android:visibility="visible" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/mateCardCalIni"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                app:strokeWidth="1dp"
+                app:cardCornerRadius="4dp"
                 app:strokeColor="@color/negro"
-                app:cardBackgroundColor="@color/azulAlicia"
-                app:cardCornerRadius="4dp">
+                app:strokeWidth="1dp">
 
-            <CalendarView
-                android:id="@+id/calRangoIni"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <DatePicker
+                    android:id="@+id/calRangoIni"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:datePickerMode="calendar" />
             </com.google.android.material.card.MaterialCardView>
 
             <Space
@@ -262,30 +263,27 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/calFin"
-                android:textSize="16sp"
                 android:gravity="center"
-                android:visibility="visible"
-                android:textColor="@color/negro"/>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="5dp" />
+                android:text="@string/calFin"
+                android:textColor="@color/negro"
+                android:textSize="16sp"
+                android:visibility="visible" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/mateCardCalFin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                app:strokeWidth="1dp"
+                app:cardCornerRadius="4dp"
                 app:strokeColor="@color/negro"
-                app:cardBackgroundColor="@color/azulAlicia"
-                app:cardCornerRadius="4dp">
+                app:strokeWidth="1dp">
 
-                <CalendarView
+                <DatePicker
                     android:id="@+id/calRangoFin"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:calendarViewShown="false"
+                    android:datePickerMode="spinner" />
             </com.google.android.material.card.MaterialCardView>
 
             <Space
@@ -297,7 +295,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btnGenRepo"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <Space
                 android:layout_width="wrap_content"
