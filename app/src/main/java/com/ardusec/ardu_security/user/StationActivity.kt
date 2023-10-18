@@ -1,4 +1,4 @@
-package com.ardusec.ardu_security
+package com.ardusec.ardu_security.user
 
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.ardusec.ardu_security.R
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -46,8 +47,10 @@ class StationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_station)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        setContentView(R.layout.user_activity_station)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
 
         //Obteniendo los valores del usuario y estacion
         if(intent.extras != null){

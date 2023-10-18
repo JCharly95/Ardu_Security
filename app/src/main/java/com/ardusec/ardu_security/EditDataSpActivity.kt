@@ -3,7 +3,6 @@ package com.ardusec.ardu_security
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatSpinner
@@ -12,11 +11,9 @@ import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -24,7 +21,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
-class EditDataUsSpActivity : AppCompatActivity() {
+class EditDataSpActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblHeadSp: TextView
     private lateinit var btnAyuda: ImageButton
@@ -49,11 +46,13 @@ class EditDataUsSpActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_data_us_sp)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        setContentView(R.layout.activity_edit_data_sp)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
         //Obteniendo el campo
         if(intent.extras == null){
-            Toast.makeText(this@EditDataUsSpActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@EditDataSpActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
             campo = bundle.getString("campo").toString()
@@ -154,12 +153,12 @@ class EditDataUsSpActivity : AppCompatActivity() {
                         }
                     }
                     // Estableciendo el adaptador para el rellenado del spinner
-                    val adapPregs = ArrayAdapter(this@EditDataUsSpActivity, android.R.layout.simple_spinner_item, arrPregs)
+                    val adapPregs = ArrayAdapter(this@EditDataSpActivity, android.R.layout.simple_spinner_item, arrPregs)
                     adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spNPreg.adapter = adapPregs
                 }
                     .addOnFailureListener {
-                        Toast.makeText(this@EditDataUsSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                     }
             }
             rellPregs.await()
@@ -184,12 +183,12 @@ class EditDataUsSpActivity : AppCompatActivity() {
                             }
                         }
                         // Estableciendo el adaptador para el rellenado del spinner
-                        val adapSis = ArrayAdapter(this@EditDataUsSpActivity, android.R.layout.simple_spinner_item, arrSists)
+                        val adapSis = ArrayAdapter(this@EditDataSpActivity, android.R.layout.simple_spinner_item, arrSists)
                         adapSis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spNSis.adapter = adapSis
                     }
                     override fun onCancelled(databaseError: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -205,7 +204,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                 val arrTipos = ArrayList<String>()
                 arrTipos.addAll(lstTipos)
                 // Estableciendo el adaptador para el rellenado del spinner
-                val adadTipos = ArrayAdapter(this@EditDataUsSpActivity, android.R.layout.simple_spinner_item, arrTipos)
+                val adadTipos = ArrayAdapter(this@EditDataSpActivity, android.R.layout.simple_spinner_item, arrTipos)
                 adadTipos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spNSis.adapter = adadTipos
             }
@@ -253,7 +252,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                             }
                         }
                             .addOnFailureListener {
-                                Toast.makeText(this@EditDataUsSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                             }
                     }
                     getPreg.await()
@@ -284,7 +283,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                             }
                         }
                             .addOnFailureListener {
-                                Toast.makeText(this@EditDataUsSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                             }
                     }
                     getSis.await()
@@ -307,7 +306,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                             }
                         }
                             .addOnFailureListener {
-                                Toast.makeText(this@EditDataUsSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                             }
                     }
                     getTip.await()
@@ -368,14 +367,14 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                         }
                                     }
                                     override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@EditDataUsSpActivity,"El usuario no fue encontrado en la relacion",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataSpActivity,"El usuario no fue encontrado en la relacion",Toast.LENGTH_SHORT).show()
                                     }
                                 })
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"No se pudieron ver las preguntas",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"No se pudieron ver las preguntas",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -392,7 +391,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -406,7 +405,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                         for (objUser in dataSnapshot.children) {
                             if(objUser.key.toString() == user){
                                 objUser.ref.child("pregunta_Seg").setValue("pregunta${listPregs.selectedItemPosition}").addOnSuccessListener {
-                                    Toast.makeText(this@EditDataUsSpActivity, "Su pregunta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataSpActivity, "Su pregunta fue actualizada satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(1500){
                                         lifecycleScope.launch(Dispatchers.Main){
                                             retorno()
@@ -415,14 +414,14 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                     }
                                 }
                                     .addOnFailureListener {
-                                        Toast.makeText(this@EditDataUsSpActivity, "Error: Su pregunta no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataSpActivity, "Error: Su pregunta no pudo ser actualizada", Toast.LENGTH_SHORT).show()
                                         spNPreg.setSelection(0)
                                     }
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -454,7 +453,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                         }
                                     }
                                     override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@EditDataUsSpActivity,"El usuario no fue encontrado en la relacion",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataSpActivity,"El usuario no fue encontrado en la relacion",Toast.LENGTH_SHORT).show()
                                     }
                                 })
                                 break
@@ -462,7 +461,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"No se pudieron ver los sistemas",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"No se pudieron ver los sistemas",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -479,7 +478,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -498,7 +497,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                         for(sistems in snapshot.children){
                                             if(sistems.value.toString() == keyVieja){
                                                 sistems.ref.setValue("sistema${listSis.selectedItemPosition}").addOnSuccessListener {
-                                                    Toast.makeText(this@EditDataUsSpActivity, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(this@EditDataSpActivity, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                                     Timer().schedule(1500){
                                                         lifecycleScope.launch(Dispatchers.Main){
                                                             retorno()
@@ -507,21 +506,21 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                                     }
                                                 }
                                                     .addOnFailureListener {
-                                                        Toast.makeText(this@EditDataUsSpActivity, "Error: Su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(this@EditDataSpActivity, "Error: Su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
                                                         spNSis.setSelection(0)
                                                     }
                                             }
                                         }
                                     }
                                     override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@EditDataUsSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
                                     }
                                 })
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -541,7 +540,7 @@ class EditDataUsSpActivity : AppCompatActivity() {
                         for (objUs in dataSnapshot.children) {
                             if(objUs.key.toString() == user){
                                 objUs.ref.child("tipo_Usuario").setValue(tipo).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataUsSpActivity, "Su tipo fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataSpActivity, "Su tipo fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(1500){
                                         lifecycleScope.launch(Dispatchers.Main){
                                             retorno()
@@ -550,14 +549,14 @@ class EditDataUsSpActivity : AppCompatActivity() {
                                     }
                                 }
                                     .addOnFailureListener {
-                                        Toast.makeText(this@EditDataUsSpActivity, "Error: Su tipo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataSpActivity, "Error: Su tipo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
                                         spNSis.setSelection(0)
                                     }
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
                     }
                 })
             }

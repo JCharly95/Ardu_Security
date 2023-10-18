@@ -85,22 +85,21 @@
     <string name="lblUser">Usuario: </string>
     <string name="lblNameVal">Nombre del usuario</string>
     <string name="lblUserVal">Username </string>
-    <string name="btnEditNombre">Cambiar Nombre</string>
-    <string name="btnEditCorreo">Cambiar Correo</string>
-    <string name="btnEditUsername">Cambiar Nombre de Usuario</string>
-    <string name="btnEditContra">Cambiar Contraseña</string>
-    <string name="btnEditPregun">Cambiar Pregunta</string>
-    <string name="btnEditRespu">Cambiar Respuesta</string>
-    <string name="btnEditSisRel">Cambiar Sistema</string>
-    <string name="btnEditTipUser">Cambiar Tipo de Usuario</string>
-    <string name="btnEditPin">Cambiar Pin</string>
-    <string name="btnEditTele">Cambiar Telefono</string>
+    <string name="btnEditNombre">Cambiar\nNombre</string>
+    <string name="btnEditCorreo">Cambiar\nCorreo</string>
+    <string name="btnEditUsername">Cambiar\nNombre de\nUsuario</string>
+    <string name="btnEditContra">Cambiar\nContraseña</string>
+    <string name="btnEditPregun">Cambiar\nPregunta</string>
+    <string name="btnEditRespu">Cambiar\nRespuesta</string>
+    <string name="btnEditSisRel">Cambiar\nSistema</string>
+    <string name="btnEditTipUser">Cambiar Tipo\nde Usuario</string>
+    <string name="btnEditTel">Cambiar\nTelefono</string>
     <!-- Strings de la vista de ajustes-->
     <string name="headAjus">Ajustes</string>
     <string name="btnTema">Seleccionar Tema App</string>
-    <string name="btnEdit">Editar Información</string>
-    <string name="btnNoti">Notificaciones</string>
-    <string name="btnCommSis">Opiniones de Sistema</string>
+    <string name="btnEdit">Editar\nInformación\nde Usuario</string>
+    <string name="btnNoti">Gestionar\nNotificaciones</string>
+    <string name="btnCommSis">Opiniones\ndel Sistema</string>
     <string name="btnAbout">Acerca de…</string>
     <!-- Strings de la vistas de edicion de campos-->
     <string name="headEdit">Editar </string>
@@ -156,4 +155,10 @@
     <string name="headComms">Generar Opinion</string>
     <string name="lblOp">Opinion:</string>
     <string name="btnSendComm">Enviar Opinion</string>
+    <!-- Strings de la vista de manejo de sistema-->
+    <string name="headManSis">Gestion del Sistema</string>
+    <string name="btnUpSisNam">Cambiar\nNombre</string>
+    <string name="btnUpSisAla">Cambiar\nAlarma</string>
+    <string name="btnUpSisSta">Cambiar\nEstaciones</string>
+    <string name="btnUpSisUse">Administrar\nUsuarios</string>
 </resources>

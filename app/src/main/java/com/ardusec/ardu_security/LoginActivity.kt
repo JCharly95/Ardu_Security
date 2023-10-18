@@ -2,34 +2,28 @@ package com.ardusec.ardu_security
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.net.wifi.hotspot2.pps.Credential
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.ardusec.ardu_security.user.DashboardActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -139,7 +133,7 @@ class LoginActivity : AppCompatActivity() {
             buscarUsBD()
         }
         btnRegister.setOnClickListener{
-            val intentRegister = Intent(this@LoginActivity,RegisterActivity::class.java)
+            val intentRegister = Intent(this@LoginActivity, RegisterActivity::class.java)
             startActivity(intentRegister)
         }
         btnLostPass.setOnClickListener{

@@ -1,4 +1,4 @@
-package com.ardusec.ardu_security
+package com.ardusec.ardu_security.user
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.ardusec.ardu_security.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -36,8 +37,8 @@ class GenReportsActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     // Bundle para extras y saber que campo sera actualizado
     private lateinit var bundle: Bundle
-    private lateinit var campo: String
     private lateinit var user: String
+    private lateinit var sistema: String
     // Variables de valor de seleccion
     private var estaSel = ""
     private var sensoSel = ""
@@ -46,16 +47,18 @@ class GenReportsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_gen_reports)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        setContentView(R.layout.user_activity_gen_reports)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
 
         //Obteniendo el campo
         if(intent.extras == null){
             Toast.makeText(this@GenReportsActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
-            campo = bundle.getString("campo").toString()
             user = bundle.getString("usuario").toString()
+            sistema = bundle.getString("sistema").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -165,15 +168,15 @@ class GenReportsActivity : AppCompatActivity() {
         }
         rbSelEst3.setOnClickListener {
             if(rbSelEst3.isChecked)
-                estaSel = "Estacion2"
+                estaSel = "Estacion3"
         }
         rbSelEst4.setOnClickListener {
             if(rbSelEst4.isChecked)
-                estaSel = "Estacion2"
+                estaSel = "Estacion4"
         }
         rbSelEst5.setOnClickListener {
             if(rbSelEst5.isChecked)
-                estaSel = "Estacion2"
+                estaSel = "Estacion5"
         }
         rbSenGLP.setOnClickListener {
             if(rbSenGLP.isChecked)

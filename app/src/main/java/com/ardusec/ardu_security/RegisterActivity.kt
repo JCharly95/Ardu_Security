@@ -13,15 +13,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
-import androidx.activity.result.contract.ActivityResultContracts;
+import com.ardusec.ardu_security.user.DashboardActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -79,7 +77,9 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this@RegisterActivity, R.color.teal_700)))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this@RegisterActivity,
+            R.color.teal_700
+        )))
 
         // Preparacion de los elementos
         setUp()

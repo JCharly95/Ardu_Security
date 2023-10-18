@@ -6,10 +6,10 @@
     android:background="@color/azulAlicia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DashboardActivity">
+    tools:context=".admin.ManageSisActivity">
 
     <ScrollView
-        android:id="@+id/DashView"
+        android:id="@+id/ManSisView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="20dp"
@@ -24,10 +24,11 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/lblDash"
+                android:id="@+id/lblManSis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/headDash"
+                android:text="@string/headManSis"
+                android:gravity="center"
                 android:textSize="34sp"
                 android:textColor="@color/negro"
                 android:visibility="visible"/>
@@ -35,39 +36,6 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Seleccione el sistema de la sesion"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:textColor="@color/negro"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/negro"
-                app:cardCornerRadius="4dp">
-
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spSistemas"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:spinnerMode="dropdown"
-                    android:textColor="@color/negro"
-                    android:dropDownWidth="wrap_content"
-                    android:entries="@array/lstSistems"/>
-            </com.google.android.material.card.MaterialCardView>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,12 +51,12 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnStats"
+                        android:id="@+id/btnSisNam"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/estaciones" />
+                        app:srcCompat="@drawable/editar_nombre"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -96,7 +64,7 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnEsta"
+                        android:text="@string/btnUpSisNam"
                         android:textColor="@color/negro"/>
                 </LinearLayout>
 
@@ -113,12 +81,12 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnGenRep"
+                        android:id="@+id/btnSisAla"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/reportes" />
+                        app:srcCompat="@drawable/editar_alarma"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -126,7 +94,7 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnReportes"
+                        android:text="@string/btnUpSisAla"
                         android:textColor="@color/negro" />
                 </LinearLayout>
             </LinearLayout>
@@ -149,12 +117,12 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnAjuste"
+                        android:id="@+id/btnSisSta"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/ajustes" />
+                        app:srcCompat="@drawable/editar_estaciones"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -162,7 +130,7 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnAjus"
+                        android:text="@string/btnUpSisSta"
                         android:textColor="@color/negro" />
                 </LinearLayout>
 
@@ -179,12 +147,12 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnManUs"
+                        android:id="@+id/btnSisGesUs"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/manual" />
+                        app:srcCompat="@drawable/gestionar_usuarios"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -192,76 +160,8 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnManu"
+                        android:text="@string/btnUpSisUse"
                         android:textColor="@color/negro" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:id="@+id/LinBtnEsta5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                    <ImageButton
-                        android:id="@+id/btnGesSis"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/gestion_sistema" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnGesSis"
-                        android:textColor="@color/negro" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:id="@+id/LinBtnAlarm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnCerrSes"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/cerrar_sesion" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnCloSes"
-                        android:textColor="@color/negro"  />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

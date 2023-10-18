@@ -1,12 +1,9 @@
-package com.ardusec.ardu_security
+package com.ardusec.ardu_security.user
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Adapter
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -18,6 +15,9 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.ardusec.ardu_security.MainActivity
+import com.ardusec.ardu_security.R
+import com.ardusec.ardu_security.admin.ManageSisActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -51,8 +51,8 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this@DashboardActivity, R.color.teal_700)))
+        setContentView(R.layout.user_activity_dashboard)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this@DashboardActivity,R.color.teal_700)))
         //Obteniendo los valores de acceso/registro
         if(intent.extras == null) {
             tipo = "Cliente"
@@ -157,36 +157,114 @@ class DashboardActivity : AppCompatActivity() {
         // Agregar los listener
         btnMenEsta.setOnClickListener {
             if(validarSelSis(spSistemas)){
-                val statsActi = Intent(this@DashboardActivity, MenuStationsActivity::class.java).apply {
-                    putExtra("username", user)
-                    putExtra("sistema", spSistemas.selectedItem.toString())
+                lifecycleScope.launch(Dispatchers.IO){
+                    val getSis = async {
+                        ref = database.getReference("Sistemas")
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for(objSis in dataSnapshot.children) {
+                                    if(objSis.child("nombre_Sis").value.toString() == spSistemas.selectedItem.toString()) {
+                                        val statsActi = Intent(this@DashboardActivity, MenuStationsActivity::class.java).apply {
+                                            putExtra("username", user)
+                                            putExtra("sistema", objSis.key.toString())
+                                        }
+                                        startActivity(statsActi)
+                                        break
+                                    }
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(this@DashboardActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+                    getSis.await()
                 }
-                startActivity(statsActi)
             }
         }
         btnGenRep.setOnClickListener {
             if(validarSelSis(spSistemas)){
-                val reportActi = Intent(this@DashboardActivity, GenReportsActivity::class.java).apply {
-                    putExtra("username", user)
-                    putExtra("sistema", spSistemas.selectedItem.toString())
+                lifecycleScope.launch(Dispatchers.IO){
+                    val getSis = async {
+                        ref = database.getReference("Sistemas")
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for(objSis in dataSnapshot.children) {
+                                    if(objSis.child("nombre_Sis").value.toString() == spSistemas.selectedItem.toString()) {
+                                        val reportActi = Intent(this@DashboardActivity, GenReportsActivity::class.java).apply {
+                                            putExtra("username", user)
+                                            putExtra("sistema", objSis.key.toString())
+                                        }
+                                        startActivity(reportActi)
+                                        break
+                                    }
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(this@DashboardActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+                    getSis.await()
                 }
-                startActivity(reportActi)
             }
         }
         btnMenAj.setOnClickListener {
             if(validarSelSis(spSistemas)){
-                val settingActi = Intent(this@DashboardActivity, SettingsActivity::class.java).apply {
-                    putExtra("username", user)
-                    putExtra("sistema", spSistemas.selectedItem.toString())
+                lifecycleScope.launch(Dispatchers.IO){
+                    val getSis = async {
+                        ref = database.getReference("Sistemas")
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for(objSis in dataSnapshot.children) {
+                                    if(objSis.child("nombre_Sis").value.toString() == spSistemas.selectedItem.toString()) {
+                                        val settingActi = Intent(this@DashboardActivity, SettingsActivity::class.java).apply {
+                                            putExtra("username", user)
+                                            putExtra("sistema", objSis.key.toString())
+                                        }
+                                        startActivity(settingActi)
+                                        break
+                                    }
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(this@DashboardActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+                    getSis.await()
                 }
-                startActivity(settingActi)
             }
         }
         btnManual.setOnClickListener {
 
         }
         btnMenSis.setOnClickListener {
-
+            if(validarSelSis(spSistemas)){
+                lifecycleScope.launch(Dispatchers.IO){
+                    val getSis = async {
+                        ref = database.getReference("Sistemas")
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for(objSis in dataSnapshot.children) {
+                                    if(objSis.child("nombre_Sis").value.toString() == spSistemas.selectedItem.toString()) {
+                                        val gesSisActi = Intent(this@DashboardActivity, ManageSisActivity::class.java).apply {
+                                            putExtra("username", user)
+                                            putExtra("sistema", objSis.key.toString())
+                                        }
+                                        startActivity(gesSisActi)
+                                        break
+                                    }
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(this@DashboardActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+                    getSis.await()
+                }
+            }
         }
         btnCerSes.setOnClickListener {
             // Cerrar Sesion en Firebase

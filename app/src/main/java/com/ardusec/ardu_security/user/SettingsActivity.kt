@@ -1,34 +1,38 @@
-package com.ardusec.ardu_security
+package com.ardusec.ardu_security.user
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.ardusec.ardu_security.R
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var btnSelTem: Button
-    private lateinit var btnEditInfo: Button
-    private lateinit var btnGesNoti: Button
-    private lateinit var btnComent: Button
-    private lateinit var btnAcerca: Button
+    private lateinit var btnEditInfo: ImageButton
+    private lateinit var btnGesNoti: ImageButton
+    private lateinit var btnComent: ImageButton
+    private lateinit var btnAcerca: ImageButton
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var user: String
+    private lateinit var sistema: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        setContentView(R.layout.user_activity_settings)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
         //Obteniendo el usuario
         if(intent.extras == null){
             Toast.makeText(this@SettingsActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
+            sistema = bundle.getString("sistema").toString()
         }
         // Configurar el arranque de la interfaz
         setUp()
@@ -40,7 +44,6 @@ class SettingsActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Configuracion"
         // Relacionando los elementos con su objeto de la interfaz
-        btnSelTem = findViewById(R.id.btnTema)
         btnEditInfo = findViewById(R.id.btnActuInfo)
         btnGesNoti = findViewById(R.id.btnGesNoti)
         btnComent = findViewById(R.id.btnCommSis)
@@ -65,9 +68,6 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun addListeners(){
         // Agregar los listener
-        btnSelTem.setOnClickListener {
-
-        }
         btnEditInfo.setOnClickListener {
             val intentPerf = Intent(this@SettingsActivity, UserActivity::class.java).apply {
                 putExtra("username", user)

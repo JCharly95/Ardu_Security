@@ -1,21 +1,18 @@
-package com.ardusec.ardu_security
+package com.ardusec.ardu_security.user
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.ardusec.ardu_security.R
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -36,14 +33,17 @@ class MenuStationsActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var user: String
     private lateinit var tipo: String
+    private lateinit var sistema: String
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_menu_stations)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        setContentView(R.layout.user_activity_menu_stations)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
         //Obteniendo los valores de acceso/registro
         if(intent.extras == null){
             tipo = "Cliente"
@@ -51,6 +51,7 @@ class MenuStationsActivity : AppCompatActivity() {
         }else{
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
+            sistema = bundle.getString("sistema").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -177,7 +178,8 @@ class MenuStationsActivity : AppCompatActivity() {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         for(sisRel in snapshot.children){
                                             if(sisRel.child("sistema_Rel").value == sistema && contEsta == numBtn){
-                                                val intActEst5 = Intent(this@MenuStationsActivity,StationActivity::class.java).apply {
+                                                val intActEst5 = Intent(this@MenuStationsActivity,
+                                                    StationActivity::class.java).apply {
                                                     putExtra("username", user)
                                                     putExtra("name_station", sisRel.key.toString())
                                                 }

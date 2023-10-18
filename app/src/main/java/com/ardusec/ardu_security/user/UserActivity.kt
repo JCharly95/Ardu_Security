@@ -1,22 +1,23 @@
-package com.ardusec.ardu_security
+package com.ardusec.ardu_security.user
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.ardusec.ardu_security.EditDataSpActivity
+import com.ardusec.ardu_security.EditDataTxtActivity
+import com.ardusec.ardu_security.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -25,16 +26,16 @@ class UserActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblNom: TextView
     private lateinit var lblUser: TextView
-    private lateinit var btnEditNom: Button
-    private lateinit var btnEditEma: Button
-    private lateinit var btnEditUsernam: Button
-    private lateinit var btnEditPass: Button
-    private lateinit var btnEditPreg: Button
-    private lateinit var btnEditResp: Button
-    private lateinit var btnEditSis: Button
-    private lateinit var btnEditUsNom: Button
-    private lateinit var btnEditTipUser: Button
-    private lateinit var btnEditTel: Button
+    private lateinit var btnEditNom: ImageButton
+    private lateinit var btnEditEma: ImageButton
+    private lateinit var btnEditPass: ImageButton
+    private lateinit var btnEditPreg: ImageButton
+    private lateinit var btnEditResp: ImageButton
+    private lateinit var btnEditSis: ImageButton
+    private lateinit var btnEditUsNom: ImageButton
+    private lateinit var btnEditTipUser: ImageButton
+    private lateinit var linLayTel: LinearLayout
+    private lateinit var btnEditTel: ImageButton
     // Elementos del bundle de usuario
     private lateinit var bundle: Bundle
     private lateinit var user: String
@@ -45,8 +46,10 @@ class UserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        setContentView(R.layout.user_activity_user)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
         //Obteniendo el usuario
         if(intent.extras == null){
             Toast.makeText(this@UserActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
@@ -74,7 +77,8 @@ class UserActivity : AppCompatActivity() {
         btnEditSis = findViewById(R.id.btnEditSisRel)
         btnEditUsNom = findViewById(R.id.btnEditUsNam)
         btnEditTipUser = findViewById(R.id.btnEditTipUser)
-        btnEditTel = findViewById(R.id.btnEditTele)
+        linLayTel = findViewById(R.id.linLayEditTel)
+        btnEditTel = findViewById(R.id.btnEditTel)
         // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
         database = Firebase.database
         auth = FirebaseAuth.getInstance()
@@ -93,7 +97,7 @@ class UserActivity : AppCompatActivity() {
                                 lblNom.text = objUs.child("nombre").value.toString()
                                 lblUser.text = objUs.child("username").value.toString()
                                 if(objUs.child("tipo_Usuario").value.toString() == "Administrador") {
-                                    btnEditTel.isGone = false
+                                    linLayTel.isGone = false
                                 }
                             }
                         }
@@ -111,70 +115,63 @@ class UserActivity : AppCompatActivity() {
         // Toda la edicion de campos se lanzara hacia la misma actividad,
         // solo que dependera del campo a editar, los valores que seran mostrados
         btnEditNom.setOnClickListener {
-            val editNom = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+            val editNom = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Nombre")
             }
             startActivity(editNom)
         }
         btnEditEma.setOnClickListener {
-            val editEma = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+            val editEma = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Correo")
             }
             startActivity(editEma)
         }
-        btnEditUsernam.setOnClickListener {
-            val editUser = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
-                putExtra("usuario", user)
-                putExtra("campo", "Username")
-            }
-            startActivity(editUser)
-        }
         btnEditPass.setOnClickListener {
-            val editPass = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+            val editPass = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Contraseña")
             }
             startActivity(editPass)
         }
         btnEditPreg.setOnClickListener {
-            val editPreg = Intent(this@UserActivity, EditDataUsSpActivity::class.java).apply {
+            val editPreg = Intent(this@UserActivity, EditDataSpActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Pregunta")
             }
             startActivity(editPreg)
         }
         btnEditResp.setOnClickListener {
-            val editResp = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+            val editResp = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Respuesta")
             }
             startActivity(editResp)
         }
         btnEditSis.setOnClickListener {
-            val editSis = Intent(this@UserActivity, EditDataUsSpActivity::class.java).apply {
+            val editSis = Intent(this@UserActivity, EditDataSpActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Sistema")
             }
             startActivity(editSis)
         }
         btnEditUsNom.setOnClickListener {
-            val editUser = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+            val editUser = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Username")
             }
             startActivity(editUser)
         }
         btnEditTipUser.setOnClickListener {
-            val editTipo = Intent(this@UserActivity, EditDataUsSpActivity::class.java).apply {
+            val editTipo = Intent(this@UserActivity, EditDataSpActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Tipo")
             }
             startActivity(editTipo)
         }
         btnEditTel.setOnClickListener {
-            val editTel = Intent(this@UserActivity, EditDataUsTxtActivity::class.java).apply {
+            val editTel = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
                 putExtra("campo", "Telefono")
             }

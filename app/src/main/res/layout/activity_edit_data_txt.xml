@@ -6,7 +6,7 @@
     android:background="@color/azulAlicia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditDataUsTxtActivity">
+    tools:context=".EditDataTxtActivity">
 
     <ScrollView
         android:id="@+id/ActuInfoUsTxtView"

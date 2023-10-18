@@ -19,7 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.card.MaterialCardView
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -28,14 +27,13 @@ import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.concurrent.schedule
 
-class EditDataUsTxtActivity : AppCompatActivity() {
+class EditDataTxtActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var lblHeadSec: TextView
     private lateinit var btnAyuda: ImageButton
@@ -65,6 +63,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
     private lateinit var campo: String
     private lateinit var user: String
     private lateinit var respuesta: String
+    private lateinit var sistema: String
     // Variables de acceso para google
     private lateinit var googleConf: GoogleSignInOptions
     private lateinit var googleCli: GoogleSignInClient
@@ -72,15 +71,18 @@ class EditDataUsTxtActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_data_us_txt)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        setContentView(R.layout.activity_edit_data_txt)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
         //Obteniendo el campo
         if(intent.extras == null){
-            Toast.makeText(this@EditDataUsTxtActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@EditDataTxtActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
             campo = bundle.getString("campo").toString()
             user = bundle.getString("usuario").toString()
+            sistema = bundle.getString("sisName").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -92,7 +94,6 @@ class EditDataUsTxtActivity : AppCompatActivity() {
     private fun setUp(){
         // Titulo de la pantalla
         title = "Actualizar Informacion"
-
         // Relacionando los elementos con su objeto de la interfaz
         lblHeadSec = findViewById(R.id.lblHeadEditTxt)
         btnAyuda = findViewById(R.id.btnInfoActuTxt)
@@ -162,7 +163,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                     txtValVie1.text = correo1
                                     letrero2.isGone = false
                                     txtValVie2.text = correo2
-                                    Toast.makeText(this@EditDataUsTxtActivity,"Seleccione un proveedor de correo",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataTxtActivity,"Seleccione un proveedor de correo",Toast.LENGTH_SHORT).show()
                                     txtValNueEma.isGone = false
                                     linLaySelProv.isGone = false
                                     mateLayConf.isGone = false
@@ -209,6 +210,23 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 "Telefono" -> {
                                     txtValVie1.text = objUs.child("num_Tel").value.toString()
                                     txtValNueNum.isGone = false
+                                }
+                                "Nombre Sistema" -> {
+                                    lifecycleScope.launch(Dispatchers.IO){
+                                        val getSis = async {
+                                            ref = database.getReference("Sistemas")
+                                            ref.get().addOnSuccessListener {
+                                                for(objSis in it.children){
+                                                    if(objSis.key.toString() == sistema){
+                                                        txtValVie1.text = objSis.child("nombre_Sis").value.toString()
+                                                        txtValNueGen.isGone = false
+                                                        break
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        getSis.await()
+                                    }
                                 }
                             }
                             break
@@ -309,8 +327,13 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 actTel(txtValNueNum.text.toString().toLong(), user)
                             }
                         }
+                        "Nombre Sistema" -> {
+                            if(validarNombre(txtValNueGen.text)) {
+                                actNomSis(txtValNueGen.text.toString(), sistema, user)
+                            }
+                        }
                         else -> {
-                            Toast.makeText(this@EditDataUsTxtActivity, "Error: El campo solicitado no esta disponible", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@EditDataTxtActivity, "Error: El campo solicitado no esta disponible", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -420,7 +443,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
             .requestEmail()
             .build()
         // Obteniendo el cliente de google
-        googleCli = GoogleSignIn.getClient(this@EditDataUsTxtActivity, googleConf)
+        googleCli = GoogleSignIn.getClient(this@EditDataTxtActivity, googleConf)
         // Fin de crearPeticionGoogle() y preparar la peticion de google
     }
 
@@ -443,7 +466,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             var campoGoo = ""
             if(intent.extras == null){
-                Toast.makeText(this@EditDataUsTxtActivity, "Error: no se pudo obtener el campo solicitado mediante Google", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EditDataTxtActivity, "Error: no se pudo obtener el campo solicitado mediante Google", Toast.LENGTH_SHORT).show()
             }else {
                 bundle = intent.extras!!
                 campoGoo = bundle.getString("campoGoo").toString()
@@ -470,7 +493,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                                             val refEma = objUs.ref.child("accesos")
                                                             refEma.child("google").setValue(txtValNueEma.text.toString().trim())
                                                                 .addOnSuccessListener {
-                                                                    Toast.makeText(this@EditDataUsTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                                                    Toast.makeText(this@EditDataTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
                                                                     Timer().schedule(1500) {
                                                                         lifecycleScope.launch(Dispatchers.Main){
                                                                             retorno()
@@ -479,28 +502,28 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                                                     }
                                                                 }
                                                                 .addOnFailureListener {
-                                                                    Toast.makeText(this@EditDataUsTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
                                                                 }
                                                         }
                                                     }
                                                 }
                                                 override fun onCancelled(error: DatabaseError) {
-                                                    Toast.makeText(this@EditDataUsTxtActivity,"Error: Su correo no pudo ser actualizado",Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado",Toast.LENGTH_SHORT).show()
                                                 }
                                             })
                                         }
                                         .addOnFailureListener {
-                                            Toast.makeText(this@EditDataUsTxtActivity,"Su correo no pudo ser actualizado, proceso incompleto",Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(this@EditDataTxtActivity,"Su correo no pudo ser actualizado, proceso incompleto",Toast.LENGTH_SHORT).show()
                                         }
                                 }
                                 "Contraseña" -> {
                                     userAuth.updatePassword(txtValNuePas.text.toString())
                                         .addOnSuccessListener {
-                                        Toast.makeText(this@EditDataUsTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
                                         Timer().schedule(1500){
                                             FirebaseAuth.getInstance().signOut()
                                             lifecycleScope.launch(Dispatchers.Main){
-                                                Intent(this@EditDataUsTxtActivity, MainActivity::class.java).apply {
+                                                Intent(this@EditDataTxtActivity, MainActivity::class.java).apply {
                                                     startActivity(this)
                                                     finish()
                                                 }
@@ -508,13 +531,13 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                         }
                                     }
                                         .addOnFailureListener {
-                                            Toast.makeText(this@EditDataUsTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             }
                         }
                         reautenticar.addOnFailureListener {
-                            Toast.makeText(this@EditDataUsTxtActivity,"El usuario no pudo ser reautenticado",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@EditDataTxtActivity,"El usuario no pudo ser reautenticado",Toast.LENGTH_SHORT).show()
                         }
                     }
                     updValsGoo.await()
@@ -540,7 +563,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         for(objUs in dataSnapshot.children){
                             if(objUs.key.toString() == usuario){
                                 objUs.ref.child("nombre").setValue(nombre.trim()).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataUsTxtActivity,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataTxtActivity,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
                                     Timer().schedule(1500) {
                                         lifecycleScope.launch(Dispatchers.Main){
                                             retorno()
@@ -549,13 +572,13 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                     }
                                 }
                                     .addOnFailureListener {
-                                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su nombre no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
                                     }
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su nombre no pudo ser actualizado",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre no pudo ser actualizado",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -583,7 +606,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                         val refEma = objUs.ref.child("accesos")
                                         val actuCorr = refEma.child("correo").setValue(nCorreo.trim())
                                         actuCorr.addOnSuccessListener {
-                                            Toast.makeText(this@EditDataUsTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(this@EditDataTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
                                             Timer().schedule(1500) {
                                                 lifecycleScope.launch(Dispatchers.Main){
                                                     retorno()
@@ -592,22 +615,22 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                             }
                                         }
                                         actuCorr.addOnFailureListener {
-                                            Toast.makeText(this@EditDataUsTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 }
                             }
                             override fun onCancelled(error: DatabaseError) {
-                                Toast.makeText(this@EditDataUsTxtActivity,"Error: Su correo no pudo ser actualizado",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado",Toast.LENGTH_SHORT).show()
                             }
                         })
                     }
                     actualizar.addOnFailureListener {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Su correo no pudo ser actualizado, proceso incompleto",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Su correo no pudo ser actualizado, proceso incompleto",Toast.LENGTH_SHORT).show()
                     }
                 }
                 reautenticar.addOnFailureListener {
-                    Toast.makeText(this@EditDataUsTxtActivity,"El usuario no pudo ser reautenticado",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditDataTxtActivity,"El usuario no pudo ser reautenticado",Toast.LENGTH_SHORT).show()
                 }
             }
             updCorreo.await()
@@ -636,13 +659,13 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                     }
                                 }
                                 override fun onCancelled(error: DatabaseError) {
-                                    Toast.makeText(this@EditDataUsTxtActivity,"Error: Su username no pudo ser actualizado, p11",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su username no pudo ser actualizado, p11",Toast.LENGTH_SHORT).show()
                                 }
                             })
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su username no pudo ser actualizado, p12",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Su username no pudo ser actualizado, p12",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -669,13 +692,13 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                     }
                                 }
                                 override fun onCancelled(error: DatabaseError) {
-                                    Toast.makeText(this@EditDataUsTxtActivity,"Error: Su username no pudo ser actualizado, p21",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su username no pudo ser actualizado, p21",Toast.LENGTH_SHORT).show()
                                 }
                             })
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su username no pudo ser actualizado, p22",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Su username no pudo ser actualizado, p22",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -696,7 +719,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                 // En este caso, se tomará el valor completo del usuario y se escribira uno nuevo con los datos del viejo
                                 objUser.ref.child(nUser).setValue(objUser.child(usuario).value)
                                 objUser.ref.child(usuario).removeValue()
-                                Toast.makeText(this@EditDataUsTxtActivity,"Su username fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@EditDataTxtActivity,"Su username fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
                                 Timer().schedule(1500) {
                                     lifecycleScope.launch(Dispatchers.Main){
                                         retorno()
@@ -708,7 +731,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su username no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Su username no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -725,11 +748,11 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                 reautenticar.addOnSuccessListener {
                     val upPas = user.updatePassword(nContra)
                     upPas.addOnSuccessListener {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
                         Timer().schedule(1500){
                             FirebaseAuth.getInstance().signOut()
                             lifecycleScope.launch(Dispatchers.Main){
-                                Intent(this@EditDataUsTxtActivity, MainActivity::class.java).apply {
+                                Intent(this@EditDataTxtActivity, MainActivity::class.java).apply {
                                     startActivity(this)
                                     finish()
                                 }
@@ -737,12 +760,12 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         }
                     }
                     upPas.addOnFailureListener {
-                        Toast.makeText(this@EditDataUsTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
                         Log.w("UpdateFirebaseError:", it.cause.toString())
                     }
                 }
                 reautenticar.addOnFailureListener {
-                    Toast.makeText(this@EditDataUsTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
                     Log.w("UpdateFirebaseError:", it.cause.toString())
                 }
             }
@@ -758,7 +781,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         for(objUs in dataSnapshot.children){
                             if(objUs.key.toString() == usuario){
                                 objUs.ref.child("resp_Seguri").setValue(resp).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataUsTxtActivity,"Su respuesta fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataTxtActivity,"Su respuesta fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
                                     Timer().schedule(1500) {
                                         lifecycleScope.launch(Dispatchers.Main){
                                             retorno()
@@ -767,13 +790,13 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                     }
                                 }
                                     .addOnFailureListener {
-                                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su respuesta no pudo ser actualizada, proceso fallido",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataTxtActivity,"Error: Su respuesta no pudo ser actualizada, proceso fallido",Toast.LENGTH_SHORT).show()
                                     }
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su respuesta no pudo ser actualizada",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Su respuesta no pudo ser actualizada",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -789,7 +812,7 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                         for (objUs in dataSnapshot.children) {
                             if(objUs.key.toString() == usuario) {
                                 objUs.ref.child("num_Tel").setValue(telefono).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataUsTxtActivity, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@EditDataTxtActivity, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(1500){
                                         lifecycleScope.launch(Dispatchers.Main){
                                             retorno()
@@ -798,18 +821,61 @@ class EditDataUsTxtActivity : AppCompatActivity() {
                                     }
                                 }
                                     .addOnFailureListener {
-                                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su telefono no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@EditDataTxtActivity,"Error: Su telefono no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
                                     }
                                 break
                             }
                         }
                     }
                     override fun onCancelled(databaseError: DatabaseError) {
-                        Toast.makeText(this@EditDataUsTxtActivity,"Error: Su telefono no pudo ser actualizado",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Su telefono no pudo ser actualizado",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
             updTel.await()
+        }
+    }
+
+    private fun actNomSis(nNombre: String, sisKey: String, usuario: String){
+        lifecycleScope.launch(Dispatchers.IO){
+            val upNomSis = async {
+                // Creando la fecha del cambio
+                val calendar = Calendar.getInstance()
+                val dia = calendar.get(Calendar.DAY_OF_MONTH); val mes = calendar.get(Calendar.MONTH) + 1; val year = calendar.get(Calendar.YEAR)
+                val hora = calendar.get(Calendar.HOUR_OF_DAY); val minuto = calendar.get(Calendar.MINUTE)
+                val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)}"
+                // Accediendo a la ruta de cambio y estableciendo los nuevos valores
+                ref = database.getReference("Sistemas")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for(objSis in dataSnapshot.children){
+                            if(objSis.key.toString() == sisKey){
+                                objSis.child("nombre_Sis").ref.setValue(nNombre)
+                                objSis.child("ulti_Cam_Fecha").ref.setValue(fechaCambio)
+                                objSis.child("ulti_Cam_User").ref.setValue(usuario)
+                                Timer().schedule(1500){
+                                    lifecycleScope.launch(Dispatchers.Main){
+                                        retorno()
+                                        finish()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@EditDataTxtActivity, "Error: El cambio solicitado no se pudo realizar", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            upNomSis.await()
+        }
+    }
+
+    private fun transFecha(valor: Int):String {
+        if(valor < 10){
+            return "0$valor"
+        }else{
+            return valor.toString()
         }
     }
 }
