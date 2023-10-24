@@ -39,6 +39,7 @@ class GenReportsActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var user: String
     private lateinit var sistema: String
+    private lateinit var keySis: String
     // Variables de valor de seleccion
     private var estaSel = ""
     private var sensoSel = ""

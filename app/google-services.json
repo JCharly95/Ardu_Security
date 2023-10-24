@@ -15,27 +15,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "221885248757-c7a7ebv84mde2et02io445g8133lpinf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ardusec.ardu_security",
-            "certificate_hash": "1af3942d6c6b08b867ef2e8d34e77d70ef6db3c2"
-          }
-        },
-        {
-          "client_id": "221885248757-jlc09rlbq14jihl0u58f605ltfa47jlf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ardusec.ardu_security",
-            "certificate_hash": "76dc30cba79947296fbd963ab190dac6c40cbe10"
-          }
-        },
-        {
           "client_id": "221885248757-o73chlq1maqvh0eg4aigmh8efq81lr64.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ardusec.ardu_security",
             "certificate_hash": "8285fd8cd831ed91e93fb557810ed4bd57d6c9c9"
+          }
+        },
+        {
+          "client_id": "221885248757-s5m8j84mi0r5har1n1qe418s5948a4u3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ardusec.ardu_security",
+            "certificate_hash": "faa357df6a2e66250eae06ca545c0aabbaea1157"
           }
         },
         {

@@ -82,7 +82,7 @@ class EditDataTxtActivity : AppCompatActivity() {
             bundle = intent.extras!!
             campo = bundle.getString("campo").toString()
             user = bundle.getString("usuario").toString()
-            sistema = bundle.getString("sisName").toString()
+            sistema = bundle.getString("sistema").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -328,7 +328,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                             }
                         }
                         "Nombre Sistema" -> {
-                            if(validarNombre(txtValNueGen.text)) {
+                            if(!txtValNueGen.text.isNullOrEmpty()) {
                                 actNomSis(txtValNueGen.text.toString(), sistema, user)
                             }
                         }
@@ -836,30 +836,42 @@ class EditDataTxtActivity : AppCompatActivity() {
         }
     }
 
+    private fun transFecha(valor: Int):String {
+        if(valor < 10){
+            return "0$valor"
+        }else{
+            return valor.toString()
+        }
+    }
+
     private fun actNomSis(nNombre: String, sisKey: String, usuario: String){
+        // Creando la fecha del cambio
+        val calendar = Calendar.getInstance()
+        val dia = calendar.get(Calendar.DAY_OF_MONTH); val mes = calendar.get(Calendar.MONTH) + 1; val year = calendar.get(Calendar.YEAR)
+        val hora = calendar.get(Calendar.HOUR_OF_DAY); val minuto = calendar.get(Calendar.MINUTE)
+        val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)}"
+
         lifecycleScope.launch(Dispatchers.IO){
             val upNomSis = async {
-                // Creando la fecha del cambio
-                val calendar = Calendar.getInstance()
-                val dia = calendar.get(Calendar.DAY_OF_MONTH); val mes = calendar.get(Calendar.MONTH) + 1; val year = calendar.get(Calendar.YEAR)
-                val hora = calendar.get(Calendar.HOUR_OF_DAY); val minuto = calendar.get(Calendar.MINUTE)
-                val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)}"
                 // Accediendo a la ruta de cambio y estableciendo los nuevos valores
                 ref = database.getReference("Sistemas")
                 ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(objSis in dataSnapshot.children){
                             if(objSis.key.toString() == sisKey){
-                                objSis.child("nombre_Sis").ref.setValue(nNombre)
-                                objSis.child("ulti_Cam_Fecha").ref.setValue(fechaCambio)
-                                objSis.child("ulti_Cam_User").ref.setValue(usuario)
-                                Timer().schedule(1500){
-                                    lifecycleScope.launch(Dispatchers.Main){
-                                        retorno()
-                                        finish()
+                                objSis.ref.child("ulti_Cam_Fecha").setValue(fechaCambio)
+                                objSis.ref.child("ulti_Cam_User").setValue(usuario)
+                                objSis.ref.child("nombre_Sis").setValue(nNombre).addOnSuccessListener {
+                                    Toast.makeText(this@EditDataTxtActivity, "Su nombre fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                    Timer().schedule(1500){
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            retorno()
+                                            finish()
+                                        }
                                     }
                                 }
                             }
+                            break
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
@@ -868,14 +880,6 @@ class EditDataTxtActivity : AppCompatActivity() {
                 })
             }
             upNomSis.await()
-        }
-    }
-
-    private fun transFecha(valor: Int):String {
-        if(valor < 10){
-            return "0$valor"
-        }else{
-            return valor.toString()
         }
     }
 }

@@ -1,12 +1,14 @@
 package com.ardusec.ardu_security.admin
 
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.core.content.ContextCompat
 import com.ardusec.ardu_security.EditDataSpActivity
 import com.ardusec.ardu_security.EditDataTxtActivity
 import com.ardusec.ardu_security.R
@@ -27,6 +29,9 @@ class ManageSisActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.admin_activity_manage_sis)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+            R.color.teal_700
+        )))
 
         //Obteniendo los valores de acceso/registro
         if(intent.extras == null) {
