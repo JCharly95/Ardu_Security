@@ -113,7 +113,7 @@ class AlarmActivity : AppCompatActivity() {
                             }
                         }
                     }else{
-                        Log.w("FirebaseError","Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados")
+                        avisoAl("Error: Datos parcialmente obtenidos")
                     }
                 }
             }
@@ -139,7 +139,7 @@ class AlarmActivity : AppCompatActivity() {
                                 }
                             }
                             override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                                avisoAl("Error: Datos parcialmente obtenidos; ${databaseError.toException()}")
                             }
                         })
                     }
@@ -161,7 +161,7 @@ class AlarmActivity : AppCompatActivity() {
                                 }
                             }
                             override fun onCancelled(databaseError: DatabaseError) {
-                                Log.w("FirebaseError", "Error: No se pudieron obtener o no se pudieron actualizar los valores solicitados", databaseError.toException())
+                                avisoAl("Error: Datos parcialmente obtenidos; ${databaseError.toException()}")
                             }
                         })
                     }

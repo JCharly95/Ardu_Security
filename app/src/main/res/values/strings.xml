@@ -152,13 +152,24 @@
     <string name="calFin">Fin:</string>
     <string name="btnGenRepo">Generar Reporte</string>
     <!-- Strings de la vista comentarios-->
-    <string name="headComms">Generar Opinion</string>
-    <string name="lblOp">Opinion:</string>
-    <string name="btnSendComm">Enviar Opinion</string>
+    <string name="headComms">Generar Comentario</string>
+    <string name="lblOp">Comentario:</string>
+    <string name="btnSendComm">Enviar Comentario</string>
     <!-- Strings de la vista de manejo de sistema-->
     <string name="headManSis">Gestion del Sistema</string>
     <string name="btnUpSisNam">Cambiar\nNombre</string>
-    <string name="btnUpSisAla">Cambiar\nAlarma</string>
+    <string name="btnUpSisAla">Gestionar\nAlarma</string>
     <string name="btnUpSisSta">Cambiar\nEstaciones</string>
     <string name="btnUpSisUse">Administrar\nUsuarios</string>
+    <!-- Strings de la vista de manejo de alarmas admin-->
+    <string name="headManAla">Gestion de Alarma</string>
+    <string name="lblAlarma">Alarma Actual:</string>
+    <string name="btnAlaCrea">Crear y Enlazar\nAlarma</string>
+    <string name="btnAlaChg">Cambiar\nAlarma</string>
+    <string name="lblHeadAlaChg">Cambio de Alarma</string>
+    <string name="lblMsgAlaChg">Estas son las alarmas disponibles para seleccion:</string>
+    <string-array name="lstAlarmas">
+        <item>Seleccione su nueva alarma</item>
+    </string-array>
+    <string name="btnConfAlaChg">Confirmar seleccion y\nrealizar cambio</string>
 </resources>

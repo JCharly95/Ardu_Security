@@ -5,34 +5,27 @@ import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
-import com.ardusec.ardu_security.EditDataSpActivity
 import com.ardusec.ardu_security.EditDataTxtActivity
 import com.ardusec.ardu_security.R
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 
 class ManageSisActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var btnSisChgNam: ImageButton
-    private lateinit var btnSisChgAla: ImageButton
+    private lateinit var btnSisAla: ImageButton
     private lateinit var btnSisChgSta: ImageButton
     private lateinit var btnAdminUs: ImageButton
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var user: String
-    private lateinit var tipo: String
     private lateinit var sistema: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.admin_activity_manage_sis)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+            supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
+                R.color.teal_700
+            )))
 
         //Obteniendo los valores de acceso/registro
         if(intent.extras == null) {
@@ -41,7 +34,6 @@ class ManageSisActivity : AppCompatActivity() {
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
             sistema = bundle.getString("sistema").toString()
-            tipo = bundle.getString("tipo").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -55,7 +47,7 @@ class ManageSisActivity : AppCompatActivity() {
         title = "Administrador Sistema"
         // Relacionando los elementos con su objeto de la interfaz
         btnSisChgNam = findViewById(R.id.btnSisNam)
-        btnSisChgAla = findViewById(R.id.btnSisAla)
+        btnSisAla = findViewById(R.id.btnSisAla)
         btnSisChgSta = findViewById(R.id.btnSisSta)
         btnAdminUs = findViewById(R.id.btnSisGesUs)
     }
@@ -69,11 +61,10 @@ class ManageSisActivity : AppCompatActivity() {
             }
             startActivity(chgNamSisActi)
         }
-        btnSisChgAla.setOnClickListener {
-            val chgAlaSisActi = Intent(this@ManageSisActivity, EditDataSpActivity::class.java).apply {
+        btnSisAla.setOnClickListener {
+            val chgAlaSisActi = Intent(this@ManageSisActivity, ManageAlarmActivity::class.java).apply {
                 putExtra("sistema", sistema)
                 putExtra("usuario", user)
-                putExtra("campo", "AlaSis")
             }
             startActivity(chgAlaSisActi)
         }

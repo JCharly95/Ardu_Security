@@ -3,18 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/azulAlicia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightGray"
     tools:context=".user.GenReportsActivity">
 
     <ScrollView
         android:id="@+id/ReportsView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/azulAlicia"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="-182dp">
+        android:layout_marginTop="20dp"
+        android:background="@color/azulAlicia">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -252,8 +251,9 @@
                 <DatePicker
                     android:id="@+id/calRangoIni"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:datePickerMode="calendar" />
+                    android:layout_height="wrap_content"
+                    android:calendarViewShown="false"
+                    android:datePickerMode="spinner"/>
             </com.google.android.material.card.MaterialCardView>
 
             <Space

@@ -195,7 +195,6 @@
                     android:entries="@array/lstSavQues"
                     android:spinnerMode="dropdown"
                     android:textColor="@color/negro" />
-
             </com.google.android.material.card.MaterialCardView>
 
             <Space
