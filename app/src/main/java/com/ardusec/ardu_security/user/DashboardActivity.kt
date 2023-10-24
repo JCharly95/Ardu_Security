@@ -2,7 +2,6 @@ package com.ardusec.ardu_security.user
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
@@ -11,6 +10,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
@@ -29,6 +29,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+
 
 class DashboardActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
@@ -98,6 +99,7 @@ class DashboardActivity : AppCompatActivity() {
         // Inicializando el Spinner
         sistemas()
 
+        // Mostrando el boton de gestion para el admin
         if(tipo == "Administrador"){
             linLayGesSis.isGone = false
         }

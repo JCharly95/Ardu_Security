@@ -25,6 +25,7 @@ class ManageSisActivity : AppCompatActivity() {
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var user: String
+    private lateinit var tipo: String
     private lateinit var sistema: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +41,7 @@ class ManageSisActivity : AppCompatActivity() {
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
             sistema = bundle.getString("sistema").toString()
+            tipo = bundle.getString("tipo").toString()
         }
 
         // Configurar el arranque de la interfaz

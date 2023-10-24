@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.ardusec.ardu_security.user.DashboardActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -62,6 +63,7 @@ class EditDataTxtActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var campo: String
     private lateinit var user: String
+    private lateinit var tipo: String
     private lateinit var respuesta: String
     private lateinit var sistema: String
     // Variables de acceso para google
@@ -82,6 +84,7 @@ class EditDataTxtActivity : AppCompatActivity() {
             bundle = intent.extras!!
             campo = bundle.getString("campo").toString()
             user = bundle.getString("usuario").toString()
+            tipo = bundle.getString("tipo").toString()
             sistema = bundle.getString("sistema").toString()
         }
 
@@ -849,7 +852,7 @@ class EditDataTxtActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         val dia = calendar.get(Calendar.DAY_OF_MONTH); val mes = calendar.get(Calendar.MONTH) + 1; val year = calendar.get(Calendar.YEAR)
         val hora = calendar.get(Calendar.HOUR_OF_DAY); val minuto = calendar.get(Calendar.MINUTE)
-        val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)}"
+        val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)} FechDispo"
 
         lifecycleScope.launch(Dispatchers.IO){
             val upNomSis = async {
@@ -865,8 +868,12 @@ class EditDataTxtActivity : AppCompatActivity() {
                                     Toast.makeText(this@EditDataTxtActivity, "Su nombre fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                     Timer().schedule(1500){
                                         lifecycleScope.launch(Dispatchers.Main){
-                                            retorno()
-                                            finish()
+                                            Intent(this@EditDataTxtActivity, DashboardActivity::class.java).apply {
+                                                putExtra("username", user)
+                                                putExtra("tipo", "Administrador")
+                                                startActivity(this)
+                                                finish()
+                                            }
                                         }
                                     }
                                 }
