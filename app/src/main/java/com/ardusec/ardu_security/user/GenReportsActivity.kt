@@ -2,9 +2,11 @@ package com.ardusec.ardu_security.user
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import com.ardusec.ardu_security.R
 import com.google.firebase.auth.FirebaseAuth
@@ -17,6 +19,7 @@ import java.util.Calendar
 class GenReportsActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var btnAyuda: ImageButton
+    private lateinit var spSistemas: AppCompatSpinner
     private lateinit var rbSelEst1: RadioButton
     private lateinit var rbSelEst2: RadioButton
     private lateinit var rbSelEst3: RadioButton
@@ -31,15 +34,17 @@ class GenReportsActivity : AppCompatActivity() {
     private lateinit var dateRanIni: DatePicker
     private lateinit var dateRanFin: DatePicker
     private lateinit var btnGenRepo: Button
-    // Instancias de Firebase; Database y ReferenciaDB
-    private lateinit var auth: FirebaseAuth
-    //private lateinit var ref: DatabaseReference
-    private lateinit var database: FirebaseDatabase
     // Bundle para extras y saber que campo sera actualizado
     private lateinit var bundle: Bundle
     private lateinit var user: String
     private lateinit var sistema: String
-    private lateinit var keySis: String
+    // Bandera de activacion para el spínner
+    private var bandeListen = false
+    //private lateinit var keySis: String
+    // Instancias de Firebase; Database y ReferenciaDB
+    private lateinit var auth: FirebaseAuth
+    //private lateinit var ref: DatabaseReference
+    private lateinit var database: FirebaseDatabase
     // Variables de valor de seleccion
     private var estaSel = ""
     private var sensoSel = ""
@@ -49,9 +54,7 @@ class GenReportsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_activity_gen_reports)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
 
         //Obteniendo el campo
         if(intent.extras == null){
@@ -59,7 +62,6 @@ class GenReportsActivity : AppCompatActivity() {
         }else{
             bundle = intent.extras!!
             user = bundle.getString("usuario").toString()
-            sistema = bundle.getString("sistema").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -73,6 +75,7 @@ class GenReportsActivity : AppCompatActivity() {
         title = "Reportes"
         // Relacionando los elementos con su objeto de la interfaz
         btnAyuda = findViewById(R.id.btnHelpGenRepo)
+        spSistemas = findViewById(R.id.spSisRepo)
         rbSelEst1 = findViewById(R.id.rbSelEsta1)
         rbSelEst2 = findViewById(R.id.rbSelEsta2)
         rbSelEst3 = findViewById(R.id.rbSelEsta3)
@@ -158,6 +161,18 @@ class GenReportsActivity : AppCompatActivity() {
                     "** NOTA: Para el cambio de correo o contraseña, se le " +
                     "solicitara la contraseña como confirmacion de cambio."
             avisoGenRepo(msg)
+        }
+        spSistemas.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (!bandeListen) {
+                    bandeListen = true
+                    return
+                }
+                // Estableciendo el sistema de la sesion
+                sistema = parent!!.getItemAtPosition(position).toString()
+            }
         }
         rbSelEst1.setOnClickListener {
             if(rbSelEst1.isChecked)

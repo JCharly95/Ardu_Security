@@ -232,9 +232,6 @@
                 android:text="@string/lblCopyright"
                 android:textColor="@color/negro"
                 android:visibility="visible" />
-
         </LinearLayout>
-
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

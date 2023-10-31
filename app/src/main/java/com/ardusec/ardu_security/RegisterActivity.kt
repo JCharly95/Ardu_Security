@@ -71,8 +71,8 @@ class RegisterActivity : AppCompatActivity() {
     // Data clases para objetos virtuales (simulados) de kotlin
     data class Acceso(val correo: String, val google: String)
     data class SistemasUser(val sistema1: String)
-    data class UserCliente(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String)
-    data class UserAdmin(val nombre: String, val username: String, val tipo_Usuario: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Long)
+    data class UserCliente(val nombre: String, val username: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String)
+    data class UserAdmin(val nombre: String, val username: String, val accesos: Acceso, val sistemas: SistemasUser, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Long)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -514,7 +514,7 @@ class RegisterActivity : AppCompatActivity() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSis in dataSnapshot.children) {
                             if (objSis.child("nombre_Sis").value.toString() == sistema)
-                                objSis.ref.child("usuarios").child(usuario).setValue(true)
+                                objSis.ref.child("usuarios").child(usuario).setValue(tipo)
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
@@ -526,7 +526,7 @@ class RegisterActivity : AppCompatActivity() {
                 val nUsSis = SistemasUser(sistema1 = "sistema${spSisRel.selectedItemPosition}")
                 if(tipo == "Cliente") {
                     // Usuario cliente
-                    val nUser = UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta )
+                    val nUser = UserCliente( nombre = nombre, username = usuario, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
                     ref.child(usuario).setValue(nUser).addOnCompleteListener {
@@ -535,7 +535,6 @@ class RegisterActivity : AppCompatActivity() {
                         // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                         val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                             putExtra("username", usuario)
-                            putExtra("tipo", tipo)
                         }
                         startActivity(intentDash)
                     }
@@ -545,7 +544,7 @@ class RegisterActivity : AppCompatActivity() {
                 }else{
                     // Usuario administrador
                     val telefono = txtTel.text.toString().toLong()
-                    val nUser = UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
+                    val nUser = UserAdmin( nombre = nombre, username = usuario, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
                     // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                     ref = database.getReference("Usuarios")
                     ref.child(usuario).setValue(nUser).addOnCompleteListener {
@@ -554,7 +553,6 @@ class RegisterActivity : AppCompatActivity() {
                         // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                         val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                             putExtra("username", usuario)
-                            putExtra("tipo", tipo)
                         }
                         startActivity(intentDash)
                     }
@@ -639,7 +637,7 @@ class RegisterActivity : AppCompatActivity() {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 for (objSis in dataSnapshot.children) {
                                     if (objSis.child("nombre_Sis").value.toString() == sistema)
-                                        objSis.ref.child("usuarios").child(usuario).setValue(true)
+                                        objSis.ref.child("usuarios").child(usuario).setValue(tipo)
                                 }
                             }
                             override fun onCancelled(error: DatabaseError) {
@@ -655,7 +653,7 @@ class RegisterActivity : AppCompatActivity() {
                             if(tipo == "Cliente"){
                                 // Usuario cliente
                                 val nUser = nAcc?.let {
-                                    UserCliente( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta )
+                                    UserCliente( nombre = nombre, username = usuario, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta )
                                 }
                                 // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                                 ref = database.getReference("Usuarios")
@@ -665,7 +663,6 @@ class RegisterActivity : AppCompatActivity() {
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                                     val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                                         putExtra("username", usuario)
-                                        putExtra("tipo", tipo)
                                     }
                                     startActivity(intentDash)
                                 }
@@ -676,7 +673,7 @@ class RegisterActivity : AppCompatActivity() {
                                 // Usuario administrador
                                 val telefono = txtTel.text.toString().toLong()
                                 val nUser = nAcc?.let {
-                                    UserAdmin( nombre = nombre, username = usuario, tipo_Usuario = tipo, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
+                                    UserAdmin( nombre = nombre, username = usuario, accesos = nAcc, sistemas = nUsSis, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
                                 }
                                 // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
                                 ref = database.getReference("Usuarios")
@@ -686,7 +683,6 @@ class RegisterActivity : AppCompatActivity() {
                                     // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
                                     val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
                                         putExtra("username", usuario)
-                                        putExtra("tipo", tipo)
                                     }
                                     startActivity(intentDash)
                                 }

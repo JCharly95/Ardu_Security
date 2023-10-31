@@ -84,21 +84,20 @@
 
                     <TextView
                         android:id="@+id/lblGas"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblGas"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
                     <TextView
                         android:id="@+id/lblGasVal"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblUni"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />
@@ -116,21 +115,20 @@
 
                     <TextView
                         android:id="@+id/lblCo"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblCo"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
                     <TextView
                         android:id="@+id/lblCoVal"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblUni"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />
@@ -148,21 +146,20 @@
 
                     <TextView
                         android:id="@+id/lblPro"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblPro"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
                     <TextView
                         android:id="@+id/lblProVal"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblUni"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />
@@ -180,21 +177,20 @@
 
                     <TextView
                         android:id="@+id/lblHum"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblHum"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
                     <TextView
                         android:id="@+id/lblHumVal"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:text="@string/lblUni"
                         android:textColor="@color/negro"
                         android:textSize="14sp" />

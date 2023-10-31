@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/azulAlicia"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".admin.ManageSisUsersActivity">
+
+    <ScrollView
+        android:id="@+id/AdminMenUsView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:background="@color/azulAlicia">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lblHeadMenSisUs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/headMenSisUs"
+                android:textColor="@color/negro"
+                android:textSize="25sp" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <TextView
+                android:id="@+id/lblMsgMenSisUs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblListUsSis"
+                android:textColor="@color/negro"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:visibility="visible" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="5dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/linLaySistemUsers"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/negro"
+                app:cardBackgroundColor="@color/azulAlicia"
+                app:cardCornerRadius="4dp">
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spSistemUsers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:spinnerMode="dropdown"
+                    android:textColor="@color/negro"
+                    android:dropDownWidth="wrap_content"
+                    android:entries="@array/lstUsersSis"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <TextView
+                android:id="@+id/lblAdminNomSel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblName"
+                android:textColor="@color/negro"
+                android:textSize="20sp"
+                android:visibility="visible" />
+
+            <EditText
+                android:id="@+id/txtAdminNomSel"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:inputType="text"
+                android:autofillHints="text"
+                android:textColor="@color/negro"
+                android:hint="@string/lblName"
+                android:textColorHint="@color/darkgray"
+                android:enabled="false"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <TextView
+                android:id="@+id/lblAdminUserSel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblUser"
+                android:textColor="@color/negro"
+                android:textSize="20sp"
+                android:visibility="visible" />
+
+            <EditText
+                android:id="@+id/txtAdminUserSel"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:inputType="text"
+                android:autofillHints="text"
+                android:textColor="@color/negro"
+                android:hint="@string/lblUser"
+                android:textColorHint="@color/darkgray"
+                android:enabled="false"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <TextView
+                android:id="@+id/lblAdminTipoSel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblTipoUsSel"
+                android:textColor="@color/negro"
+                android:textSize="20sp"
+                android:visibility="visible" />
+
+            <EditText
+                android:id="@+id/txtAdminTipoSel"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:inputType="text"
+                android:autofillHints="text"
+                android:textColor="@color/negro"
+                android:hint="@string/lblTipoUsSel"
+                android:textColorHint="@color/darkgray"
+                android:enabled="false"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageButton
+                        android:id="@+id/btnEditTipUser"
+                        android:layout_width="124dp"
+                        android:layout_height="124dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/editar_tipo_usuario" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:clickable="false"
+                        android:text="@string/btnEditTipUser"
+                        android:textColor="@color/negro" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageButton
+                        android:id="@+id/btnDelSisUs"
+                        android:layout_width="124dp"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/eliminar_usuario_sistema" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:clickable="false"
+                        android:text="@string/btnDelSisUser"
+                        android:textColor="@color/negro"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

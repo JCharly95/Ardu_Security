@@ -339,41 +339,6 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditTipUser"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_tipo_usuario" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditTipUser"
-                        android:textColor="@color/negro" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <LinearLayout
                     android:id="@+id/linLayEditTel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -399,17 +364,11 @@
                         android:text="@string/btnEditTel"
                         android:textColor="@color/negro"/>
                 </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
             </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp" />
-
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/azulAlicia"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ResetPassActivity">
 
     <LinearLayout
         android:id="@+id/ForgPassView"
@@ -147,10 +148,11 @@
             android:layout_height="5dp" />
 
         <Button
-                android:id="@+id/btnSendRecPass"
+            android:id="@+id/btnSendRecPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/btnComproResp"
+            android:textSize="16sp"
             android:visibility="visible"/>
 
     </LinearLayout>

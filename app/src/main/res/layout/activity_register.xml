@@ -217,65 +217,74 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp" />
 
-            <TextView
-                android:id="@+id/lblTipUser"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/lblTipUser"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible"/>
-
-            <RadioGroup
-                android:id="@+id/rbgSelTipUser"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:visibility="visible">
+                android:orientation="vertical">
 
-                <RadioButton
-                    android:id="@+id/rbTipUsCli"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rbUserGen"
-                    android:textColor="@color/negro"
-                    android:textSize="16sp"
-                    android:visibility="visible" />
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/negro"
+                    app:cardBackgroundColor="@color/azulAlicia"
+                    app:cardCornerRadius="4dp">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spSistema"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:dropDownWidth="wrap_content"
+                        android:entries="@array/lstSistems"
+                        android:spinnerMode="dropdown"
+                        android:textColor="@color/negro"/>
+                </com.google.android.material.card.MaterialCardView>
 
                 <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <RadioButton
-                    android:id="@+id/rbTipUsAdmin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rbUserAdmin"
-                    android:textColor="@color/negro"
-                    android:textSize="16sp"
-                    android:visibility="visible" />
-            </RadioGroup>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/negro"
-                app:cardBackgroundColor="@color/azulAlicia"
-                app:cardCornerRadius="4dp">
-
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spSistema"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:dropDownWidth="wrap_content"
-                    android:entries="@array/lstSistems"
-                    android:spinnerMode="dropdown"
-                    android:textColor="@color/negro"/>
+                    android:layout_height="5dp" />
 
-            </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/lblTipUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/lblTipUser"
+                    android:textColor="@color/negro"
+                    android:textSize="20sp"
+                    android:visibility="visible"/>
+
+                <RadioGroup
+                    android:id="@+id/rbgSelTipUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <RadioButton
+                        android:id="@+id/rbTipUsCli"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/rbUserGen"
+                        android:textColor="@color/negro"
+                        android:textSize="16sp"
+                        android:visibility="visible" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <RadioButton
+                        android:id="@+id/rbTipUsAdmin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/rbUserAdmin"
+                        android:textColor="@color/negro"
+                        android:textSize="16sp"
+                        android:visibility="visible" />
+                </RadioGroup>
+            </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"
@@ -325,9 +334,6 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="10dp" />
-
         </LinearLayout>
-
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

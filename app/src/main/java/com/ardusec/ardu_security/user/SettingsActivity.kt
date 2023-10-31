@@ -18,21 +18,17 @@ class SettingsActivity : AppCompatActivity() {
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var user: String
-    private lateinit var sistema: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_activity_settings)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
         //Obteniendo el usuario
         if(intent.extras == null){
             Toast.makeText(this@SettingsActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
-            sistema = bundle.getString("sistema").toString()
         }
         // Configurar el arranque de la interfaz
         setUp()

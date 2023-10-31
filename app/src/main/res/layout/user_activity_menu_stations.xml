@@ -8,230 +8,320 @@
     android:background="@color/azulAlicia"
     tools:context=".user.MenuStationsActivity">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/StationsView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
         android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/lblMenEsta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/headEsta"
-            android:textSize="34sp"
-            android:textColor="@color/negro"
-            android:visibility="visible"/>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
+        android:background="@color/azulAlicia">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/LinBtnEsta1"
+            <TextView
+                android:id="@+id/lblMenEsta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <ImageButton
-                    android:id="@+id/btnStat1"
-                    android:layout_width="124dp"
-                    android:layout_height="124dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/estacion1" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:gravity="center"
-                    android:text="@string/btnSta1"
-                    android:textColor="@color/negro"
-                    android:textSize="20sp" />
-            </LinearLayout>
+                android:text="@string/headEsta"
+                android:textSize="34sp"
+                android:textColor="@color/negro"
+                android:visibility="visible"/>
 
             <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
 
             <LinearLayout
-                android:id="@+id/LinBtnEsta2"
-                android:layout_width="wrap_content"
+                android:id="@+id/linLayBotsMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <ImageButton
-                    android:id="@+id/btnStat2"
-                    android:layout_width="124dp"
-                    android:layout_height="124dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/estacion2" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:gravity="center"
-                    android:text="@string/btnSta2"
-                    android:textColor="@color/negro"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <LinearLayout
-                android:id="@+id/LinBtnEsta3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <ImageButton
-                    android:id="@+id/btnStat3"
-                    android:layout_width="124dp"
-                    android:layout_height="124dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/estacion3" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:gravity="center"
-                    android:text="@string/btnSta3"
-                    android:textColor="@color/negro"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <LinearLayout
-                android:id="@+id/LinBtnEsta4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <ImageButton
-                    android:id="@+id/btnStat4"
-                    android:layout_width="124dp"
-                    android:layout_height="124dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/estacion4" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:gravity="center"
-                    android:text="@string/btnSta4"
-                    android:textColor="@color/negro"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <LinearLayout
-                android:id="@+id/LinBtnEsta5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <ImageButton
-                    android:id="@+id/btnStat5"
-                    android:layout_width="124dp"
-                    android:layout_height="124dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/estacion5" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:gravity="center"
-                    android:text="@string/btnSta5"
-                    android:textColor="@color/negro"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <LinearLayout
-                android:id="@+id/LinBtnAlarm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
                 android:orientation="vertical">
 
-                <ImageButton
-                    android:id="@+id/btnAlarma"
-                    android:layout_width="124dp"
-                    android:layout_height="124dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/alarma" />
-
-                <TextView
+                <LinearLayout
+                    android:id="@+id/linLayEsta12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:clickable="false"
-                    android:text="@string/btnAlarma"
-                    android:textColor="@color/negro"  />
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnEsta1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnStat1"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnSta1"
+                            app:srcCompat="@drawable/estacion1" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:text="@string/btnSta1"
+                            android:textColor="@color/negro"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnEsta2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnStat2"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnSta2"
+                            app:srcCompat="@drawable/estacion2" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:text="@string/btnSta2"
+                            android:textColor="@color/negro"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <LinearLayout
+                    android:id="@+id/linLayEsta34"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnEsta31"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnStat31"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnSta3"
+                            app:srcCompat="@drawable/estacion3" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:text="@string/btnSta3"
+                            android:textColor="@color/negro"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnEsta41"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnStat41"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnSta4"
+                            app:srcCompat="@drawable/estacion4" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:text="@string/btnSta4"
+                            android:textColor="@color/negro"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linLayEsta3Ala"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnEsta32"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnStat32"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnSta3"
+                            app:srcCompat="@drawable/estacion3" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:text="@string/btnSta3"
+                            android:textColor="@color/negro"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnAlarm2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnAlarma2"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnAlarma"
+                            app:srcCompat="@drawable/alarma" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnAlarma"
+                            android:textColor="@color/negro"  />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <LinearLayout
+                    android:id="@+id/linLayEsta5Ala"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnEsta5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnStat5"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnSta5"
+                            app:srcCompat="@drawable/estacion5" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:text="@string/btnSta5"
+                            android:textColor="@color/negro"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/LinBtnAlarm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnAlarma"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:contentDescription="@string/btnAlarma"
+                            app:srcCompat="@drawable/alarma" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnAlarma"
+                            android:textColor="@color/negro"  />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,18 +8,18 @@
     android:layout_height="match_parent"
     tools:context=".admin.ManageSisActivity">
 
-    <ScrollView
-        android:id="@+id/ManSisView"
+    <LinearLayout
+        android:id="@+id/AdminMenSisView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="20dp"
-        android:background="@color/azulAlicia">
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -27,7 +27,7 @@
                 android:id="@+id/lblManSis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/headManSis"
+                android:text="@string/headMenSis"
                 android:gravity="center"
                 android:textSize="34sp"
                 android:textColor="@color/negro"
@@ -35,7 +35,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="20dp" />
+                android:layout_height="5dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                 android:gravity="center">
 
                 <LinearLayout
-                    android:id="@+id/LinBtnEsta1"
+                    android:id="@+id/LinBtnAdminNom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -56,6 +56,7 @@
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
+                        android:contentDescription="@string/btnUpSisNam"
                         app:srcCompat="@drawable/editar_nombre"/>
 
                     <TextView
@@ -74,19 +75,20 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/LinBtnEsta2"
+                    android:id="@+id/LinBtnAdminUs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnSisAla"
+                        android:id="@+id/btnSisGesUs"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_alarma"/>
+                        android:contentDescription="@string/btnUpSisUse"
+                        app:srcCompat="@drawable/gestionar_usuarios"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -94,7 +96,7 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnUpSisAla"
+                        android:text="@string/btnUpSisUse"
                         android:textColor="@color/negro" />
                 </LinearLayout>
             </LinearLayout>
@@ -107,10 +109,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <LinearLayout
-                    android:id="@+id/LinBtnEsta3"
+                    android:id="@+id/LinBtnAdminSta"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -122,6 +126,7 @@
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
+                        android:contentDescription="@string/btnUpSisSta"
                         app:srcCompat="@drawable/editar_estaciones"/>
 
                     <TextView
@@ -140,19 +145,20 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/LinBtnEsta4"
+                    android:id="@+id/LinBtnAdminAla"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnSisGesUs"
+                        android:id="@+id/btnSisAla"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/gestionar_usuarios"/>
+                        android:contentDescription="@string/btnUpSisAla"
+                        app:srcCompat="@drawable/editar_alarma"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -160,10 +166,10 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnUpSisUse"
+                        android:text="@string/btnUpSisAla"
                         android:textColor="@color/negro" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

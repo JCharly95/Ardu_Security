@@ -33,12 +33,12 @@ class UserActivity : AppCompatActivity() {
     private lateinit var btnEditResp: ImageButton
     private lateinit var btnEditSis: ImageButton
     private lateinit var btnEditUsNom: ImageButton
-    private lateinit var btnEditTipUser: ImageButton
     private lateinit var linLayTel: LinearLayout
     private lateinit var btnEditTel: ImageButton
     // Elementos del bundle de usuario
     private lateinit var bundle: Bundle
     private lateinit var user: String
+    private lateinit var sistema: String
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
@@ -47,15 +47,14 @@ class UserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_activity_user)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
         //Obteniendo el usuario
         if(intent.extras == null){
             Toast.makeText(this@UserActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
+            sistema = bundle.getString("sistema").toString()
         }
         // Configurar el arranque de la interfaz
         setUp()
@@ -76,7 +75,6 @@ class UserActivity : AppCompatActivity() {
         btnEditResp = findViewById(R.id.btnEditResp)
         btnEditSis = findViewById(R.id.btnEditSisRel)
         btnEditUsNom = findViewById(R.id.btnEditUsNam)
-        btnEditTipUser = findViewById(R.id.btnEditTipUser)
         linLayTel = findViewById(R.id.linLayEditTel)
         btnEditTel = findViewById(R.id.btnEditTel)
         // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
@@ -96,9 +94,7 @@ class UserActivity : AppCompatActivity() {
                             if(objUs.key.toString() == user){
                                 lblNom.text = objUs.child("nombre").value.toString()
                                 lblUser.text = objUs.child("username").value.toString()
-                                if(objUs.child("tipo_Usuario").value.toString() == "Administrador") {
-                                    linLayTel.isGone = false
-                                }
+                                break
                             }
                         }
                     }
@@ -108,6 +104,37 @@ class UserActivity : AppCompatActivity() {
                 })
             }
             getVals.await()
+
+            val getUsTipo = async {
+                ref = database.getReference("Sistemas")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot){
+                        for (objSis in dataSnapshot.children) {
+                            if(objSis.key.toString() == sistema){
+                                val usRef = objSis.ref.child("usuarios")
+                                usRef.addListenerForSingleValueEvent(object: ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for(objUs in snapshot.children){
+                                            if(objUs.key.toString() == user && objUs.value.toString() == "Administrador"){
+                                                linLayTel.isGone = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                    }
+                                })
+                                break
+                            }
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            getUsTipo.await()
         }
     }
 
@@ -162,13 +189,6 @@ class UserActivity : AppCompatActivity() {
                 putExtra("campo", "Username")
             }
             startActivity(editUser)
-        }
-        btnEditTipUser.setOnClickListener {
-            val editTipo = Intent(this@UserActivity, EditDataSpActivity::class.java).apply {
-                putExtra("usuario", user)
-                putExtra("campo", "Tipo")
-            }
-            startActivity(editTipo)
         }
         btnEditTel.setOnClickListener {
             val editTel = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {

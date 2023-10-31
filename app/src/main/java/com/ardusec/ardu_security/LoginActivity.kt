@@ -221,7 +221,7 @@ class LoginActivity : AppCompatActivity() {
                             for (objUser in dataSnapshot.children) {
                                 if (objUser.key.toString() == usuario){
                                     if(rbSelAccEma.isChecked) {
-                                        valiLogEmail(objUser.child("tipo_Usuario").value.toString())
+                                        valiLogEmail()
                                     }else if(rbSelAccGoo.isChecked) {
                                         valiLogGoo()
                                     }
@@ -243,7 +243,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun valiLogEmail(tipo: String){
+    private fun valiLogEmail(){
         lifecycleScope.launch(Dispatchers.IO){
             val logEma = async {
                 // Validacion individual de los campos (para este punto ya se valido el username previamente)
@@ -264,7 +264,6 @@ class LoginActivity : AppCompatActivity() {
                                 }
                                 val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
                                     putExtra("username", usuario)
-                                    putExtra("tipo", tipo)
                                 }
                                 startActivity(intentoDash)
                             }
@@ -338,7 +337,6 @@ class LoginActivity : AppCompatActivity() {
                                             Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
                                             val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
                                                 putExtra("username", usuario)
-                                                putExtra("tipo", objUser.child("tipo_Usuario").value.toString())
                                             }
                                             startActivity(intentoDash)
                                             break

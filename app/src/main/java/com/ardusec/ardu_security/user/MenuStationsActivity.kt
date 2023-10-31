@@ -4,8 +4,10 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -18,21 +20,33 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MenuStationsActivity : AppCompatActivity() {
-    private lateinit var btnSta1: ImageButton
+    // Estableciendo los elementos de interaccion
+    private lateinit var linLayEsta12: LinearLayout
     private lateinit var linLayBtn1: LinearLayout
-    private lateinit var btnSta2: ImageButton
+    private lateinit var btnSta1: ImageButton
     private lateinit var linLayBtn2: LinearLayout
-    private lateinit var btnSta3: ImageButton
-    private lateinit var linLayBtn3: LinearLayout
-    private lateinit var btnSta4: ImageButton
+    private lateinit var btnSta2: ImageButton
+    private lateinit var linLayEsta34: LinearLayout
+    private lateinit var linLayBtn31: LinearLayout
+    private lateinit var btnSta31: ImageButton
     private lateinit var linLayBtn4: LinearLayout
-    private lateinit var btnSta5: ImageButton
+    private lateinit var btnSta4: ImageButton
+    private lateinit var linLayEsta3Ala: LinearLayout
+    private lateinit var linLayBtn32: LinearLayout
+    private lateinit var btnSta32: ImageButton
+    private lateinit var linLayAlarm2: LinearLayout
+    private lateinit var btnAlarma2: ImageButton
+    private lateinit var linLayEsta5Ala: LinearLayout
     private lateinit var linLayBtn5: LinearLayout
+    private lateinit var btnSta5: ImageButton
+    private lateinit var linLayAlarm: LinearLayout
     private lateinit var btnAlarma: ImageButton
+    // Variables de evaluacion para determinar la cantidad de botones a mostrar
+    private var cantEsta: Long = 0
+    private val arrEstasKey = ArrayList<String>()
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var user: String
-    private lateinit var tipo: String
     private lateinit var sistema: String
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var ref: DatabaseReference
@@ -41,12 +55,9 @@ class MenuStationsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_activity_menu_stations)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
         //Obteniendo los valores de acceso/registro
         if(intent.extras == null){
-            tipo = "Cliente"
             Toast.makeText(this@MenuStationsActivity, "Error: no se pudo obtener la informacion del usuario", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
@@ -64,57 +75,62 @@ class MenuStationsActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Menu Estaciones"
         // Relacionando los elementos con su objeto de la interfaz
-        btnSta1 = findViewById(R.id.btnStat1)
-        btnSta2 = findViewById(R.id.btnStat2)
-        btnSta3 = findViewById(R.id.btnStat3)
-        btnSta4 = findViewById(R.id.btnStat4)
-        btnSta5 = findViewById(R.id.btnStat5)
-        btnAlarma = findViewById(R.id.btnAlarma)
+        linLayEsta12 = findViewById(R.id.linLayEsta12)
         linLayBtn1 = findViewById(R.id.LinBtnEsta1)
+        btnSta1 = findViewById(R.id.btnStat1)
         linLayBtn2 = findViewById(R.id.LinBtnEsta2)
-        linLayBtn3 = findViewById(R.id.LinBtnEsta3)
-        linLayBtn4 = findViewById(R.id.LinBtnEsta4)
+        btnSta2 = findViewById(R.id.btnStat2)
+        linLayEsta34 = findViewById(R.id.linLayEsta34)
+        linLayBtn31 = findViewById(R.id.LinBtnEsta31)
+        btnSta31 = findViewById(R.id.btnStat31)
+        linLayBtn4 = findViewById(R.id.LinBtnEsta41)
+        btnSta4 = findViewById(R.id.btnStat41)
+        linLayEsta3Ala = findViewById(R.id.linLayEsta3Ala)
+        linLayBtn32 = findViewById(R.id.LinBtnEsta32)
+        btnSta32 = findViewById(R.id.btnStat32)
+        linLayAlarm2 = findViewById(R.id.LinBtnAlarm2)
+        btnAlarma2 = findViewById(R.id.btnAlarma2)
+        linLayEsta5Ala = findViewById(R.id.linLayEsta5Ala)
         linLayBtn5 = findViewById(R.id.LinBtnEsta5)
+        btnSta5 = findViewById(R.id.btnStat5)
+        linLayAlarm = findViewById(R.id.LinBtnAlarm)
+        btnAlarma = findViewById(R.id.btnAlarma)
+
         // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
         database = Firebase.database
-
-        // Habilitando solo los botones adecuados de acuerdo al plan del sistema
+        // Establecer los botones a mostrar
         setupBtn()
     }
 
     private fun addListeners() {
         // Agregando los listener
         btnSta1.setOnClickListener {
-            lanzarEstacion(1)
+            lanzarEstacion(0)
         }
         btnSta2.setOnClickListener {
+            lanzarEstacion(1)
+        }
+        btnSta31.setOnClickListener {
             lanzarEstacion(2)
         }
-        btnSta3.setOnClickListener {
-            lanzarEstacion(3)
+        btnSta32.setOnClickListener {
+            lanzarEstacion(2)
         }
         btnSta4.setOnClickListener {
-            lanzarEstacion(4)
+            lanzarEstacion(3)
         }
         btnSta5.setOnClickListener {
-            lanzarEstacion(5)
+            lanzarEstacion(4)
         }
         btnAlarma.setOnClickListener {
             lanzarAlarma()
         }
+        btnAlarma2.setOnClickListener {
+            lanzarAlarma()
+        }
     }
 
-    private fun avisoMenSta(){
-        val mensaje = "Error: No se pudieron obtener los valores solicitados"
-        val aviso = AlertDialog.Builder(this)
-        aviso.setTitle("Aviso")
-        aviso.setMessage(mensaje)
-        aviso.setPositiveButton("Aceptar", null)
-        val dialog: AlertDialog = aviso.create()
-        dialog.show()
-    }
-
-    private fun setupBtn() {
+    private fun setupBtn(){
         lifecycleScope.launch(Dispatchers.IO) {
             val setBtnsEstas = async {
                 // Creando la referencia de la coleccion de sistemas en la BD
@@ -123,131 +139,60 @@ class MenuStationsActivity : AppCompatActivity() {
                 ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSis in dataSnapshot.children) {
-                            val refUser = objSis.child("usuarios").ref
-                            refUser.addListenerForSingleValueEvent(object: ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    for(usSis in snapshot.children) {
-                                        if(usSis.key.toString() == user) {
-                                            if(objSis.child("tipo").value == "Avanzado") {
-                                                linLayBtn1.isGone = false
-                                                linLayBtn2.isGone = false
-                                                linLayBtn3.isGone = false
-                                                linLayBtn4.isGone = false
-                                                linLayBtn5.isGone = false
-                                                break
-                                            }else{
-                                                linLayBtn1.isGone = false
-                                                linLayBtn2.isGone = false
-                                                linLayBtn3.isGone = false
-                                                linLayBtn4.isGone = true
-                                                linLayBtn5.isGone = true
-                                                break
-                                            }
-                                        }
+                            if(objSis.key.toString() == sistema){
+                                val refSnap = objSis.child("estaciones")
+                                cantEsta = refSnap.childrenCount
+                                when(cantEsta.toInt()){
+                                    3 -> {
+                                        linLayEsta12.isGone = false
+                                        linLayEsta3Ala.isGone = false
+                                    }
+                                    5 -> {
+                                        linLayEsta12.isGone = false
+                                        linLayEsta34.isGone = false
+                                        linLayEsta5Ala.isGone = false
+                                    }
+                                    else -> {
+                                        Toast.makeText(this@MenuStationsActivity,"Error: Cantidad del sistema inadecuada",Toast.LENGTH_SHORT).show()
                                     }
                                 }
-                                override fun onCancelled(error: DatabaseError) {
-                                    avisoMenSta()
-                                }
-                            })
-                            break
+                                // Obteniendo las ID de las estaciones
+                                val refEsta = refSnap.ref
+                                refEsta.addListenerForSingleValueEvent(object: ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for(objEsta in snapshot.children){
+                                           arrEstasKey.add(objEsta.key.toString())
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Toast.makeText(this@MenuStationsActivity,"Error: Consulta erronea",Toast.LENGTH_SHORT).show()
+                                    }
+                                })
+                                break
+                            }
                         }
                     }
                     override fun onCancelled(databaseError: DatabaseError) {
-                        avisoMenSta()
+                        Toast.makeText(this@MenuStationsActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
             setBtnsEstas.await()
         }
     }
+
     private fun lanzarEstacion(numBtn: Int){
-        lifecycleScope.launch(Dispatchers.IO) {
-            val setBtnEsta5 = async {
-                // Creando la referencia de la coleccion de usuarios en la BD
-                ref = database.getReference("Usuarios").child(user).child("sistemas")
-                // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addListenerForSingleValueEvent(object: ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(sisUs in dataSnapshot.children){
-                            if(dataSnapshot.childrenCount.toInt() == 1){
-                                val sistema = sisUs.key.toString()
-                                var contEsta = 1
-                                val refEsta = database.getReference("Estaciones")
-                                refEsta.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(sisRel in snapshot.children){
-                                            if(sisRel.child("sistema_Rel").value == sistema && contEsta == numBtn){
-                                                val intActEst5 = Intent(this@MenuStationsActivity,
-                                                    StationActivity::class.java).apply {
-                                                    putExtra("username", user)
-                                                    putExtra("name_station", sisRel.key.toString())
-                                                }
-                                                startActivity(intActEst5)
-                                            }
-                                            contEsta++
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        avisoMenSta()
-                                    }
-                                })
-                                break
-                            }else{
-                                // Preparar algo aqui para cuando se tenga mas de un sistema
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        avisoMenSta()
-                    }
-                })
-            }
-            setBtnEsta5.await()
+        val staActi = Intent(this@MenuStationsActivity,StationActivity::class.java).apply {
+            putExtra("username", user)
+            putExtra("name_station", arrEstasKey[numBtn])
         }
+        startActivity(staActi)
     }
     private fun lanzarAlarma(){
-        lifecycleScope.launch(Dispatchers.IO) {
-            val setBtnAla = async {
-                // Creando la referencia de la coleccion de usuarios en la BD
-                ref = database.getReference("Usuarios").child(user).child("sistemas")
-                // Agregando un ValueEventListener para operar con las instancias de pregunta
-                ref.addListenerForSingleValueEvent(object: ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(sisUs in dataSnapshot.children){
-                            if(dataSnapshot.childrenCount.toInt() == 1){
-                                val sistema = sisUs.key.toString()
-                                val refAla = database.getReference("Alarmas")
-                                refAla.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(sisRel in snapshot.children){
-                                            if(sisRel.child("sistema_Rel").value == sistema){
-                                                val intentAlarma = Intent(this@MenuStationsActivity, AlarmActivity::class.java).apply {
-                                                    putExtra("sistema", sistema)
-                                                }
-                                                startActivity(intentAlarma)
-                                                break
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        avisoMenSta()
-                                    }
-                                })
-                                break
-                            }else{
-                                // Preparar algo aqui para cuando se tenga mas de un sistema
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        avisoMenSta()
-                    }
-                })
-            }
-            setBtnAla.await()
+        val alaActi = Intent(this@MenuStationsActivity, AlarmActivity::class.java).apply {
+            putExtra("username", user)
+            putExtra("sistema", sistema)
         }
+        startActivity(alaActi)
     }
 }

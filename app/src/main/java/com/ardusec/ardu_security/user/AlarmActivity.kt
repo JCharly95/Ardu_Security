@@ -37,9 +37,7 @@ class AlarmActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_activity_alarm)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
 
         //Obteniendo los valores del usuario y estacion
         if(intent.extras != null){
@@ -88,9 +86,9 @@ class AlarmActivity : AppCompatActivity() {
             val setAla = async {
                 // Establecer el estado del switch acorde al valor de la entidad en firebase
                 ref = database.getReference("Alarmas")
-                ref.get().addOnCompleteListener {taskGet ->
-                    if(taskGet.isSuccessful){
-                        for (objAla in taskGet.result.children) {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objAla in dataSnapshot.children){
                             if(objAla.child("sistema_Rel").value.toString() == sistema) {
                                 val condicion = objAla.child("condicion").value.toString()
                                 val estado = objAla.child("estado").value.toString()
@@ -112,10 +110,11 @@ class AlarmActivity : AppCompatActivity() {
                                 }
                             }
                         }
-                    }else{
-                        avisoAl("Error: Datos parcialmente obtenidos")
                     }
-                }
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@AlarmActivity, "Error: Datos parcialmente obtenidos", Toast.LENGTH_SHORT).show()
+                    }
+                })
             }
             setAla.await()
         }

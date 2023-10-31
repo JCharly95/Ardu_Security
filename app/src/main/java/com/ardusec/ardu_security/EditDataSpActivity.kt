@@ -1,5 +1,6 @@
 package com.ardusec.ardu_security
 
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,10 +10,12 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.ardusec.ardu_security.user.DashboardActivity
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -39,24 +42,24 @@ class EditDataSpActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     // Bundle para extras y saber que campo sera actualizado
     private lateinit var bundle: Bundle
-    private lateinit var campo: String
     private lateinit var user: String
-    // Variable para obtener la key vieja, tanto sistema como pregunta
-    private lateinit var keyVieja: String
+    private lateinit var sistema: String
+    private lateinit var campo: String
+    private var tipo = ""
+    private var keyVieja = ""
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_data_sp)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
         //Obteniendo el campo
         if(intent.extras == null){
             Toast.makeText(this@EditDataSpActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
         }else{
             bundle = intent.extras!!
-            campo = bundle.getString("campo").toString()
             user = bundle.getString("usuario").toString()
+            sistema = bundle.getString("sistema").toString()
+            campo = bundle.getString("campo").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -83,8 +86,10 @@ class EditDataSpActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = Firebase.database
         // Establecer el encabezado y el boton, acorde al campo a actualizar
-        lblHeadSp.text = lblHeadSp.text.toString() + "\n" + campo
-        btnConfCamb.text = btnConfCamb.text.toString() + "\n" + campo
+        val titPant = "${lblHeadSp.text}\n$campo"
+        val btnText = "${btnConfCamb.text}\n$campo"
+        lblHeadSp.text = titPant
+        btnConfCamb.text = btnText
 
         // Actualizar los elementos del formulario acorde al cambio solicitado
         setFormulario()
@@ -92,22 +97,9 @@ class EditDataSpActivity : AppCompatActivity() {
 
     private fun addListeners(){
         btnAyuda.setOnClickListener {
-            val msg = "Consideraciones de campos: \n\n" +
-                    "Nombre;\n" +
-                    "* Su nombre no debe tener numeros\n" +
-                    "* Su nombre debe tener al menos 10 caracteres\n\n" +
-                    "Correo; Formato Aceptado:\n" +
-                    "* usuario@dominio.com(.mx)\n\n" +
-                    "Contraseña:\n" +
-                    "* Extension minima de 8 caracteres\n" +
-                    "* Por lo menos una mayuscula\n" +
-                    "* Por lo menos un numero\n" +
-                    "* Por lo menos  un caracter especial\n\n" +
-                    "Administradores; Numero Telefonico:\n" +
-                    "* Solo se permiten numeros\n" +
-                    "* Lada + Numero ó Tel. Celular\n\n" +
-                    "** NOTA: Para el cambio de correo o contraseña, se le " +
-                    "solicitara la contraseña como confirmacion de cambio."
+            val msg = "Instrucciones: \n\n" +
+                    "* Se mostrará el valor actual solicitado para cambiar y deberá seleccionar el nuevo valor a establecer en la lista desplegable;\n\n" +
+                    "- NOTA: Si no puede concluir con el proceso, revise el mensaje de error mostrado en pantalla o regrese a la vista anterior\n"
             avisoActu(msg)
         }
         btnConfCamb.setOnClickListener{
@@ -141,7 +133,7 @@ class EditDataSpActivity : AppCompatActivity() {
             val rellPregs = async {
                 // Obtener el arreglo de strings establecido para las preguntas
                 val lstPregs = resources.getStringArray(R.array.lstSavQues)
-                var arrPregs = ArrayList<String>()
+                val arrPregs = ArrayList<String>()
                 arrPregs.addAll(lstPregs)
                 // Creando la referencia de la coleccion de preguntas en la BD
                 ref = database.getReference("Preguntas")
@@ -168,10 +160,10 @@ class EditDataSpActivity : AppCompatActivity() {
     private fun rellSpinSis() {
         lifecycleScope.launch(Dispatchers.IO) {
             val rellSis = async {
-                    // Obtener el arreglo de strings establecido para los sistemas
-                    val lstSists = resources.getStringArray(R.array.lstSistems)
-                    var arrSists = ArrayList<String>()
-                    arrSists.addAll(lstSists)
+                // Obtener el arreglo de strings establecido para los sistemas
+                val lstSists = resources.getStringArray(R.array.lstSistems)
+                val arrSists = ArrayList<String>()
+                arrSists.addAll(lstSists)
                 // Creando la referencia de la coleccion de sistemas en la BD
                 ref = database.getReference("Sistemas")
                 // Agregando un ValueEventListener para operar con las instancias de pregunta
@@ -234,57 +226,73 @@ class EditDataSpActivity : AppCompatActivity() {
                 // Buscar en la BD la informacion del sistema actual del usuario
                 lifecycleScope.launch(Dispatchers.IO) {
                     val getPreg = async {
-                        // Creando la referencia de la coleccion de preguntas en la BD
                         ref = database.getReference("Preguntas")
-                        // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
-                        ref.get().addOnSuccessListener{ taskGetPreg ->
-                            for (objPreg in taskGetPreg.children){
-                                val refPregUs = objPreg.child("usuarios").ref
-                                refPregUs.get().addOnSuccessListener { taskGetUser ->
-                                    for(objUs in taskGetUser.children){
-                                        if(objUs.key.toString() == user){
-                                            keyVieja = objPreg.key.toString()
-                                            txtValVie.text = objPreg.child("Val_Pregunta").value.toString()
-                                            break
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for (objPreg in dataSnapshot.children){
+                                    val refPregUs = objPreg.child("usuarios").ref
+                                    refPregUs.addListenerForSingleValueEvent(object: ValueEventListener{
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            for(objUs in snapshot.children){
+                                                if(objUs.key.toString() == user){
+                                                    keyVieja = objPreg.key.toString()
+                                                    txtValVie.text = objPreg.child("Val_Pregunta").value.toString()
+                                                    break
+                                                }
+                                            }
                                         }
-                                    }
+                                        override fun onCancelled(error: DatabaseError) {
+                                            Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                        }
+
+                                    })
                                 }
                             }
-                        }
-                            .addOnFailureListener {
+                            override fun onCancelled(error: DatabaseError) {
                                 Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                             }
+                        })
                     }
                     getPreg.await()
                 }
             }
             "Sistema" -> {
-                // Mostrar el spinner de los sistemas y rellenarlo
+                // Mostrar los spinner de sistemas y tipo, luego rellenarlos
                 mateCarSis.isGone = false
                 rellSpinSis()
+                // Valor por defecto en caso de no tener sistema relacionado
+                val msgNoSis = "No se cuenta con sistema"
+                txtValVie.text = msgNoSis
                 // Buscar en la BD la informacion del sistema actual del usuario
                 lifecycleScope.launch(Dispatchers.IO) {
                     val getSis = async {
                         // Creando la referencia de la coleccion de sistemas en la BD
                         ref = database.getReference("Sistemas")
-                        // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
-                        ref.get().addOnSuccessListener{ taskGetSis ->
-                            for (objSis in taskGetSis.children){
-                                val refSisUs = objSis.child("usuarios").ref
-                                refSisUs.get().addOnSuccessListener { taskGetUser ->
-                                    for(objUs in taskGetUser.children){
-                                        if(objUs.key.toString() == user){
-                                            keyVieja = objSis.key.toString()
-                                            txtValVie.text = objSis.child("nombre_Sis").value.toString()
-                                            break
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for(objSis in dataSnapshot.children){
+                                    val refSisUs = objSis.child("usuarios").ref
+                                    refSisUs.addListenerForSingleValueEvent(object: ValueEventListener{
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            for(objUs in snapshot.children){
+                                                if(objUs.key.toString() == user){
+                                                    keyVieja = objSis.key.toString()
+                                                    txtValVie.text = objSis.child("nombre_Sis").value.toString()
+                                                    tipo = objSis.child("usuarios").child(user).value.toString()
+                                                    break
+                                                }
+                                            }
                                         }
-                                    }
+                                        override fun onCancelled(error: DatabaseError) {
+                                            Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                        }
+                                    })
                                 }
                             }
-                        }
-                            .addOnFailureListener {
+                            override fun onCancelled(error: DatabaseError) {
                                 Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                             }
+                        })
                     }
                     getSis.await()
                 }
@@ -294,22 +302,36 @@ class EditDataSpActivity : AppCompatActivity() {
                 rellTipos()
                 // Buscar en la BD la informacion del tipo de usuario actual del usuario
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val getTip = async {
-                        // Creando la referencia de la coleccion de usuarios en la BD
-                        ref = database.getReference("Usuarios")
-                        // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
-                        ref.get().addOnSuccessListener{ taskGetSis ->
-                            for (objUs in taskGetSis.children){
-                                if(objUs.key.toString() == user){
-                                    txtValVie.text = objUs.child("tipo_Usuario").value.toString()
+                    val getUsTipo = async {
+                        ref = database.getReference("Sistemas")
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot){
+                                for (objSis in dataSnapshot.children) {
+                                    if(objSis.key.toString() == sistema){
+                                        val usRef = objSis.ref.child("usuarios")
+                                        usRef.addListenerForSingleValueEvent(object: ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                for(objUs in snapshot.children){
+                                                    if(objUs.key.toString() == user){
+                                                        txtValVie.text = objUs.value.toString()
+                                                        break
+                                                    }
+                                                }
+                                            }
+                                            override fun onCancelled(error: DatabaseError) {
+                                                Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                            }
+                                        })
+                                        break
+                                    }
                                 }
                             }
-                        }
-                            .addOnFailureListener {
+                            override fun onCancelled(databaseError: DatabaseError) {
                                 Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                             }
+                        })
                     }
-                    getTip.await()
+                    getUsTipo.await()
                 }
             }
         }
@@ -320,7 +342,9 @@ class EditDataSpActivity : AppCompatActivity() {
         return if(lista.selectedItemPosition != 0 || lista.selectedItem.toString() != "Seleccione su pregunta clave"){
             true
         }else{
-            avisoActu("Error: Favor de seleccionar una pregunta")
+            lifecycleScope.launch(Dispatchers.Main){
+                avisoActu("Error: Favor de seleccionar una pregunta")
+            }
             false
         }
     }
@@ -328,7 +352,9 @@ class EditDataSpActivity : AppCompatActivity() {
         return if (lista.selectedItemPosition != 0 || lista.selectedItem.toString() != "Seleccione su Sistema") {
             true
         }else{
-            avisoActu("Error: Favor de seleccionar un sistema")
+            lifecycleScope.launch(Dispatchers.Main){
+                avisoActu("Error: Favor de seleccionar un sistema")
+            }
             false
         }
     }
@@ -337,7 +363,9 @@ class EditDataSpActivity : AppCompatActivity() {
         return if (lista.selectedItemPosition != 0 || lista.selectedItem.toString() != "Seleccione su tipo de usuario") {
             true
         }else{
-            avisoActu("Error: Favor de seleccionar un tipo de usuario")
+            lifecycleScope.launch(Dispatchers.Main){
+                avisoActu("Error: Favor de seleccionar un tipo de usuario")
+            }
             false
         }
     }
@@ -356,7 +384,7 @@ class EditDataSpActivity : AppCompatActivity() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objPreg in dataSnapshot.children){
                             if(objPreg.child("Val_Pregunta").value.toString() == txtValVie.text.toString()){
-                                // Creando la referencia al subArreglo de los usuarios en las preguntas
+                                // Creando la referencia al subarreglo de los usuarios en las preguntas y eliminando la relacion vieja
                                 val refPregUs = objPreg.child("usuarios").ref
                                 refPregUs.addListenerForSingleValueEvent(object: ValueEventListener{
                                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -371,6 +399,10 @@ class EditDataSpActivity : AppCompatActivity() {
                                     }
                                 })
                             }
+                            // Luego se establecera la nueva relacion con la pregunta actualizada
+                            if (objPreg.child("Val_Pregunta").value.toString() == pregunta) {
+                                objPreg.ref.child("usuarios").child(user).setValue(true)
+                            }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
@@ -379,23 +411,6 @@ class EditDataSpActivity : AppCompatActivity() {
                 })
             }
             delPregUs.await()
-            // Luego se establecera la nueva relacion con la pregunta actualizada
-            val setPregUs = async {
-                // Creando la relacion del usuario con la pregunta en la entidad Preguntas
-                ref = database.getReference("Preguntas")
-                ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for (objPreg in dataSnapshot.children) {
-                            if (objPreg.child("Val_Pregunta").value.toString() == pregunta)
-                                objPreg.ref.child("usuarios").child(user).setValue(true)
-                        }
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
-            setPregUs.await()
             // Y finalmente se establecera el nuevo valor de la pregunta en el usuario
             val setUsPreg = async {
                 // Actualizando el valor en la entidad de usuarios
@@ -440,7 +455,7 @@ class EditDataSpActivity : AppCompatActivity() {
                 ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objSis in dataSnapshot.children){
-                            if(objSis.key.toString() == keyVieja){
+                            if(keyVieja != "" && objSis.key.toString() == keyVieja){
                                 // Creando la referencia al subArreglo de los usuarios en los sistemas
                                 val refSisUs = objSis.child("usuarios").ref
                                 refSisUs.addListenerForSingleValueEvent(object: ValueEventListener{
@@ -458,6 +473,10 @@ class EditDataSpActivity : AppCompatActivity() {
                                 })
                                 break
                             }
+                            // Luego se establecera la nueva relacion con el sistema actualizado
+                            if (objSis.child("nombre_Sis").value.toString() == sistema) {
+                                objSis.ref.child("usuarios").child(user).setValue("Cliente")
+                            }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
@@ -466,23 +485,6 @@ class EditDataSpActivity : AppCompatActivity() {
                 })
             }
             delSisUs.await()
-            // Luego se establecera la nueva relacion con el sistema actualizado
-            val setSisUs = async {
-                // Creando la relacion del usuario con el sistema en la entidad Sistemas
-                ref = database.getReference("Sistemas")
-                ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for (objSis in dataSnapshot.children) {
-                            if (objSis.child("nombre_Sis").value.toString() == sistema)
-                                objSis.ref.child("usuarios").child(user).setValue(true)
-                        }
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
-            setSisUs.await()
             // Y finalmente se establecera el nuevo valor del sistema en el usuario
             val setUsSis = async {
                 // Actualizando el valor en la entidad de usuarios
@@ -494,14 +496,18 @@ class EditDataSpActivity : AppCompatActivity() {
                                 val sisUser = objUser.ref.child("sistemas")
                                 sisUser.addListenerForSingleValueEvent(object: ValueEventListener{
                                     override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(sistems in snapshot.children){
-                                            if(sistems.value.toString() == keyVieja){
-                                                sistems.ref.setValue("sistema${listSis.selectedItemPosition}").addOnSuccessListener {
+                                        for(objSis in snapshot.children){
+                                            if(keyVieja == ""){
+                                                objSis.child("sistema1").ref.setValue(sistema).addOnSuccessListener {
                                                     Toast.makeText(this@EditDataSpActivity, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                                     Timer().schedule(1500){
                                                         lifecycleScope.launch(Dispatchers.Main){
-                                                            retorno()
-                                                            finish()
+                                                            Intent(this@EditDataSpActivity, DashboardActivity::class.java).apply {
+                                                                putExtra("username", user)
+                                                                putExtra("tipo", "Cliente")
+                                                                startActivity(this)
+                                                                finish()
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -509,6 +515,26 @@ class EditDataSpActivity : AppCompatActivity() {
                                                         Toast.makeText(this@EditDataSpActivity, "Error: Su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
                                                         spNSis.setSelection(0)
                                                     }
+                                            }else{
+                                                if(objSis.value.toString() == keyVieja){
+                                                    objSis.ref.setValue("sistema${listSis.selectedItemPosition}").addOnSuccessListener {
+                                                        Toast.makeText(this@EditDataSpActivity, "Su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                                        Timer().schedule(1500){
+                                                            lifecycleScope.launch(Dispatchers.Main){
+                                                                Intent(this@EditDataSpActivity, DashboardActivity::class.java).apply {
+                                                                    putExtra("username", user)
+                                                                    putExtra("tipo", "Cliente")
+                                                                    startActivity(this)
+                                                                    finish()
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                        .addOnFailureListener {
+                                                            Toast.makeText(this@EditDataSpActivity, "Error: Su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                                            spNSis.setSelection(0)
+                                                        }
+                                                }
                                             }
                                         }
                                     }
@@ -534,29 +560,44 @@ class EditDataSpActivity : AppCompatActivity() {
         // Corrutina con las acciones a realizar en la BD
         lifecycleScope.launch(Dispatchers.IO) {
             val setTipo = async {
-                ref = database.getReference("Usuarios")
-                ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                // Creando la referencia de la coleccion de sistemas en la BD
+                ref = database.getReference("Sistemas")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for (objUs in dataSnapshot.children) {
-                            if(objUs.key.toString() == user){
-                                objUs.ref.child("tipo_Usuario").setValue(tipo).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataSpActivity, "Su tipo fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                    Timer().schedule(1500){
-                                        lifecycleScope.launch(Dispatchers.Main){
-                                            retorno()
-                                            finish()
+                        for(objSis in dataSnapshot.children){
+                            val refSisUs = objSis.child("usuarios").ref
+                            refSisUs.addListenerForSingleValueEvent(object: ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    for(objUs in snapshot.children){
+                                        if(objUs.key.toString() == user){
+                                            objUs.ref.setValue(tipo).addOnSuccessListener {
+                                                Toast.makeText(this@EditDataSpActivity, "Su tipo fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                                Timer().schedule(1500){
+                                                    lifecycleScope.launch(Dispatchers.Main){
+                                                        Intent(this@EditDataSpActivity, DashboardActivity::class.java).apply {
+                                                            putExtra("username", user)
+                                                            putExtra("tipo", tipo)
+                                                            startActivity(this)
+                                                            finish()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(this@EditDataSpActivity, "Error: Su tipo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                                    spNSis.setSelection(0)
+                                                }
                                         }
                                     }
                                 }
-                                    .addOnFailureListener {
-                                        Toast.makeText(this@EditDataSpActivity, "Error: Su tipo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                                        spNSis.setSelection(0)
-                                    }
-                            }
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                }
+                            })
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataSpActivity,"Datos recuperados parcialmente o sin recuperar",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataSpActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
                     }
                 })
             }

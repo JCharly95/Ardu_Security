@@ -64,8 +64,8 @@ class EditDataTxtActivity : AppCompatActivity() {
     private lateinit var campo: String
     private lateinit var user: String
     private lateinit var tipo: String
-    private lateinit var respuesta: String
     private lateinit var sistema: String
+    private lateinit var respuesta: String
     // Variables de acceso para google
     private lateinit var googleConf: GoogleSignInOptions
     private lateinit var googleCli: GoogleSignInClient
@@ -74,9 +74,7 @@ class EditDataTxtActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_data_txt)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
         //Obteniendo el campo
         if(intent.extras == null){
             Toast.makeText(this@EditDataTxtActivity, "Error: no se pudo obtener el campo solicitado", Toast.LENGTH_SHORT).show()
@@ -124,140 +122,32 @@ class EditDataTxtActivity : AppCompatActivity() {
 
         // Establecer el encabezado y el boton, acorde al campo a actualizar
         val letHeadVal = lblHeadSec.text.toString()+"\n"+campo
-        lblHeadSec.text = letHeadVal
         val letBtnVal = btnConfCamb.text.toString()+"\n"+campo
+        lblHeadSec.text = letHeadVal
         btnConfCamb.text = letBtnVal
 
         // Actualizar los elementos del formulario acorde al cambio solicitado
         setFormulario()
     }
-
-    private fun avisoActu(mensaje: String){
-        val aviso = AlertDialog.Builder(this)
-        aviso.setTitle("Aviso")
-        aviso.setMessage(mensaje)
-        aviso.setPositiveButton("Aceptar", null)
-        val dialog: AlertDialog = aviso.create()
-        dialog.show()
-    }
-
-    private fun retorno(){
-        return this.onBackPressedDispatcher.onBackPressed()
-    }
-
-    private fun setFormulario(){
-        lifecycleScope.launch(Dispatchers.IO){
-            val getVals = async {
-                ref = database.getReference("Usuarios")
-                val obteNom = ref.get()
-                obteNom.addOnSuccessListener { taskGetValues ->
-                    for (objUs in taskGetValues.children) {
-                        if (objUs.key.toString() == user) {
-                            when(campo){
-                                "Nombre" -> {
-                                    txtValVie1.text = objUs.child("nombre").value.toString()
-                                    txtValNueGen.isGone = false
-                                }
-                                "Correo" -> {
-                                    val valEmail = objUs.child("accesos").child("correo").value
-                                    val valGoogle = objUs.child("accesos").child("google").value
-                                    val correo1 = "Correo: $valEmail"
-                                    val correo2 = "Google: $valGoogle"
-                                    txtValVie1.text = correo1
-                                    letrero2.isGone = false
-                                    txtValVie2.text = correo2
-                                    Toast.makeText(this@EditDataTxtActivity,"Seleccione un proveedor de correo",Toast.LENGTH_SHORT).show()
-                                    txtValNueEma.isGone = false
-                                    linLaySelProv.isGone = false
-                                    mateLayConf.isGone = false
-                                    // Obtener la respuesta y la pregunta del usuario
-                                    respuesta = objUs.child("resp_Seguri").value.toString()
-                                    ref = database.getReference("Preguntas")
-                                    ref.get().addOnSuccessListener { taskGetPreg ->
-                                        for(objPreg in taskGetPreg.children) {
-                                            if(objPreg.key.toString() == objUs.child("pregunta_Seg").value) {
-                                                lblConfPreg.text = objPreg.child("Val_Pregunta").value.toString()
-                                                break
-                                            }
-                                        }
-                                    }
-                                    // Preparar la peticion de google por si se usa el correo de google
-                                    crearPeticionGoogle()
-                                }
-                                "Username" -> {
-                                    txtValVie1.text = objUs.child("username").value.toString()
-                                    txtValNueGen.isGone = false
-                                }
-                                "Contraseña" -> {
-                                    // Obtener la respuesta y la pregunta del usuario
-                                    respuesta = objUs.child("resp_Seguri").value.toString()
-                                    ref = database.getReference("Preguntas")
-                                    ref.get().addOnSuccessListener { taskGetPreg ->
-                                        for(objPreg in taskGetPreg.children) {
-                                            if(objPreg.key.toString() == objUs.child("pregunta_Seg").value) {
-                                                lblConfPreg.text = objPreg.child("Val_Pregunta").value.toString()
-                                                break
-                                            }
-                                        }
-                                    }
-                                    val avisoContra = "Por seguridad no se puede mostrar este valor, ingrese su nueva contraseña"
-                                    txtValVie1.text = avisoContra
-                                    txtValNuePas.isGone = false
-                                    linLaySelProv.isGone = false
-                                    mateLayConf.isGone = false
-                                }
-                                "Respuesta" -> {
-                                    txtValVie1.text = objUs.child("resp_Seguri").value.toString()
-                                    txtValNueGen.isGone = false
-                                }
-                                "Telefono" -> {
-                                    txtValVie1.text = objUs.child("num_Tel").value.toString()
-                                    txtValNueNum.isGone = false
-                                }
-                                "Nombre Sistema" -> {
-                                    lifecycleScope.launch(Dispatchers.IO){
-                                        val getSis = async {
-                                            ref = database.getReference("Sistemas")
-                                            ref.get().addOnSuccessListener {
-                                                for(objSis in it.children){
-                                                    if(objSis.key.toString() == sistema){
-                                                        txtValVie1.text = objSis.child("nombre_Sis").value.toString()
-                                                        txtValNueGen.isGone = false
-                                                        break
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        getSis.await()
-                                    }
-                                }
-                            }
-                            break
-                        }
-                    }
-                }
-            }
-            getVals.await()
-        }
-    }
     private fun addListeners() {
         btnAyuda.setOnClickListener {
-            val msg = "Consideraciones de campos: \n\n" +
-            "Nombre;\n" +
+            val msg = "--Consideraciones de campos; \n\n" +
+                    "- Nombre Personal:\n" +
                     "* Su nombre no debe tener numeros\n" +
                     "* Su nombre debe tener al menos 10 caracteres\n\n" +
-                    "Correo; Formato Aceptado:\n" +
-                    "* usuario@dominio.com(.mx)\n\n" +
-                    "Contraseña:\n" +
+                    "- Correo; Formato Aceptado:\n" +
+                    "* usuario@dominio(opcional: extension pais)\n\n" +
+                    "- Contraseña:\n" +
                     "* Extension minima de 8 caracteres\n" +
                     "* Por lo menos una mayuscula\n" +
                     "* Por lo menos un numero\n" +
                     "* Por lo menos  un caracter especial\n\n" +
-                    "Administradores; Numero Telefonico:\n" +
+                    "- Administradores; Numero Telefonico:\n" +
                     "* Solo se permiten numeros\n" +
                     "* Lada + Numero ó Tel. Celular\n\n" +
-                    "** NOTA: Para el cambio de correo o contraseña, se le " +
-                    "solicitara la contraseña como confirmacion de cambio."
+                    "- Administradores; Nombre de Sistema:\n" +
+                    "* Formato Libre\n\n" +
+                    "** NOTA: Para el cambio de correo o contraseña, se le solicitara la contraseña como confirmacion de cambio."
             avisoActu(msg)
         }
         rbValNueEma.setOnClickListener {
@@ -288,52 +178,43 @@ class EditDataTxtActivity : AppCompatActivity() {
                 val confChg = async {
                     when(campo){
                         "Nombre" -> {
-                            if(validarNombre(txtValNueGen.text)) {
+                            if(validarNombre(txtValNueGen.text))
                                 actNombre(txtValNueGen.text.toString(), user)
-                            }
                         }
                         "Correo" -> {
                             if(rbValNueEma.isChecked) {
-                                if(validarCorreo(txtValNueEma.text) && validarCorreo(txtConfEma.text) && validarContra(txtConfPass.text)) {
+                                if(validarCorreo(txtValNueEma.text) && validarCorreo(txtConfEma.text) && validarContra(txtConfPass.text))
                                     actCorreo(txtValNueEma.text.toString(), user)
-                                }
                             }else if(rbValNueGoo.isChecked) {
                                 // Dado que cuando se accede con google no se cuenta como tal con una contra, se usara la respuesta de seguridad en su lugar
-                                if(validarCorreo(txtValNueEma.text) && (txtConfEma.text.toString() == respuesta)) {
+                                if(validarCorreo(txtValNueEma.text) && (txtConfEma.text.toString() == respuesta))
                                     chgGoogle("Correo")
-                                }
                             }
                         }
                         "Username" -> {
-                            if(validarUsuario(txtValNueGen.text)) {
+                            if(validarUsuario(txtValNueGen.text))
                                 actUsername(txtValNueGen.text.toString(), user)
-                            }
                         }
                         "Contraseña" -> {
                             if(rbValNueEma.isChecked) {
-                                if(validarContra(txtValNuePas.text) && validarContra(txtConfPass.text)) {
+                                if(validarContra(txtValNuePas.text) && validarContra(txtConfPass.text))
                                     actContra(txtValNuePas.text.toString())
-                                }
                             }else if(rbValNueGoo.isChecked) {
-                                if(validarContra(txtConfPass.text) && (txtConfEma.text.toString() == respuesta)) {
+                                if(validarContra(txtConfPass.text) && (txtConfEma.text.toString() == respuesta))
                                     chgGoogle("Contraseña")
-                                }
                             }
                         }
                         "Respuesta" -> {
-                            if(validarResp(txtValNueGen.text)) {
+                            if(validarResp(txtValNueGen.text))
                                 actResp(txtValNueGen.text.toString(), user)
-                            }
                         }
                         "Telefono" -> {
-                            if(validarTel(txtValNueNum.text)) {
+                            if(validarTel(txtValNueNum.text))
                                 actTel(txtValNueNum.text.toString().toLong(), user)
-                            }
                         }
                         "Nombre Sistema" -> {
-                            if(!txtValNueGen.text.isNullOrEmpty()) {
+                            if(!txtValNueGen.text.isNullOrEmpty())
                                 actNomSis(txtValNueGen.text.toString(), sistema, user)
-                            }
                         }
                         else -> {
                             Toast.makeText(this@EditDataTxtActivity, "Error: El campo solicitado no esta disponible", Toast.LENGTH_SHORT).show()
@@ -342,6 +223,134 @@ class EditDataTxtActivity : AppCompatActivity() {
                 }
                 confChg.await()
             }
+        }
+    }
+
+    private fun avisoActu(mensaje: String){
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Aviso")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
+    private fun retorno(){
+        return this.onBackPressedDispatcher.onBackPressed()
+    }
+
+    private fun setFormulario(){
+        lifecycleScope.launch(Dispatchers.IO){
+            val getVals = async {
+                ref = database.getReference("Usuarios")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objUs in dataSnapshot.children) {
+                            if (objUs.key.toString() == user) {
+                                when(campo){
+                                    "Nombre" -> {
+                                        txtValVie1.text = objUs.child("nombre").value.toString()
+                                        txtValNueGen.isGone = false
+                                    }
+                                    "Correo" -> {
+                                        Toast.makeText(this@EditDataTxtActivity,"Seleccione un proveedor de correo",Toast.LENGTH_SHORT).show()
+                                        val valEmail = objUs.child("accesos").child("correo").value
+                                        val valGoogle = objUs.child("accesos").child("google").value
+                                        val correo1 = "Correo: $valEmail"
+                                        val correo2 = "Google: $valGoogle"
+                                        txtValVie1.text = correo1
+                                        letrero2.isGone = false
+                                        txtValVie2.text = correo2
+                                        txtValNueEma.isGone = false
+                                        linLaySelProv.isGone = false
+                                        mateLayConf.isGone = false
+                                        // Obtener la respuesta y la pregunta del usuario
+                                        respuesta = objUs.child("resp_Seguri").value.toString()
+                                        ref = database.getReference("Preguntas")
+                                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                                            override fun onDataChange(snapshot1: DataSnapshot) {
+                                                for(objPreg in snapshot1.children) {
+                                                    if(objPreg.key.toString() == objUs.child("pregunta_Seg").value) {
+                                                        lblConfPreg.text = objPreg.child("Val_Pregunta").value.toString()
+                                                        break
+                                                    }
+                                                }
+                                            }
+                                            override fun onCancelled(error: DatabaseError) {
+                                                Toast.makeText(this@EditDataTxtActivity,"Error: Consulta corrompida",Toast.LENGTH_SHORT).show()
+                                            }
+                                        })
+                                        // Preparar la peticion de google por si se usa el correo de google
+                                        crearPeticionGoogle()
+                                    }
+                                    "Username" -> {
+                                        txtValVie1.text = objUs.child("username").value.toString()
+                                        txtValNueGen.isGone = false
+                                    }
+                                    "Contraseña" -> {
+                                        // Obtener la respuesta y la pregunta del usuario
+                                        respuesta = objUs.child("resp_Seguri").value.toString()
+                                        ref = database.getReference("Preguntas")
+                                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                                            override fun onDataChange(snapshot2: DataSnapshot) {
+                                                for(objPreg in snapshot2.children) {
+                                                    if(objPreg.key.toString() == objUs.child("pregunta_Seg").value) {
+                                                        lblConfPreg.text = objPreg.child("Val_Pregunta").value.toString()
+                                                        break
+                                                    }
+                                                }
+                                            }
+                                            override fun onCancelled(error: DatabaseError) {
+                                                Toast.makeText(this@EditDataTxtActivity,"Error: Consulta corrompida",Toast.LENGTH_SHORT).show()
+                                            }
+                                        })
+                                        val avisoContra = "Por seguridad no se puede mostrar este valor, ingrese su nueva contraseña"
+                                        txtValVie1.text = avisoContra
+                                        txtValNuePas.isGone = false
+                                        linLaySelProv.isGone = false
+                                        mateLayConf.isGone = false
+                                    }
+                                    "Respuesta" -> {
+                                        txtValVie1.text = objUs.child("resp_Seguri").value.toString()
+                                        txtValNueGen.isGone = false
+                                    }
+                                    "Telefono" -> {
+                                        txtValVie1.text = objUs.child("num_Tel").value.toString()
+                                        txtValNueNum.isGone = false
+                                    }
+                                    "Nombre Sistema" -> {
+                                        lifecycleScope.launch(Dispatchers.IO){
+                                            val getSis = async {
+                                                ref = database.getReference("Sistemas")
+                                                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                                                    override fun onDataChange(snapshot3: DataSnapshot) {
+                                                        for(objSis in snapshot3.children){
+                                                            if(objSis.key.toString() == sistema){
+                                                                txtValVie1.text = objSis.child("nombre_Sis").value.toString()
+                                                                txtValNueGen.isGone = false
+                                                                break
+                                                            }
+                                                        }
+                                                    }
+                                                    override fun onCancelled(error: DatabaseError) {
+                                                        Toast.makeText(this@EditDataTxtActivity,"Error: Consulta corrompida",Toast.LENGTH_SHORT).show()
+                                                    }
+                                                })
+                                            }
+                                            getSis.await()
+                                        }
+                                    }
+                                }
+                                break
+                            }
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Consulta corrompida",Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            getVals.await()
         }
     }
 
@@ -522,20 +531,20 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 "Contraseña" -> {
                                     userAuth.updatePassword(txtValNuePas.text.toString())
                                         .addOnSuccessListener {
-                                        Toast.makeText(this@EditDataTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                        Timer().schedule(1500){
-                                            FirebaseAuth.getInstance().signOut()
-                                            lifecycleScope.launch(Dispatchers.Main){
-                                                Intent(this@EditDataTxtActivity, MainActivity::class.java).apply {
-                                                    startActivity(this)
-                                                    finish()
+                                            Toast.makeText(this@EditDataTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                            Timer().schedule(1500){
+                                                FirebaseAuth.getInstance().signOut()
+                                                lifecycleScope.launch(Dispatchers.Main){
+                                                    Intent(this@EditDataTxtActivity, MainActivity::class.java).apply {
+                                                        startActivity(this)
+                                                        finish()
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
                                         .addOnFailureListener {
                                             Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
-                                    }
+                                        }
                                 }
                             }
                         }
@@ -566,14 +575,14 @@ class EditDataTxtActivity : AppCompatActivity() {
                         for(objUs in dataSnapshot.children){
                             if(objUs.key.toString() == usuario){
                                 objUs.ref.child("nombre").setValue(nombre.trim()).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataTxtActivity,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                    Timer().schedule(1500) {
-                                        lifecycleScope.launch(Dispatchers.Main){
-                                            retorno()
-                                            finish()
+                                        Toast.makeText(this@EditDataTxtActivity,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(1500) {
+                                            lifecycleScope.launch(Dispatchers.Main){
+                                                retorno()
+                                                finish()
+                                            }
                                         }
                                     }
-                                }
                                     .addOnFailureListener {
                                         Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
                                     }
@@ -607,19 +616,18 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 for(objUs in dataSnapshot.children){
                                     if(objUs.key.toString() == usuario){
                                         val refEma = objUs.ref.child("accesos")
-                                        val actuCorr = refEma.child("correo").setValue(nCorreo.trim())
-                                        actuCorr.addOnSuccessListener {
-                                            Toast.makeText(this@EditDataTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                            Timer().schedule(1500) {
-                                                lifecycleScope.launch(Dispatchers.Main){
-                                                    retorno()
-                                                    finish()
+                                        refEma.child("correo").setValue(nCorreo.trim()).addOnSuccessListener {
+                                                Toast.makeText(this@EditDataTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                                Timer().schedule(1500) {
+                                                    lifecycleScope.launch(Dispatchers.Main){
+                                                        retorno()
+                                                        finish()
+                                                    }
                                                 }
                                             }
-                                        }
-                                        actuCorr.addOnFailureListener {
-                                            Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
-                                        }
+                                            .addOnFailureListener {
+                                                Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                            }
                                     }
                                 }
                             }
@@ -686,10 +694,11 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     for(objUsers in snapshot.children) {
                                         if(objUsers.key.toString() == usuario) {
+                                            val tipo = objUsers.value.toString()
                                             // Dado que no es posible renombrar las keys de los objetos
                                             // se removera el valor con el usuario previo y se creara uno nuevo con el nuevo usuario
                                             objUsers.ref.removeValue()
-                                            refSisUs.child(nUser).setValue(true)
+                                            refSisUs.child(nUser).setValue(tipo)
                                             break
                                         }
                                     }
@@ -784,14 +793,14 @@ class EditDataTxtActivity : AppCompatActivity() {
                         for(objUs in dataSnapshot.children){
                             if(objUs.key.toString() == usuario){
                                 objUs.ref.child("resp_Seguri").setValue(resp).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataTxtActivity,"Su respuesta fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                    Timer().schedule(1500) {
-                                        lifecycleScope.launch(Dispatchers.Main){
-                                            retorno()
-                                            finish()
+                                        Toast.makeText(this@EditDataTxtActivity,"Su respuesta fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(1500) {
+                                            lifecycleScope.launch(Dispatchers.Main){
+                                                retorno()
+                                                finish()
+                                            }
                                         }
                                     }
-                                }
                                     .addOnFailureListener {
                                         Toast.makeText(this@EditDataTxtActivity,"Error: Su respuesta no pudo ser actualizada, proceso fallido",Toast.LENGTH_SHORT).show()
                                     }
@@ -815,14 +824,14 @@ class EditDataTxtActivity : AppCompatActivity() {
                         for (objUs in dataSnapshot.children) {
                             if(objUs.key.toString() == usuario) {
                                 objUs.ref.child("num_Tel").setValue(telefono).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataTxtActivity, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                    Timer().schedule(1500){
-                                        lifecycleScope.launch(Dispatchers.Main){
-                                            retorno()
-                                            finish()
+                                        Toast.makeText(this@EditDataTxtActivity, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(1500){
+                                            lifecycleScope.launch(Dispatchers.Main){
+                                                retorno()
+                                                finish()
+                                            }
                                         }
                                     }
-                                }
                                     .addOnFailureListener {
                                         Toast.makeText(this@EditDataTxtActivity,"Error: Su telefono no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
                                     }
@@ -840,10 +849,10 @@ class EditDataTxtActivity : AppCompatActivity() {
     }
 
     private fun transFecha(valor: Int):String {
-        if(valor < 10){
-            return "0$valor"
+        return if(valor < 10){
+            "0$valor"
         }else{
-            return valor.toString()
+            valor.toString()
         }
     }
 
@@ -865,20 +874,24 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 objSis.ref.child("ulti_Cam_Fecha").setValue(fechaCambio)
                                 objSis.ref.child("ulti_Cam_User").setValue(usuario)
                                 objSis.ref.child("nombre_Sis").setValue(nNombre).addOnSuccessListener {
-                                    Toast.makeText(this@EditDataTxtActivity, "Su nombre fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                    Timer().schedule(1500){
-                                        lifecycleScope.launch(Dispatchers.Main){
-                                            Intent(this@EditDataTxtActivity, DashboardActivity::class.java).apply {
-                                                putExtra("username", user)
-                                                putExtra("tipo", "Administrador")
-                                                startActivity(this)
-                                                finish()
+                                        Toast.makeText(this@EditDataTxtActivity, "El nombre de su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
+                                        Timer().schedule(1500){
+                                            lifecycleScope.launch(Dispatchers.Main){
+                                                Intent(this@EditDataTxtActivity, DashboardActivity::class.java).apply {
+                                                    putExtra("username", user)
+                                                    putExtra("tipo", "Administrador")
+                                                    startActivity(this)
+                                                    finish()
+                                                }
                                             }
                                         }
                                     }
-                                }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this@EditDataTxtActivity, "Error: Su tipo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                        txtValNueGen.text.clear()
+                                    }
+                                break
                             }
-                            break
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {

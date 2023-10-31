@@ -104,11 +104,11 @@ class StationActivity : AppCompatActivity() {
                 establecerCamara(camURL)
             }
             "estacion4" -> {
-                //camURL = "http://192.168.1.79:5000"
+                camURL = "http://192.168.1.79:5000"
                 establecerCamara(camURL)
             }
             "estacion5" -> {
-                //camURL = "http://192.168.1.79:5000"
+                camURL = "http://192.168.1.79:5000"
                 establecerCamara(camURL)
             }
         }

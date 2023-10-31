@@ -33,7 +33,9 @@
     <string name="msgRecEma">Procesando Solicitud…</string>
     <!-- Strings de la vista dashboard -->
     <string name="headDash">Menú Principal</string>
-    <string name="btnEsta">Estaciones</string>
+    <string name="btnShowHideSis">Mostrar/Ocultar\nSeleccion Sistema</string>
+    <string name="lblSelSis">Seleccione el sistema de la sesion</string>
+    <string name="btnEstaciones">Estaciones</string>
     <string name="btnReportes">Reportes</string>
     <string name="btnAjus">Ajustes</string>
     <string name="btnManu">Manual de \n Usuario</string>
@@ -75,7 +77,7 @@
     <string name="lblCo">Nivel de CO2:</string>
     <string name="lblPro">Nivel de Propano:</string>
     <string name="lblHum">Nivel de Humo:</string>
-    <string name="lblUni">ppm</string>
+    <string name="lblUni">Valor ppm</string>
     <string name="lblCondMagne">Sensor Magnetico</string>
     <string name="lblMagneAbi">Abierto</string>
     <string name="lblMagneCerr">Cerrado</string>
@@ -155,12 +157,24 @@
     <string name="headComms">Generar Comentario</string>
     <string name="lblOp">Comentario:</string>
     <string name="btnSendComm">Enviar Comentario</string>
-    <!-- Strings de la vista de manejo de sistema-->
-    <string name="headManSis">Gestion del Sistema</string>
+    <!-- Strings de la vista de manejo de sistema admin-->
+    <string name="headMenSis">Gestion del Sistema</string>
     <string name="btnUpSisNam">Cambiar\nNombre</string>
     <string name="btnUpSisAla">Gestionar\nAlarma</string>
     <string name="btnUpSisSta">Cambiar\nEstaciones</string>
     <string name="btnUpSisUse">Administrar\nUsuarios</string>
+    <!-- Strings de la vista de manejo de usuarios admin-->
+    <string name="headMenSisUs">Gestion de Usuarios</string>
+    <string name="lblListUsSis">Estos son los usuarios pertenencientes al sistema:</string>
+    <string-array name="lstUsersSis">
+        <item>Seleccione el usuario en cuestion</item>
+    </string-array>
+    <string name="lblTipoUsSel">Tipo:</string>
+    <string name="btnDelSisUser">Eliminar\nUsuario\ndel Sistema</string>
+    <!--
+    <string name="btnUpSisSta">Cambiar\nEstaciones</string>
+    <string name="btnUpSisUse">Administrar\nUsuarios</string>-->
+
     <!-- Strings de la vista de manejo de alarmas admin-->
     <string name="headManAla">Gestion de Alarma</string>
     <string name="lblAlarma">Alarma Actual:</string>
