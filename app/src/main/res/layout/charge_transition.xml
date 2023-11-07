@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/azulAlicia">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:orientation="vertical">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            android:layout_gravity="center_horizontal"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/imgLogoPan"
+                android:layout_width="278dp"
+                android:layout_height="278dp"
+                android:contentDescription="@string/imgLogo"
+                android:background="@color/azulAlicia"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/cargando" />
+        </androidx.cardview.widget.CardView>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/lblCarga"
+            android:textColor="@color/negro"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:visibility="visible"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,10 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -182,11 +179,12 @@ class MenuStationsActivity : AppCompatActivity() {
     }
 
     private fun lanzarEstacion(numBtn: Int){
-        val staActi = Intent(this@MenuStationsActivity,StationActivity::class.java).apply {
+        val staActi = Intent(this@MenuStationsActivity, StationActivity::class.java).apply {
             putExtra("username", user)
-            putExtra("name_station", arrEstasKey[numBtn])
+            putExtra("key_station", arrEstasKey[numBtn])
         }
         startActivity(staActi)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
     private fun lanzarAlarma(){
         val alaActi = Intent(this@MenuStationsActivity, AlarmActivity::class.java).apply {
@@ -194,5 +192,6 @@ class MenuStationsActivity : AppCompatActivity() {
             putExtra("sistema", sistema)
         }
         startActivity(alaActi)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }

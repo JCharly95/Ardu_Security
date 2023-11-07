@@ -48,15 +48,13 @@ class StationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_activity_station)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,
-            R.color.teal_700
-        )))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this,R.color.teal_700)))
 
         //Obteniendo los valores del usuario y estacion
         if(intent.extras != null){
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
-            estacion = bundle.getString("name_station").toString()
+            estacion = bundle.getString("key_station").toString()
         }else{
             Toast.makeText(this@StationActivity, "Error: no se pudo obtener la informacion del sistema", Toast.LENGTH_SHORT).show()
         }
@@ -232,11 +230,10 @@ class StationActivity : AppCompatActivity() {
                             val tipo = objSen.child("tipo").value.toString()
                             if(estaBus == estacion && tipo == "Magnetico") {
                                 val estado = objSen.child("estado").value.toString().toBoolean()
-                                if(estado){
+                                if(estado)
                                     rbMagneOp.isChecked = true
-                                }else{
+                                else
                                     rbMagneCl.isChecked = true
-                                }
                                 break
                             }
                         }

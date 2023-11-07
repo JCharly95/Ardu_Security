@@ -54,60 +54,6 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="5dp" />
-
-            <Button
-                android:id="@+id/btnMosOcuSelSis"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btnShowHideSis"
-                android:textSize="16sp" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="5dp" />
-
-            <LinearLayout
-                android:id="@+id/linLaySpSis"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lblSelSis"
-                    android:textSize="18sp"
-                    android:gravity="center"
-                    android:textColor="@color/negro"/>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="@color/negro"
-                    app:cardCornerRadius="4dp">
-
-                    <androidx.appcompat.widget.AppCompatSpinner
-                        android:id="@+id/spSisDash"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:spinnerMode="dropdown"
-                        android:textColor="@color/negro"
-                        android:dropDownWidth="wrap_content"
-                        android:entries="@array/lstSistems"/>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
                 android:layout_height="10dp" />
 
             <LinearLayout

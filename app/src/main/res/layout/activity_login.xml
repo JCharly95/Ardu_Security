@@ -53,6 +53,7 @@
                     android:id="@+id/btnInfoLog"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:contentDescription="@string/btnHelp"
                     android:backgroundTint="@color/teal_200"
                     app:srcCompat="@android:drawable/ic_menu_help" />
 
@@ -107,9 +108,9 @@
                 </RadioGroup>
             </LinearLayout>
 
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
 
             <EditText
                 android:id="@+id/txtUserLogin"

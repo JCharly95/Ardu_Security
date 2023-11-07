@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -44,18 +45,28 @@ class MainActivity : AppCompatActivity() {
                 val nombre = usuario.displayName
                 // Buscando al usuario en la BD
                 ref = database.getReference("Usuarios")
-                ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objUser in dataSnapshot.children) {
-                            val refEma = objUser.child("accesos")
-                            val refTipo = objUser.child("tipo_Usuario")
-                            if(refEma.child("correo").value == correo || refEma.child("google").value == correo) {
-                                Toast.makeText(this@MainActivity, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
-                                val intentDash = Intent(this@MainActivity, DashboardActivity::class.java).apply {
-                                        putExtra("username", objUser.key.toString())
-                                        putExtra("tipo", refTipo.value.toString())
+                            val dirCor = objUser.child("accesos").child("correo").value.toString()
+                            val dirGoo = objUser.child("accesos").child("google").value.toString()
+                            if(dirCor == correo || dirGoo == correo) {
+                                // Nueva adicion, se agrego una nueva funcion de pantallas de carga y para eso se deja la pantalla por un segundo y luego se llama a la ventana de carga
+                                Timer().schedule(1000) {
+                                    lifecycleScope.launch(Dispatchers.Main) {
+                                        chgPanta()
                                     }
-                                startActivity(intentDash)
+                                }
+                                Timer().schedule(3000) {
+                                    lifecycleScope.launch(Dispatchers.Main) {
+                                        Toast.makeText(this@MainActivity, "Bienvenido $nombre", Toast.LENGTH_SHORT).show()
+                                        val intentDash = Intent(this@MainActivity, DashboardActivity::class.java).apply {
+                                            putExtra("username", objUser.key.toString())
+                                        }
+                                        startActivity(intentDash)
+                                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                    }
+                                }
                                 break
                             }
                         }
@@ -67,13 +78,30 @@ class MainActivity : AppCompatActivity() {
             }
         }else{
             // En caso de que no haya una sesion iniciada se hara un retardo de 2 segundos y se enviara al login
+            // Nueva adicion, se agrego una nueva funcion de pantallas de carga y para eso se deja la pantalla por un segundo y luego se llama a la ventana de carga
             Timer().schedule(1000) {
                 lifecycleScope.launch(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+                    chgPanta()
                 }
-                val intentLogin = Intent(this@MainActivity, LoginActivity::class.java)
-                startActivity(intentLogin)
             }
+            Timer().schedule(3000) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Bienvenido a Ardu Security", Toast.LENGTH_SHORT).show()
+                    val intentLogin = Intent(this@MainActivity, LoginActivity::class.java)
+                    startActivity(intentLogin)
+                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                }
+            }
+        }
+    }
+
+    private fun chgPanta(){
+        val builder = AlertDialog.Builder(this@MainActivity).create()
+        val view = layoutInflater.inflate(R.layout.charge_transition,null)
+        builder.setView(view)
+        builder.show()
+        Timer().schedule(2000){
+            builder.dismiss()
         }
     }
 }

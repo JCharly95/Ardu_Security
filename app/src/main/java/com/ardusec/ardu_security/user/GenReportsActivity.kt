@@ -46,10 +46,10 @@ class GenReportsActivity : AppCompatActivity() {
     //private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
     // Variables de valor de seleccion
-    private var estaSel = ""
-    private var sensoSel = ""
-    private var valRanIni = ""
-    private var valRanFin = ""
+    private lateinit var estaSel: String
+    private lateinit var sensoSel: String
+    private lateinit var valRanIni: String
+    private lateinit var valRanFin: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +62,7 @@ class GenReportsActivity : AppCompatActivity() {
         }else{
             bundle = intent.extras!!
             user = bundle.getString("usuario").toString()
+            sistema = bundle.getString("sistema").toString()
         }
 
         // Configurar el arranque de la interfaz
@@ -90,6 +91,11 @@ class GenReportsActivity : AppCompatActivity() {
         dateRanIni = findViewById(R.id.calRangoIni)
         dateRanFin = findViewById(R.id.calRangoFin)
         btnGenRepo = findViewById(R.id.btnConfGenRepo)
+        // Estableciendo los valores por defecto
+        estaSel = ""
+        sensoSel = ""
+        valRanIni = ""
+        valRanFin = ""
 
         // Inicializando los calendarios
         iniCalens()
@@ -161,18 +167,6 @@ class GenReportsActivity : AppCompatActivity() {
                     "** NOTA: Para el cambio de correo o contraseña, se le " +
                     "solicitara la contraseña como confirmacion de cambio."
             avisoGenRepo(msg)
-        }
-        spSistemas.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (!bandeListen) {
-                    bandeListen = true
-                    return
-                }
-                // Estableciendo el sistema de la sesion
-                sistema = parent!!.getItemAtPosition(position).toString()
-            }
         }
         rbSelEst1.setOnClickListener {
             if(rbSelEst1.isChecked)

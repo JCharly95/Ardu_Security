@@ -94,6 +94,8 @@ class UserActivity : AppCompatActivity() {
                             if(objUs.key.toString() == user){
                                 lblNom.text = objUs.child("nombre").value.toString()
                                 lblUser.text = objUs.child("username").value.toString()
+                                if(objUs.child("tipo_Usuario").value.toString() == "Administrador")
+                                    linLayTel.isGone = false
                                 break
                             }
                         }
@@ -104,37 +106,6 @@ class UserActivity : AppCompatActivity() {
                 })
             }
             getVals.await()
-
-            val getUsTipo = async {
-                ref = database.getReference("Sistemas")
-                ref.addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onDataChange(dataSnapshot: DataSnapshot){
-                        for (objSis in dataSnapshot.children) {
-                            if(objSis.key.toString() == sistema){
-                                val usRef = objSis.ref.child("usuarios")
-                                usRef.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(objUs in snapshot.children){
-                                            if(objUs.key.toString() == user && objUs.value.toString() == "Administrador"){
-                                                linLayTel.isGone = false
-                                                break
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                                    }
-                                })
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
-            getUsTipo.await()
         }
     }
 
@@ -144,58 +115,74 @@ class UserActivity : AppCompatActivity() {
         btnEditNom.setOnClickListener {
             val editNom = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Nombre")
             }
             startActivity(editNom)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnEditEma.setOnClickListener {
             val editEma = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Correo")
             }
             startActivity(editEma)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnEditPass.setOnClickListener {
             val editPass = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Contraseña")
             }
             startActivity(editPass)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnEditPreg.setOnClickListener {
             val editPreg = Intent(this@UserActivity, EditDataSpActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Pregunta")
             }
             startActivity(editPreg)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnEditResp.setOnClickListener {
             val editResp = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Respuesta")
             }
             startActivity(editResp)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnEditSis.setOnClickListener {
             val editSis = Intent(this@UserActivity, EditDataSpActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Sistema")
             }
             startActivity(editSis)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnEditUsNom.setOnClickListener {
             val editUser = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Username")
             }
             startActivity(editUser)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnEditTel.setOnClickListener {
             val editTel = Intent(this@UserActivity, EditDataTxtActivity::class.java).apply {
                 putExtra("usuario", user)
+                putExtra("sistema", sistema)
                 putExtra("campo", "Telefono")
             }
             startActivity(editTel)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
     }
 }

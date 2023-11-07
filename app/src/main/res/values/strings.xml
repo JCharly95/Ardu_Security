@@ -17,8 +17,9 @@
     <string name="btnRegCor">Correo</string>
     <string name="btnRegGoo">Google</string>
     <string name="lblCopyright">Ardu Security 2023\n Copyright © Todos los derechos reservados</string>
-    <!-- Botones de ayuda -->
+    <!-- Botones de ayuda y aviso de carga-->
     <string name="btnHelp">Boton Ayuda</string>
+    <string name="lblCarga">Cargando…</string>
     <!-- Strings de la vista de olvido su contraseña -->
     <string name="LblForPass">Recuperar Contraseña</string>
     <string name="headLblForPass">Ingrese los datos solicitados:</string>

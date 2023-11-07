@@ -18,6 +18,7 @@ class SettingsActivity : AppCompatActivity() {
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var user: String
+    private lateinit var sistema: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +30,7 @@ class SettingsActivity : AppCompatActivity() {
         }else{
             bundle = intent.extras!!
             user = bundle.getString("username").toString()
+            sistema = bundle.getString("sistema").toString()
         }
         // Configurar el arranque de la interfaz
         setUp()
@@ -67,8 +69,10 @@ class SettingsActivity : AppCompatActivity() {
         btnEditInfo.setOnClickListener {
             val intentPerf = Intent(this@SettingsActivity, UserActivity::class.java).apply {
                 putExtra("username", user)
+                putExtra("sistema", sistema)
             }
             startActivity(intentPerf)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnGesNoti.setOnClickListener {
 
@@ -76,8 +80,10 @@ class SettingsActivity : AppCompatActivity() {
         btnComent.setOnClickListener {
             val commActi = Intent(this@SettingsActivity, CommentsActivity::class.java).apply {
                 putExtra("username", user)
+                putExtra("sistema", sistema)
             }
             startActivity(commActi)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnAcerca.setOnClickListener {
             acerca()

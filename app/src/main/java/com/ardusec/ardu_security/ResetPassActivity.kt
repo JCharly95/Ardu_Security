@@ -39,7 +39,6 @@ class ResetPassActivity : AppCompatActivity(){
     private lateinit var ref: DatabaseReference
     private lateinit var auth: FirebaseAuth
     // Banderas de validacion
-    private var valiNam = false
     private var valiUser = false
     private var valiCorr = false
     private var valiPreg = false
@@ -61,25 +60,25 @@ class ResetPassActivity : AppCompatActivity(){
             val rellPregs = async {
                 // Obtener el arreglo de strings establecido para las preguntas
                 val lstPregs = resources.getStringArray(R.array.lstSavQues)
-                var arrPregs = ArrayList<String>()
+                val arrPregs = ArrayList<String>()
                 arrPregs.addAll(lstPregs)
                 // Creando la referencia de la coleccion de preguntas en la BD
                 ref = database.getReference("Preguntas")
                 // Ya que las preguntas son valores estaticos y no se cambiaran con el tiempo, se optará por usar Get para una sola toma de valores
-                ref.get().addOnSuccessListener{ taskGet ->
-                    for (objPreg in taskGet.children){
-                        objPreg.ref.child("Val_Pregunta").get().addOnSuccessListener { taskAdd ->
-                            arrPregs.add(taskAdd.value.toString())
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objPreg in dataSnapshot.children){
+                            arrPregs.add(objPreg.child("Val_Pregunta").value.toString())
                         }
+                        // Estableciendo el adaptador para el rellenado del spinner
+                        val adapPregs = ArrayAdapter(this@ResetPassActivity, android.R.layout.simple_spinner_item, arrPregs)
+                        adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        spPregsRec.adapter = adapPregs
                     }
-                    // Estableciendo el adaptador para el rellenado del spinner
-                    val adapPregs = ArrayAdapter(this@ResetPassActivity, android.R.layout.simple_spinner_item, arrPregs)
-                    adapPregs.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spPregsRec.adapter = adapPregs
-                }
-                    .addOnFailureListener {
-                        Toast.makeText(this@ResetPassActivity, "Error: Datos parcialmente obtenidos", Toast.LENGTH_SHORT).show()
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Toast.makeText(this@ResetPassActivity, "Error: Consulta Incompleta; Causa: $databaseError", Toast.LENGTH_SHORT).show()
                     }
+                })
             }
             rellPregs.await()
         }
@@ -113,15 +112,21 @@ class ResetPassActivity : AppCompatActivity(){
     }
 
     private fun addListeners(){
-        val msg = "Consideraciones de campos: \n\n" +
-                "Nombre;\n" +
-                "* Su nombre no debe tener numeros\n" +
-                "* Su nombre debe tener al menos 10 caracteres\n\n" +
-                "Correo; Formato Aceptado:\n" +
-                "* usuario@dominio.com(.mx)"
-
+        // Agregar los listener
         btnAyuda.setOnClickListener {
-            avisoForPass(msg)
+            val msgAyuda = "Requisitos necesarios de cada campo: \n\n" +
+                    "Username (Nombre de usuario):\n" +
+                    "* Debe tener una extensión mínima de 6 caracteres.\n" +
+                    "* Debe tener por lo menos una letra mayúscula.\n" +
+                    "* Debe tener por lo menos el digito de un número.\n" +
+                    "Dirección de Correo:\n" +
+                    "* La estructura aceptada es:\n" +
+                    "-- usuario@dominio (.extensión de país; esto es opcional ingresarlo solo si su dirección lo contiene)\n\n" +
+                    "Pregunta de Seguridad:\n" +
+                    "* Debe seleccionar cualquiera de las 5 preguntas de seguridad disponibles.\n\n" +
+                    "Respuesta de Seguridad:\n" +
+                    "* Debe ingresar una respuesta a la pregunta seleccionada, esta será de formato libre.\n\n"
+            avisoForPass(msgAyuda)
         }
         // Añadiendo el listener del boton de envio
         btnRecPass.setOnClickListener {
@@ -143,8 +148,6 @@ class ResetPassActivity : AppCompatActivity(){
             (!Regex("[A-Z]+").containsMatchIn(usuarioFil2)) -> avisoForPass("Error: El nombre de usuario debera tener al menos una letra mayuscula")
             // No se tiene al menos un numero
             (!Regex("""\d""").containsMatchIn(usuarioFil2)) -> avisoForPass("Error: El nombre de usuario debera tener al menos un numero")
-            // No se tiene al menos un caracter especial
-            (!Regex("""[^A-Za-z ]+""").containsMatchIn(usuarioFil2)) -> avisoForPass("Error: Favor de incluir al menos un caracter especial en su nombre de usuario")
             else -> return true
         }
         return false
@@ -212,7 +215,7 @@ class ResetPassActivity : AppCompatActivity(){
                 }
             })
         }else{
-            avisoForPass("El username no pudo ser validado correctamente")
+            avisoForPass("El nombre de usuario no pudo ser validado correctamente, favor de revisarlo")
         }
     }
 
@@ -221,11 +224,10 @@ class ResetPassActivity : AppCompatActivity(){
         valiCorr = validarCorreo(txtEmaRec.text)
         valiPreg = validarSelPreg(spPregsRec)
         valiResp = validarResp(txtRespRec.text)
-
-        if(valiNam && valiCorr && valiPreg && valiResp) {
+        // En esta comprobacion tambien se deberia incluir la del username, pero este fue comprobado de manera previa a la llamada de la funcion
+        if(valiCorr && valiPreg && valiResp) {
+            // Una vez validados, se procede a comprobar la informacion ingresada
             comproInfo()
-        }else if(!valiNam){
-            avisoForPass("Error: El nombre no cumplio con los parametros de validacion establecidos")
         }else if(!valiCorr){
             avisoForPass("Error: El correo no cumplio con los parametros de validacion establecidos")
         }else if(!valiPreg){
@@ -247,11 +249,10 @@ class ResetPassActivity : AppCompatActivity(){
         ref = database.getReference("Usuarios")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (objUser in dataSnapshot.children) {
+                for(objUser in dataSnapshot.children) {
                     val userBus = objUser.key.toString()
-                    val acceso = objUser.child("accesos")
-                    val emaBus = acceso.child("correo").value
-                    val gooBus = acceso.child("google").value
+                    val emaBus = objUser.child("accesos").child("correo").value
+                    val gooBus = objUser.child("accesos").child("google").value
                     val pregBus = objUser.child("pregunta_Seg").value
                     val respBus = objUser.child("resp_Seguri").value
                     if (userBus == usuario && (emaBus == correo || gooBus == correo) && pregBus == pregunta && respBus == respuesta){
@@ -279,25 +280,24 @@ class ResetPassActivity : AppCompatActivity(){
     private fun recuPass(correo: String){
         // Solicitar a firebase que mande el correo de recuperacion y establecer el idioma de envio
         auth.setLanguageCode("es_419")
-        auth.sendPasswordResetEmail(correo).addOnCompleteListener { task ->
-            if(task.isSuccessful){
-                // Si se cumpli el envio del correo satisfactoriamente, se procede al envio hacia la main activity despues de 2 segundos y medio
-                avisoForPass("Correo de recuperacion enviado, favor de revisar su correo")
-                Timer().schedule(2500){
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        // Cuando ya se envio el correo de recuperacion, se le enviara a la pantalla de inicio
-                        val intentMain = Intent(this@ResetPassActivity, MainActivity::class.java)
-                        startActivity(intentMain)
-                    }
+        auth.sendPasswordResetEmail(correo).addOnCompleteListener {
+            // Si se cumpli el envio del correo satisfactoriamente, se procede al envio hacia la main activity despues de 2 segundos y medio
+            avisoForPass("Enviando correo de recuperacion..., favor de revisar su correo")
+            Timer().schedule(2500){
+                lifecycleScope.launch(Dispatchers.Main) {
+                    // Cuando ya se envio el correo de recuperacion, se le enviara a la pantalla de inicio
+                    val intentMain = Intent(this@ResetPassActivity, MainActivity::class.java)
+                    startActivity(intentMain)
                 }
-            }else{
-                // Si no se pudo mandar el correo se procedera a mostrar el error y borrar los campos en cuestion
-                avisoForPass("Error: No se pudo enviar el correo de recuperacion")
-                txtUserRec.text.clear()
-                txtEmaRec.text.clear()
-                spPregsRec.setSelection(0)
-                txtRespRec.text.clear()
             }
+        }
+        .addOnFailureListener {
+            // Si no se pudo mandar el correo se procedera a mostrar el error y borrar los campos en cuestion
+            avisoForPass("Error: No se pudo enviar el correo de recuperacion")
+            txtUserRec.text.clear()
+            txtEmaRec.text.clear()
+            spPregsRec.setSelection(0)
+            txtRespRec.text.clear()
         }
     }
 }
