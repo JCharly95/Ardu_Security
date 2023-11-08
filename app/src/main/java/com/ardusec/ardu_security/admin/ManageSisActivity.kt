@@ -131,29 +131,7 @@ class ManageSisActivity : AppCompatActivity() {
         }
         btnSisAla.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                val getSisData = async {
-                    // Creando la referencia de la coleccion de sistemas en la BD
-                    ref = database.getReference("Sistemas")
-                    // Agregando un ValueEventListener para operar con las instancias de pregunta
-                    ref.addListenerForSingleValueEvent(object: ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            for (objSis in dataSnapshot.children) {
-                                if(objSis.key.toString() == sistema){
-                                    val chgAlaSisActi = Intent(this@ManageSisActivity, ManageAlarmActivity::class.java).apply {
-                                        putExtra("sistema", sistema)
-                                        putExtra("usuario", user)
-                                    }
-                                    startActivity(chgAlaSisActi)
-                                    break
-                                }
-                            }
-                        }
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Toast.makeText(this@ManageSisActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                        }
-                    })
-                }
-                getSisData.await()
+
             }
         }
         btnSisChgSta.setOnClickListener {

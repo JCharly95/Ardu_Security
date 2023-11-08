@@ -662,8 +662,8 @@ class EditDataTxtActivity : AppCompatActivity() {
                                     }
                                 }
                                 "Contraseña" -> {
-                                    val actuPassGooFire = userAuth.updatePassword(txtValNuePas.text.toString())
-                                    actuPassGooFire.addOnSuccessListener {
+                                    val actuPassGoo = userAuth.updatePassword(txtValNuePas.text.toString())
+                                    actuPassGoo.addOnSuccessListener {
                                         // Cerrando la sesion de autenticacion para hacer el cambio adecuadamente
                                         auth.signOut()
                                         Timer().schedule(1000) {
@@ -681,7 +681,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                             }
                                         }
                                     }
-                                    actuPassGooFire.addOnFailureListener {
+                                    actuPassGoo.addOnFailureListener {
                                         lifecycleScope.launch(Dispatchers.Main){
                                             Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
                                         }
@@ -715,18 +715,26 @@ class EditDataTxtActivity : AppCompatActivity() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(objUs in dataSnapshot.children){
                             if(objUs.key.toString() == usuario){
-                                objUs.ref.child("nombre").setValue(nombre.trim()).addOnSuccessListener {
-                                        Toast.makeText(this@EditDataTxtActivity,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                        Timer().schedule(1500) {
-                                            lifecycleScope.launch(Dispatchers.Main){
-                                                retorno()
-                                                finish()
-                                            }
+                                val actuNombre = objUs.ref.child("nombre").setValue(nombre.trim())
+                                actuNombre.addOnSuccessListener {
+                                    Timer().schedule(1000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            chgPanta()
+                                            Toast.makeText(this@EditDataTxtActivity,"Su nombre fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
                                         }
                                     }
-                                    .addOnFailureListener {
-                                        Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                    Timer().schedule(3000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            retorno()
+                                            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                            finish()
+                                        }
                                     }
+                                }
+                                actuNombre.addOnFailureListener {
+                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                    txtValNueGen.text.clear()
+                                }
                             }
                         }
                     }
@@ -757,18 +765,26 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 for(objUs in dataSnapshot.children){
                                     if(objUs.key.toString() == usuario){
                                         val refEma = objUs.ref.child("accesos")
-                                        refEma.child("correo").setValue(nCorreo.trim()).addOnSuccessListener {
-                                                Toast.makeText(this@EditDataTxtActivity,"Su correo fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                                Timer().schedule(1500) {
-                                                    lifecycleScope.launch(Dispatchers.Main){
-                                                        retorno()
-                                                        finish()
-                                                    }
+                                        val actuCor = refEma.child("correo").setValue(nCorreo.trim())
+                                        actuCor.addOnSuccessListener {
+                                            Timer().schedule(1000) {
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    chgPanta()
+                                                    Toast.makeText(this@EditDataTxtActivity,"Su dirección de correo fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
                                                 }
                                             }
-                                            .addOnFailureListener {
-                                                Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                            Timer().schedule(3000) {
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    val cambioEmaActi = Intent(this@EditDataTxtActivity, MainActivity::class.java)
+                                                    startActivity(cambioEmaActi)
+                                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                    finish()
+                                                }
                                             }
+                                        }
+                                        actuCor.addOnFailureListener{
+                                            Toast.makeText(this@EditDataTxtActivity,"Error: Su correo no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 }
                             }
@@ -802,8 +818,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     for(objUsers in snapshot.children) {
                                         if(objUsers.key.toString() == usuario) {
-                                            // Dado que no es posible renombrar las keys de los objetos
-                                            // se removera el valor con el usuario previo y se creara uno nuevo con el nuevo usuario
+                                            // Dado que no es posible renombrar las keys de los objetos se removera el valor con el usuario previo y se creara uno nuevo con el nuevo usuario
                                             objUsers.ref.removeValue()
                                             refPregUs.child(nUser).setValue(true)
                                             break
@@ -835,11 +850,9 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     for(objUsers in snapshot.children) {
                                         if(objUsers.key.toString() == usuario) {
-                                            val tipo = objUsers.value.toString()
-                                            // Dado que no es posible renombrar las keys de los objetos
-                                            // se removera el valor con el usuario previo y se creara uno nuevo con el nuevo usuario
+                                            // Dado que no es posible renombrar las keys de los objetos se removera el valor con el usuario previo y se creara uno nuevo con el nuevo usuario
                                             objUsers.ref.removeValue()
-                                            refSisUs.child(nUser).setValue(tipo)
+                                            refSisUs.child(nUser).setValue(true)
                                             break
                                         }
                                     }
@@ -867,24 +880,41 @@ class EditDataTxtActivity : AppCompatActivity() {
                             if(objUser.key.toString() == usuario) {
                                 // Primero se cambiara el valor del atributo username del objeto
                                 objUser.ref.child("username").setValue(nUser)
-                                // Dado que no es posible renombrar las keys de los objetos
-                                // se removera el valor con el usuario previo y se creara uno nuevo con el nuevo usuario
+                                // Dado que no es posible renombrar las keys de los objetos se removera el valor con el usuario previo y se creara uno nuevo con el nuevo usuario
                                 // En este caso, se tomará el valor completo del usuario y se escribira uno nuevo con los datos del viejo
-                                objUser.ref.child(nUser).setValue(objUser.child(usuario).value)
-                                objUser.ref.child(usuario).removeValue()
-                                Toast.makeText(this@EditDataTxtActivity,"Su username fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                Timer().schedule(1500) {
-                                    lifecycleScope.launch(Dispatchers.Main){
-                                        retorno()
-                                        finish()
+                                val setNUser = objUser.ref.child(nUser).setValue(objUser.child(usuario).value)
+                                setNUser.addOnSuccessListener {
+                                    Toast.makeText(this@EditDataTxtActivity, "Actualizacion de nombre de usuario en proceso...",Toast.LENGTH_SHORT).show()
+                                }
+                                setNUser.addOnFailureListener {
+                                    Toast.makeText(this@EditDataTxtActivity, "Error: Actualizacion de nombre de usuario interrumpida",Toast.LENGTH_SHORT).show()
+                                }
+                                val remOldUser = objUser.ref.child(usuario).removeValue()
+                                remOldUser.addOnSuccessListener {
+                                    Timer().schedule(1000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            chgPanta()
+                                            Toast.makeText(this@EditDataTxtActivity, "Su nombre de usuario fue actualizado satisfactoriamente",Toast.LENGTH_SHORT).show()
+                                        }
                                     }
+                                    Timer().schedule(3000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            val cambioUserActi = Intent(this@EditDataTxtActivity, MainActivity::class.java)
+                                            startActivity(cambioUserActi)
+                                            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                            finish()
+                                        }
+                                    }
+                                }
+                                remOldUser.addOnFailureListener {
+                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre de usuario no pudo ser actualizado, proceso no completado",Toast.LENGTH_SHORT).show()
                                 }
                                 break
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataTxtActivity,"Error: Su username no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre de usuario no pudo ser actualizado, proceso no realizado",Toast.LENGTH_SHORT).show()
                     }
                 })
             }
@@ -899,27 +929,33 @@ class EditDataTxtActivity : AppCompatActivity() {
                 val credencial = EmailAuthProvider.getCredential(txtConfEma.text.toString(), txtConfPass.text.toString())
                 val reautenticar = user.reauthenticate(credencial)
                 reautenticar.addOnSuccessListener {
-                    val upPas = user.updatePassword(nContra)
-                    upPas.addOnSuccessListener {
-                        Toast.makeText(this@EditDataTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
-                        Timer().schedule(1500){
-                            FirebaseAuth.getInstance().signOut()
-                            lifecycleScope.launch(Dispatchers.Main){
-                                Intent(this@EditDataTxtActivity, MainActivity::class.java).apply {
-                                    startActivity(this)
-                                    finish()
-                                }
+                    val actuPass = user.updatePassword(nContra)
+                    actuPass.addOnSuccessListener {
+                        // Cerrando la sesion de autenticacion para hacer el cambio adecuadamente
+                        auth.signOut()
+                        Timer().schedule(1000) {
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                chgPanta()
+                                Toast.makeText(this@EditDataTxtActivity,"Su contraseña fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        Timer().schedule(3000) {
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                val cambioPassActi = Intent(this@EditDataTxtActivity, MainActivity::class.java)
+                                startActivity(cambioPassActi)
+                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                finish()
                             }
                         }
                     }
-                    upPas.addOnFailureListener {
-                        Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
-                        Log.w("UpdateFirebaseError:", it.cause.toString())
+                    actuPass.addOnFailureListener {
+                        lifecycleScope.launch(Dispatchers.Main){
+                            Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
                 reautenticar.addOnFailureListener {
                     Toast.makeText(this@EditDataTxtActivity, "Error: Su contraseña no pudo ser actualizada", Toast.LENGTH_SHORT).show()
-                    Log.w("UpdateFirebaseError:", it.cause.toString())
                 }
             }
             updContra.await()
@@ -933,18 +969,25 @@ class EditDataTxtActivity : AppCompatActivity() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(objUs in dataSnapshot.children){
                             if(objUs.key.toString() == usuario){
-                                objUs.ref.child("resp_Seguri").setValue(resp).addOnSuccessListener {
-                                        Toast.makeText(this@EditDataTxtActivity,"Su respuesta fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
-                                        Timer().schedule(1500) {
-                                            lifecycleScope.launch(Dispatchers.Main){
-                                                retorno()
-                                                finish()
-                                            }
+                                val actuResp = objUs.ref.child("resp_Seguri").setValue(resp)
+                                actuResp.addOnSuccessListener {
+                                    Timer().schedule(1000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            chgPanta()
+                                            Toast.makeText(this@EditDataTxtActivity,"Su respuesta fue actualizada satisfactoriamente",Toast.LENGTH_SHORT).show()
                                         }
                                     }
-                                    .addOnFailureListener {
-                                        Toast.makeText(this@EditDataTxtActivity,"Error: Su respuesta no pudo ser actualizada, proceso fallido",Toast.LENGTH_SHORT).show()
+                                    Timer().schedule(3000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            retorno()
+                                            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                            finish()
+                                        }
                                     }
+                                }
+                                actuResp.addOnFailureListener {
+                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su respuesta no pudo ser actualizada, proceso fallido",Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
@@ -964,18 +1007,25 @@ class EditDataTxtActivity : AppCompatActivity() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (objUs in dataSnapshot.children) {
                             if(objUs.key.toString() == usuario) {
-                                objUs.ref.child("num_Tel").setValue(telefono).addOnSuccessListener {
-                                        Toast.makeText(this@EditDataTxtActivity, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                        Timer().schedule(1500){
-                                            lifecycleScope.launch(Dispatchers.Main){
-                                                retorno()
-                                                finish()
-                                            }
+                                val setNTel = objUs.ref.child("num_Tel").setValue(telefono)
+                                setNTel.addOnSuccessListener {
+                                    Timer().schedule(1000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            chgPanta()
+                                            Toast.makeText(this@EditDataTxtActivity, "Su telefono fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                         }
                                     }
-                                    .addOnFailureListener {
-                                        Toast.makeText(this@EditDataTxtActivity,"Error: Su telefono no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                    Timer().schedule(3000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            retorno()
+                                            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                            finish()
+                                        }
                                     }
+                                }
+                                setNTel.addOnFailureListener {
+                                    Toast.makeText(this@EditDataTxtActivity,"Error: Su telefono no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
+                                }
                                 break
                             }
                         }
@@ -998,11 +1048,11 @@ class EditDataTxtActivity : AppCompatActivity() {
     }
 
     private fun actNomSis(nNombre: String, sisKey: String, usuario: String){
-        // Creando la fecha del cambio
-        val calendar = Calendar.getInstance()
+        // Creando la fecha del cambio, NOTA: La zona horaria se va a establecer con el acronimo CST que es el usado para la zona de la CDMX
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("CST"))
         val dia = calendar.get(Calendar.DAY_OF_MONTH); val mes = calendar.get(Calendar.MONTH) + 1; val year = calendar.get(Calendar.YEAR)
         val hora = calendar.get(Calendar.HOUR_OF_DAY); val minuto = calendar.get(Calendar.MINUTE)
-        val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)} FechDispo"
+        val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)} CST"
 
         lifecycleScope.launch(Dispatchers.IO){
             val upNomSis = async {
@@ -1014,29 +1064,36 @@ class EditDataTxtActivity : AppCompatActivity() {
                             if(objSis.key.toString() == sisKey){
                                 objSis.ref.child("ulti_Cam_Fecha").setValue(fechaCambio)
                                 objSis.ref.child("ulti_Cam_User").setValue(usuario)
-                                objSis.ref.child("nombre_Sis").setValue(nNombre).addOnSuccessListener {
-                                        Toast.makeText(this@EditDataTxtActivity, "El nombre de su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
-                                        Timer().schedule(1500){
-                                            lifecycleScope.launch(Dispatchers.Main){
-                                                Intent(this@EditDataTxtActivity, DashboardActivity::class.java).apply {
-                                                    putExtra("username", user)
-                                                    putExtra("tipo", "Administrador")
-                                                    startActivity(this)
-                                                    finish()
-                                                }
-                                            }
+                                val setNSisNom = objSis.ref.child("nombre_Sis").setValue(nNombre)
+                                setNSisNom.addOnSuccessListener {
+                                    Timer().schedule(1000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            chgPanta()
+                                            Toast.makeText(this@EditDataTxtActivity, "El nombre de su sistema fue actualizado satisfactoriamente", Toast.LENGTH_SHORT).show()
                                         }
                                     }
-                                    .addOnFailureListener {
-                                        Toast.makeText(this@EditDataTxtActivity, "Error: Su tipo no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                                        txtValNueGen.text.clear()
+                                    Timer().schedule(3000) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            val cambioNomSisActi = Intent(this@EditDataTxtActivity, DashboardActivity::class.java).apply {
+                                                putExtra("username", user)
+                                                putExtra("tipo", "Administrador")
+                                            }
+                                            startActivity(cambioNomSisActi)
+                                            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                            finish()
+                                        }
                                     }
+                                }
+                                setNSisNom.addOnFailureListener {
+                                    Toast.makeText(this@EditDataTxtActivity, "Error: El nombre de su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
+                                    txtValNueGen.text.clear()
+                                }
                                 break
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@EditDataTxtActivity, "Error: El cambio solicitado no se pudo realizar", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditDataTxtActivity, "Error: El cambio de nombre del sistema no se pudo realizar", Toast.LENGTH_SHORT).show()
                     }
                 })
             }
