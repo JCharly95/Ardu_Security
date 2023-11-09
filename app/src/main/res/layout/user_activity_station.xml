@@ -201,6 +201,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="20dp" />
 
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/linLayGrafica"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:contentDescription="Prueba de Grafica"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
             <LinearLayout
                 android:id="@+id/LinLaySenMagne"
                 android:layout_width="match_parent"

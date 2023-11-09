@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
         database = Firebase.database
         auth = FirebaseAuth.getInstance()
+        //insertValues()
 
         // Si el usuario salio de la app pero no finalizo su sesion, sera enviado directamente a su dashboard
         val user = auth.currentUser
@@ -104,4 +105,24 @@ class MainActivity : AppCompatActivity() {
             builder.dismiss()
         }
     }
+
+    /*private fun insertValues(){
+        ref = database.getReference("Sensores")
+        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for(objSensor in dataSnapshot.children){
+                    if(objSensor.key.toString() == "sensor4"){
+                        val clave = "12-09-2023 17:15 CST"
+                        objSensor.ref.child("registros").child(clave).child("co").setValue(0.005129816000472569)
+                        objSensor.ref.child("registros").child(clave).child("lpg").setValue(0.007848074619837792)
+                        objSensor.ref.child("registros").child(clave).child("propane").setValue(0.009505974291277681)
+                        objSensor.ref.child("registros").child(clave).child("smoke").setValue(0.020962801982828305)
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@MainActivity, "No se armo carnal", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }*/
 }
