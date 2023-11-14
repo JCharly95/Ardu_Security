@@ -8,18 +8,23 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.lifecycle.lifecycleScope
 import com.ardusec.ardu_security.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.TimeZone
 
 
 class GenReportsActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var btnAyuda: ImageButton
-    private lateinit var spSistemas: AppCompatSpinner
     private lateinit var rbSelEst1: RadioButton
     private lateinit var rbSelEst2: RadioButton
     private lateinit var rbSelEst3: RadioButton
@@ -32,24 +37,26 @@ class GenReportsActivity : AppCompatActivity() {
     private lateinit var rbSenGProp: RadioButton
     private lateinit var rbSenHumo: RadioButton
     private lateinit var dateRanIni: DatePicker
+    private lateinit var lblFechaIni: TextView
     private lateinit var dateRanFin: DatePicker
+    private lateinit var lblFechaFin: TextView
     private lateinit var btnGenRepo: Button
     // Bundle para extras y saber que campo sera actualizado
     private lateinit var bundle: Bundle
     private lateinit var user: String
     private lateinit var sistema: String
-    // Bandera de activacion para el spínner
-    private var bandeListen = false
-    //private lateinit var keySis: String
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var auth: FirebaseAuth
-    //private lateinit var ref: DatabaseReference
+    private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
+    // Variables de evaluacion para determinar la cantidad de botones a mostrar
+    private var cantEsta: Long = 0
+    private val arrEstasKey = ArrayList<String>()
     // Variables de valor de seleccion
-    private lateinit var estaSel: String
-    private lateinit var sensoSel: String
-    private lateinit var valRanIni: String
-    private lateinit var valRanFin: String
+    private var estaSel: String = ""
+    private var sensoSel: String = ""
+    private var valRanIni: String = ""
+    private var valRanFin: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +83,6 @@ class GenReportsActivity : AppCompatActivity() {
         title = "Reportes"
         // Relacionando los elementos con su objeto de la interfaz
         btnAyuda = findViewById(R.id.btnHelpGenRepo)
-        spSistemas = findViewById(R.id.spSisRepo)
         rbSelEst1 = findViewById(R.id.rbSelEsta1)
         rbSelEst2 = findViewById(R.id.rbSelEsta2)
         rbSelEst3 = findViewById(R.id.rbSelEsta3)
@@ -89,13 +95,10 @@ class GenReportsActivity : AppCompatActivity() {
         rbSenGProp = findViewById(R.id.rbSelSenProp)
         rbSenHumo = findViewById(R.id.rbSelSenHumo)
         dateRanIni = findViewById(R.id.calRangoIni)
+        lblFechaIni = findViewById(R.id.lblFechIni)
         dateRanFin = findViewById(R.id.calRangoFin)
+        lblFechaFin = findViewById(R.id.lblFechFin)
         btnGenRepo = findViewById(R.id.btnConfGenRepo)
-        // Estableciendo los valores por defecto
-        estaSel = ""
-        sensoSel = ""
-        valRanIni = ""
-        valRanFin = ""
 
         // Inicializando los calendarios
         iniCalens()
@@ -103,6 +106,62 @@ class GenReportsActivity : AppCompatActivity() {
         // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
         auth = FirebaseAuth.getInstance()
         database = Firebase.database
+
+        setUpBtnEsta()
+    }
+
+    private fun setUpBtnEsta(){
+        lifecycleScope.launch(Dispatchers.IO) {
+            val setBtnsEstas = async {
+                // Creando la referencia de la coleccion de sistemas en la BD
+                ref = database.getReference("Sistemas")
+                // Agregando un ValueEventListener para operar con las instancias de pregunta
+                ref.addListenerForSingleValueEvent(object: ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objSis in dataSnapshot.children) {
+                            if(objSis.key.toString() == sistema){
+                                val refSnap = objSis.child("estaciones")
+                                cantEsta = refSnap.childrenCount
+                                when(cantEsta.toInt()){
+                                    3 -> {
+                                        space4.isGone = true
+                                        rbSelEst4.isGone = true
+                                        space5.isGone = true
+                                        rbSelEst5.isGone = true
+                                    }
+                                    5 -> {
+                                        space4.isGone = false
+                                        rbSelEst4.isGone = false
+                                        space5.isGone = false
+                                        rbSelEst5.isGone = false
+                                    }
+                                    else -> {
+                                        Toast.makeText(this@GenReportsActivity,"Error: Cantidad del sistema inadecuada",Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                // Obteniendo las ID de las estaciones
+                                val refEsta = refSnap.ref
+                                refEsta.addListenerForSingleValueEvent(object: ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for(objEsta in snapshot.children){
+                                            arrEstasKey.add(objEsta.key.toString())
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Toast.makeText(this@GenReportsActivity,"Error: Consulta erronea",Toast.LENGTH_SHORT).show()
+                                    }
+                                })
+                                break
+                            }
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Toast.makeText(this@GenReportsActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            setBtnsEstas.await()
+        }
     }
 
     private fun avisoGenRepo(mensaje: String) {
@@ -115,36 +174,40 @@ class GenReportsActivity : AppCompatActivity() {
     }
 
     private fun iniCalens() {
-        val calendar = Calendar.getInstance()
-        dateRanIni.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+        // Creando la fecha del cambio, NOTA: La zona horaria se va a establecer con el acronimo CST que es el usado para la zona de la CDMX
+        val calendar1 = Calendar.getInstance(TimeZone.getTimeZone("CST"))
+        val calendar2 = Calendar.getInstance(TimeZone.getTimeZone("CST"))
+        dateRanIni.init(calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH), calendar1.get(Calendar.DAY_OF_MONTH))
         {   _, year, mes, dia ->
             val mes = mes + 1
             val mesCon = if(mes < 10){
                 "0$mes"
             }else{
-                mes + 1
+                mes
             }
             val diaCon = if(dia < 10){
                 "0$dia"
             }else{
                 dia
             }
-            valRanIni = "$diaCon/$mesCon/$year"
+            valRanIni = "$diaCon-$mesCon-$year"
+            lblFechaIni.text = valRanIni
         }
-        dateRanFin.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+        dateRanFin.init(calendar2.get(Calendar.YEAR), calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DAY_OF_MONTH))
         {   _, year, mes, dia ->
             val mes = mes + 1
             val mesCon = if(mes < 10){
                 "0$mes"
             }else{
-                mes + 1
+                mes
             }
             val diaCon = if(dia < 10){
                 "0$dia"
             }else{
                 dia
             }
-            valRanFin = "$diaCon/$mesCon/$year"
+            valRanFin = "$diaCon-$mesCon-$year"
+            lblFechaFin.text = valRanFin
         }
     }
 

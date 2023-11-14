@@ -73,12 +73,7 @@
     <!-- Strings de la vistas de las camaras-->
     <string name="lblCamView">Camara</string>
     <!-- Strings de la vistas de los sensores-->
-    <string name="lblSensView">Sensor de Gas/Humo</string>
-    <string name="lblGas">Nivel de Gas LP:</string>
-    <string name="lblCo">Nivel de CO2:</string>
-    <string name="lblPro">Nivel de Propano:</string>
-    <string name="lblHum">Nivel de Humo:</string>
-    <string name="lblUni">Valor ppm</string>
+    <string name="lblSensGraf">Grafica del Sensor de Gases</string>
     <string name="lblCondMagne">Sensor Magnetico</string>
     <string name="lblMagneAbi">Abierto</string>
     <string name="lblMagneCerr">Cerrado</string>
@@ -145,14 +140,18 @@
     <string name="rbEsta5">5</string>
     <string name="lblSensor">Seleccione el sensor:</string>
     <string name="rbSenGLP">Gas LP</string>
-    <string name="rbSCO2">Dioxido de Carbono (CO2)</string>
+    <string name="rbSCO2">Monoxido de Carbono (CO)</string>
     <string name="rbSenProp">Gas Propano</string>
     <string name="rbSenHumo">Humo</string>
     <string name="lblRango">Seleccione su rango de monitoreo deseado:</string>
     <string name="lblRanIni">Rango Inicio…</string>
     <string name="lblRanFin">Rango Fin…</string>
+    <string name="lblFechaIni">Fecha de Inicio:</string>
     <string name="calIni">Inicio:</string>
+    <string name="lblFechaFin">Fecha de Fin:</string>
     <string name="calFin">Fin:</string>
+    <string name="lblValFecha">Valor Fecha Seleccionado</string>
+    <string name="btnGenGrafRepo">Generar Grafica\nde Reporte</string>
     <string name="btnGenRepo">Generar Reporte</string>
     <!-- Strings de la vista comentarios-->
     <string name="headComms">Generar Comentario</string>

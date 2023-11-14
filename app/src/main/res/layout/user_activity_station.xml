@@ -67,7 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Grafica del Sensor de Gases"
+                    android:text="@string/lblSensGraf"
                     android:textColor="@color/negro"
                     android:textSize="25sp" />
 

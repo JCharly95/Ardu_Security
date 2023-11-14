@@ -24,314 +24,375 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/formSelDatosRepo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end|center"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/lblHeadGenRepo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/headRepo"
-                    android:textColor="@color/negro"
-                    android:textSize="25sp" />
-
-                <Space
-                    android:layout_width="25dp"
-                    android:layout_height="wrap_content" />
-
-                <ImageButton
-                    android:id="@+id/btnHelpGenRepo"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:backgroundTint="@color/teal_200"
-                    android:contentDescription="@string/btnHelp"
-                    app:srcCompat="@android:drawable/ic_menu_help" />
-            </LinearLayout>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lblSelSis"
-                android:textSize="18sp"
-                android:gravity="center"
-                android:textColor="@color/negro"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/negro"
-                app:cardCornerRadius="4dp">
-
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spSisRepo"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:spinnerMode="dropdown"
-                    android:textColor="@color/negro"
-                    android:dropDownWidth="wrap_content"
-                    android:entries="@array/lstSistems"/>
-            </com.google.android.material.card.MaterialCardView>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <LinearLayout
-                android:id="@+id/rbGroupEstaciones"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/lblEstaciones"
-                    android:textColor="@color/negro"
-                    android:textSize="20sp"
-                    android:visibility="visible" />
-
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:gravity="end|center"
                     android:orientation="horizontal"
                     android:visibility="visible">
 
-                    <RadioButton
-                        android:id="@+id/rbSelEsta1"
+                    <TextView
+                        android:id="@+id/lblHeadGenRepo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/rbEsta1"
-                        android:textColor="@color/negro" />
+                        android:text="@string/headRepo"
+                        android:textColor="@color/negro"
+                        android:textSize="25sp" />
 
                     <Space
+                        android:layout_width="25dp"
+                        android:layout_height="match_parent" />
+
+                    <ImageButton
+                        android:id="@+id/btnHelpGenRepo"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:backgroundTint="@color/teal_200"
+                        android:contentDescription="@string/btnHelp"
+                        app:srcCompat="@android:drawable/ic_menu_help" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/rbGroupEstaciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/lblEstaciones"
+                        android:textColor="@color/negro"
+                        android:textSize="20sp"
+                        android:visibility="visible" />
+
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:visibility="visible">
+
+                        <RadioButton
+                            android:id="@+id/rbSelEsta1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbEsta1"
+                            android:textColor="@color/negro" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <RadioButton
+                            android:id="@+id/rbSelEsta2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbEsta2"
+                            android:textColor="@color/negro" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <RadioButton
+                            android:id="@+id/rbSelEsta3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbEsta3"
+                            android:textColor="@color/negro" />
+
+                        <Space
+                            android:id="@+id/spaEsta4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"/>
+
+                        <RadioButton
+                            android:id="@+id/rbSelEsta4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbEsta4"
+                            android:textColor="@color/negro"/>
+
+                        <Space
+                            android:id="@+id/spaEsta5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"/>
+
+                        <RadioButton
+                            android:id="@+id/rbSelEsta5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbEsta5"
+                            android:textColor="@color/negro"/>
+                    </RadioGroup>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/rbGroupSensores"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/lblSensor"
+                        android:textColor="@color/negro"
+                        android:textSize="20sp"
+                        android:visibility="visible" />
+
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingStart="70dp">
+
+                        <RadioButton
+                            android:id="@+id/rbSelSenGLP"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbSenGLP"
+                            android:textColor="@color/negro" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <RadioButton
+                            android:id="@+id/rbSelSenCO2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbSCO2"
+                            android:textColor="@color/negro" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <RadioButton
+                            android:id="@+id/rbSelSenProp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbSenProp"
+                            android:textColor="@color/negro" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <RadioButton
+                            android:id="@+id/rbSelSenHumo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/rbSenHumo"
+                            android:textColor="@color/negro" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <TextView
+                    android:id="@+id/lblRangoSelRepo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/lblRango"
+                    android:textColor="@color/negro"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/linLayLblFechIni"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
                         android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lblFechaIni"
+                        android:textColor="@color/negro"
+                        android:textSize="14sp" />
+
+                    <Space
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
 
-                    <RadioButton
-                        android:id="@+id/rbSelEsta2"
+                    <TextView
+                        android:id="@+id/lblFechIni"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/rbEsta2"
-                        android:textColor="@color/negro" />
-
-                    <Space
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
-                    <RadioButton
-                        android:id="@+id/rbSelEsta3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rbEsta3"
-                        android:textColor="@color/negro" />
-
-                    <Space
-                        android:id="@+id/spaEsta4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <RadioButton
-                        android:id="@+id/rbSelEsta4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rbEsta4"
+                        android:text="@string/lblValFecha"
                         android:textColor="@color/negro"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                    <Space
-                        android:id="@+id/spaEsta5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <RadioButton
-                        android:id="@+id/rbSelEsta5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rbEsta5"
-                        android:textColor="@color/negro"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-                </RadioGroup>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <LinearLayout
-                android:id="@+id/rbGroupSensores"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/lblSensor"
+                    android:text="@string/calIni"
                     android:textColor="@color/negro"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:visibility="visible" />
 
-                <RadioGroup
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mateCardCalIni"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingStart="70dp">
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    app:cardCornerRadius="4dp"
+                    app:strokeColor="@color/negro"
+                    app:strokeWidth="1dp">
 
-                    <RadioButton
-                        android:id="@+id/rbSelSenGLP"
+                    <DatePicker
+                        android:id="@+id/calRangoIni"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:calendarViewShown="false"
+                        android:datePickerMode="spinner"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/linLayLblFechFin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/rbSenGLP"
-                        android:textColor="@color/negro" />
-
+                        android:text="@string/lblFechaFin"
+                        android:textColor="@color/negro"
+                        android:textSize="14sp" />
                     <Space
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
-
-                    <RadioButton
-                        android:id="@+id/rbSelSenCO2"
+                    <TextView
+                        android:id="@+id/lblFechFin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/rbSCO2"
-                        android:textColor="@color/negro" />
+                        android:text="@string/lblValFecha"
+                        android:textColor="@color/negro"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                    <Space
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
 
-                    <RadioButton
-                        android:id="@+id/rbSelSenProp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rbSenProp"
-                        android:textColor="@color/negro" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/calFin"
+                    android:textColor="@color/negro"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
 
-                    <Space
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mateCardCalFin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    app:cardCornerRadius="4dp"
+                    app:strokeColor="@color/negro"
+                    app:strokeWidth="1dp">
 
-                    <RadioButton
-                        android:id="@+id/rbSelSenHumo"
-                        android:layout_width="wrap_content"
+                    <DatePicker
+                        android:id="@+id/calRangoFin"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/rbSenHumo"
-                        android:textColor="@color/negro" />
-                </RadioGroup>
+                        android:calendarViewShown="false"
+                        android:datePickerMode="spinner" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <Button
+                    android:id="@+id/btnGenGrafRepo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btnGenGrafRepo"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linLayGraficaRepo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/lblSensGraf"
+                    android:textColor="@color/negro"
+                    android:textSize="25sp" />
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/areaGrafRepo"
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp"/>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <Button
+                    android:id="@+id/btnConfGenRepo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btnGenRepo"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <TextView
-                android:id="@+id/lblRangoSelRepo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/lblRango"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/calIni"
-                android:textColor="@color/negro"
-                android:textSize="16sp"
-                android:visibility="visible" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/mateCardCalIni"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                app:cardCornerRadius="4dp"
-                app:strokeColor="@color/negro"
-                app:strokeWidth="1dp">
-
-                <DatePicker
-                    android:id="@+id/calRangoIni"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:calendarViewShown="false"
-                    android:datePickerMode="spinner"/>
-            </com.google.android.material.card.MaterialCardView>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/calFin"
-                android:textColor="@color/negro"
-                android:textSize="16sp"
-                android:visibility="visible" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/mateCardCalFin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                app:cardCornerRadius="4dp"
-                app:strokeColor="@color/negro"
-                app:strokeWidth="1dp">
-
-                <DatePicker
-                    android:id="@+id/calRangoFin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:calendarViewShown="false"
-                    android:datePickerMode="spinner" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <Button
-                android:id="@+id/btnConfGenRepo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btnGenRepo"
-                android:textSize="20sp" />
-
-            <Space
-                android:layout_width="wrap_content"
                 android:layout_height="20dp" />
         </LinearLayout>
     </ScrollView>
