@@ -24,7 +24,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/LinLayCam"
+                android:id="@+id/linLayCam"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -32,7 +32,7 @@
 
                 <TextView
                     android:id="@+id/lblCamera"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/lblCamView"
                     android:gravity="center"
@@ -55,7 +55,7 @@
                 android:layout_height="20dp" />
 
             <LinearLayout
-                android:id="@+id/LinLaySenGas"
+                android:id="@+id/linLayGrafica"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -64,157 +64,25 @@
                 tools:visibility="visible">
 
                 <TextView
-                    android:id="@+id/lblSensor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/lblSensView"
+                    android:text="Grafica del Sensor de Gases"
                     android:textColor="@color/negro"
                     android:textSize="25sp" />
 
-                <Space
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/areaGraf"
                     android:layout_width="match_parent"
-                    android:layout_height="5dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/lblGas"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblGas"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/lblGasVal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblUni"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/lblCo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblCo"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/lblCoVal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblUni"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/lblPro"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblPro"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/lblProVal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblUni"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/lblHum"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblHum"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/lblHumVal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lblUni"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                    android:layout_height="350dp"/>
             </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp" />
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/linLayGrafica"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:contentDescription="Prueba de Grafica"
-                android:visibility="gone"
-                tools:visibility="visible"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
             <LinearLayout
-                android:id="@+id/LinLaySenMagne"
+                android:id="@+id/linLaySenMagne"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
