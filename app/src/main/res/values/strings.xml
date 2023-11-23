@@ -70,6 +70,12 @@
     <string name="btnCam">Camara</string>
     <string name="btnSenGH">Sensor de\n Gas/Humo</string>
     <string name="btnSenMag">Sensor\n Magnetico</string>
+    <!-- Strings de las graficas-->
+    <string name="lblBtnGrafi">Seleccione el sensor que desea ver:</string>
+    <string name="lblBtnCO">CO</string>
+    <string name="lblBtnGLP">GLP</string>
+    <string name="lblBtnProp">Propano</string>
+    <string name="lblBtnHumo">Humo</string>
     <!-- Strings de la vistas de las camaras-->
     <string name="lblCamView">Camara</string>
     <!-- Strings de la vistas de los sensores-->
@@ -133,25 +139,26 @@
     <!-- Strings de la vista de generar reportes-->
     <string name="headRepo">Generar Reportes</string>
     <string name="lblEstaciones">Seleccione su estacion:</string>
-    <string name="rbEsta1">1</string>
-    <string name="rbEsta2">2</string>
-    <string name="rbEsta3">3</string>
-    <string name="rbEsta4">4</string>
-    <string name="rbEsta5">5</string>
     <string name="lblSensor">Seleccione el sensor:</string>
     <string name="rbSenGLP">Gas LP</string>
-    <string name="rbSCO2">Monoxido de Carbono (CO)</string>
+    <string name="rbSCO">Monoxido de Carbono (CO)</string>
     <string name="rbSenProp">Gas Propano</string>
     <string name="rbSenHumo">Humo</string>
-    <string name="lblRango">Seleccione su rango de monitoreo deseado:</string>
-    <string name="lblRanIni">Rango Inicio…</string>
-    <string name="lblRanFin">Rango Fin…</string>
-    <string name="lblFechaIni">Fecha de Inicio:</string>
+    <string name="lblRango">Seleccione el periodo de monitoreo deseado:</string>
     <string name="calIni">Inicio:</string>
-    <string name="lblFechaFin">Fecha de Fin:</string>
+    <string name="lblFechaIni">Fecha de Inicio:</string>
+    <string name="lblHoraIni">Hora de Inicio:</string>
+    <string name="btnSelFechaIni">Seleccione la Fecha de Inicio</string>
+    <string name="btnSelHoraIni">Seleccione la Hora de Inicio</string>
     <string name="calFin">Fin:</string>
+    <string name="lblFechaFin">Fecha de Fin:</string>
+    <string name="lblHoraFin">Hora de Fin:</string>
+    <string name="btnSelFechaFin">Seleccione la Fecha de Fin</string>
+    <string name="btnSelHoraFin">Seleccione la Hora de Fin</string>
     <string name="lblValFecha">Valor Fecha Seleccionado</string>
-    <string name="btnGenGrafRepo">Generar Grafica\nde Reporte</string>
+    <string name="lblValHora">Valor Hora Seleccionado</string>
+    <string name="btnGenGrafRepo">Generar Grafica\ndel Reporte</string>
+    <string name="lblViewRepo">Vista Previa del Reporte a Generar</string>
     <string name="btnGenRepo">Generar Reporte</string>
     <!-- Strings de la vista comentarios-->
     <string name="headComms">Generar Comentario</string>
@@ -171,10 +178,6 @@
     </string-array>
     <string name="lblTipoUsSel">Tipo:</string>
     <string name="btnDelSisUser">Eliminar\nUsuario\ndel Sistema</string>
-    <!--
-    <string name="btnUpSisSta">Cambiar\nEstaciones</string>
-    <string name="btnUpSisUse">Administrar\nUsuarios</string>-->
-
     <!-- Strings de la vista de manejo de alarmas admin-->
     <string name="headManAla">Gestion de Alarma</string>
     <string name="lblAlarma">Alarma Actual:</string>

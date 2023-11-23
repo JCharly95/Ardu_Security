@@ -4,6 +4,7 @@
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_400">#FF0BBBBA</color>
     <color name="teal_700">#FF018786</color>
     <color name="azulApp">#2772FF</color>
     <color name="lightGray">#F8F8F8</color>
@@ -30,4 +31,9 @@
     <color name="fireBrick">#B22222</color>
     <color name="hotPink">#FF69B4</color>
     <color name="lemonChiffon">#FFFACD</color>
+    <!--Colores agregados-->
+    <color name="indianRed">#CD5C5C</color>
+    <color name="mediumAquamarine">#66CDAA</color>
+    <color name="lightSeaGreen">#20B2AA</color>
+    <color name="salmon">#FA8072</color>
 </resources>

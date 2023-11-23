@@ -14,6 +14,7 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -25,18 +26,24 @@ class StationActivity : AppCompatActivity() {
     // Seccion de la camara
     private lateinit var linLayCam: LinearLayout
     private lateinit var camara: WebView
-    // Seccion de la grafica
-    private lateinit var linLayGraf: LinearLayout
-    private lateinit var layGraf: LineChart
-    private val arrCo = ArrayList<Entry>()
-    private val arrGLP = ArrayList<Entry>()
-    private val arrPropane = ArrayList<Entry>()
-    private val arrSmoke = ArrayList<Entry>()
     // Seccion del sensor magnetico
     private lateinit var linLaySenMagne: LinearLayout
     private lateinit var rbgMagne: RadioGroup
     private lateinit var rbMagneOp: RadioButton
     private lateinit var rbMagneCl: RadioButton
+    // Seccion de la grafica
+    private lateinit var linLayBtnGraf: LinearLayout
+    private lateinit var btnSenCO: Button
+    private lateinit var btnSenGLP: Button
+    private lateinit var btnSenProp: Button
+    private lateinit var btnSenHumo: Button
+    private lateinit var linLayGraf: LinearLayout
+    private lateinit var layGraf: LineChart
+    // Arraylists de valores para los datasets de las graficas
+    private val arrCo = ArrayList<Entry>()
+    private val arrGLP = ArrayList<Entry>()
+    private val arrProp = ArrayList<Entry>()
+    private val arrHumo = ArrayList<Entry>()
     // Elementos del bundle de acceso/registro
     private lateinit var bundle: Bundle
     private lateinit var user: String
@@ -64,23 +71,31 @@ class StationActivity : AppCompatActivity() {
 
         // Configurar el arranque de la interfaz
         setUp()
+        // Agregar los listeners
+        addListeners()
     }
 
     private fun setUp() {
+        // Relacionando los elementos con su objeto de la interfaz
+        nomEsta = ""
         // Seccion de la camara
         linLayCam = findViewById(R.id.linLayCam)
         camara = findViewById(R.id.vidViewCam)
-        // Seccion de Prueba de la Grafica
-        linLayGraf = findViewById(R.id.linLayGrafica)
-        layGraf = findViewById(R.id.areaGraf)
         // Seccion del sensor magnetico
         linLaySenMagne = findViewById(R.id.linLaySenMagne)
         rbgMagne = findViewById(R.id.rbgCondMagne)
         rbMagneOp = findViewById(R.id.rbMagneAbi)
         rbMagneCl = findViewById(R.id.rbMagneCerr)
+        // Seccion de la Grafica
+        linLayBtnGraf = findViewById(R.id.linLayBtnGrafica)
+        btnSenCO = findViewById(R.id.btnViewCOGraf)
+        btnSenGLP = findViewById(R.id.btnViewGLPGraf)
+        btnSenProp = findViewById(R.id.btnViewPropGraf)
+        btnSenHumo = findViewById(R.id.btnViewHumGraf)
+        linLayGraf = findViewById(R.id.linLayGrafica)
+        layGraf = findViewById(R.id.areaGraf)
         // Inicializando instancia hacia el nodo raiz de la BD
         database = Firebase.database
-
 
         // Obteniendo los valores desde Firebase
         lifecycleScope.launch(Dispatchers.IO){
@@ -111,6 +126,21 @@ class StationActivity : AppCompatActivity() {
         setCamara()
         // Establecer el sensor segun la estacion
         setSensor()
+    }
+
+    private fun addListeners(){
+        btnSenCO.setOnClickListener {
+            genGrafSenso("CO")
+        }
+        btnSenGLP.setOnClickListener {
+            genGrafSenso("GLP")
+        }
+        btnSenProp.setOnClickListener {
+            genGrafSenso("Prop")
+        }
+        btnSenHumo.setOnClickListener {
+            genGrafSenso("Humo")
+        }
     }
 
     private fun avisoStation(){
@@ -164,9 +194,9 @@ class StationActivity : AppCompatActivity() {
                             val tipo = objSen.child("tipo").value.toString()
                             // Determinando que sensor se encuentra en la estacion
                             if(estaBus == estaKey && tipo == "Humo/Gas"){
+                                linLayBtnGraf.isGone = false
                                 linLayGraf.isGone = false
-                                generarGrafica()
-                                //esteblecerGrafica()
+                                setGrafica()
                             }
                             if(estaBus == estaKey && tipo == "Magnetico"){
                                 linLaySenMagne.isGone = false
@@ -185,6 +215,16 @@ class StationActivity : AppCompatActivity() {
         }
     }
 
+    private fun setGrafica(){
+        // Establecer los valores de la grafica
+        layGraf.setNoDataText("Favor de seleccionar el sensor que desee ver")
+        layGraf.setDrawBorders(true)
+        layGraf.setBorderColor(R.color.negro)
+        layGraf.description.text = "Sensor de Gases: $nomEsta (PPM)"
+        layGraf.description.textSize = 15f
+        layGraf.setBackgroundColor(ContextCompat.getColor(this@StationActivity,R.color.blanco))
+    }
+
     private fun establecerCamara(dirUrl: String){
         val videoURL = "$dirUrl/video_feed"
         //val videoURL = "http://192.168.100.66:5000/video_feed"
@@ -194,12 +234,9 @@ class StationActivity : AppCompatActivity() {
         camara.loadUrl(videoURL)
     }
 
-    private fun generarGrafica(){
-        var contePosX1 = 0.0F
-        var contePosX2 = 0.0F
-        var contePosX3 = 0.0F
-        var contePosX4 = 0.0F
-        lifecycleScope.launch(Dispatchers.IO) {
+    private fun genGrafSenso(sensor: String){
+        var contePosX = 0.0F
+        lifecycleScope.launch(Dispatchers.IO){
             val getGasVal = async {
                 // Creando la referencia de la coleccion de sensores en la BD
                 ref = database.getReference("Sensores")
@@ -213,50 +250,65 @@ class StationActivity : AppCompatActivity() {
                                 val refRegi = objSen.child("registros").ref
                                 refRegi.addListenerForSingleValueEvent(object: ValueEventListener{
                                     override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(objRegi in snapshot.children){
-                                            arrCo.add(Entry(contePosX1, objRegi.child("co").value.toString().toFloat()))
-                                            arrGLP.add(Entry(contePosX2, objRegi.child("lpg").value.toString().toFloat()))
-                                            arrPropane.add(Entry(contePosX3, objRegi.child("propane").value.toString().toFloat()))
-                                            arrSmoke.add(Entry(contePosX4, objRegi.child("smoke").value.toString().toFloat()))
-                                            // Incremento de contadores
-                                            contePosX1 += 3; contePosX2 += 4; contePosX3 += 5; contePosX4 += 6
+                                        when(sensor){
+                                            "CO" -> {
+                                                arrCo.clear()// Es necesario limpiar el arreglo cada vez que se solicite cambiar de informacion para no se generen errores en los cambios
+                                                for(objRegi in snapshot.children){
+                                                    arrCo.add(Entry(contePosX, objRegi.child("co").value.toString().toFloat()))
+                                                    contePosX += 3
+                                                }
+                                                val lineCoDataSet = LineDataSet(arrCo, "CO")
+                                                lineCoDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.darkgray)
+                                                lineCoDataSet.setDrawFilled(true)
+                                                lineCoDataSet.circleRadius = 5f
+                                                lineCoDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.darkgray)
+                                                lineCoDataSet.mode = LineDataSet.Mode.LINEAR
+                                                layGraf.data = LineData(lineCoDataSet)
+                                            }
+                                            "GLP" -> {
+                                                arrGLP.clear()// Es necesario limpiar el arreglo cada vez que se solicite cambiar de informacion para no se generen errores en los cambios
+                                                for(objRegi in snapshot.children){
+                                                    arrGLP.add(Entry(contePosX, objRegi.child("lpg").value.toString().toFloat()))
+                                                    contePosX += 3
+                                                }
+                                                val lineGLPDataSet = LineDataSet(arrGLP, "Gas LP")
+                                                lineGLPDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.teal_200)
+                                                lineGLPDataSet.setDrawFilled(true)
+                                                lineGLPDataSet.circleRadius = 5f
+                                                lineGLPDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.teal_200)
+                                                lineGLPDataSet.mode = LineDataSet.Mode.LINEAR
+                                                layGraf.data = LineData(lineGLPDataSet)
+                                            }
+                                            "Prop" -> {
+                                                arrProp.clear()// Es necesario limpiar el arreglo cada vez que se solicite cambiar de informacion para no se generen errores en los cambios
+                                                for(objRegi in snapshot.children){
+                                                    arrProp.add(Entry(contePosX, objRegi.child("propane").value.toString().toFloat()))
+                                                    contePosX += 3
+                                                }
+                                                val linePropDataSet = LineDataSet(arrProp, "Propano")
+                                                linePropDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.naranja)
+                                                linePropDataSet.setDrawFilled(true)
+                                                linePropDataSet.circleRadius = 5f
+                                                linePropDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.naranja)
+                                                linePropDataSet.mode = LineDataSet.Mode.LINEAR
+                                                layGraf.data = LineData(linePropDataSet)
+                                            }
+                                            "Humo" -> {
+                                                arrHumo.clear()// Es necesario limpiar el arreglo cada vez que se solicite cambiar de informacion para no se generen errores en los cambios
+                                                for(objRegi in snapshot.children){
+                                                    arrHumo.add(Entry(contePosX, objRegi.child("smoke").value.toString().toFloat()))
+                                                    contePosX += 3
+                                                }
+                                                val lineSmokeDataSet = LineDataSet(arrHumo, "Humo")
+                                                lineSmokeDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.negro)
+                                                lineSmokeDataSet.setDrawFilled(true)
+                                                lineSmokeDataSet.circleRadius = 5f
+                                                lineSmokeDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.gris)
+                                                lineSmokeDataSet.mode = LineDataSet.Mode.LINEAR
+                                                layGraf.data = LineData(lineSmokeDataSet)
+                                            }
                                         }
-                                        // Codigo de Establecer Grafica
-                                        val lineCoDataSet = LineDataSet(arrCo, "CO")
-                                        lineCoDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.darkgray)
-                                        lineCoDataSet.setDrawFilled(true)
-                                        lineCoDataSet.circleRadius = 5f
-                                        lineCoDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.darkgray)
-                                        lineCoDataSet.mode = LineDataSet.Mode.LINEAR
-                                        val lineGLPDataSet = LineDataSet(arrGLP, "Gas LP")
-                                        lineGLPDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.teal_200)
-                                        lineGLPDataSet.setDrawFilled(true)
-                                        lineGLPDataSet.circleRadius = 5f
-                                        lineGLPDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.teal_200)
-                                        lineGLPDataSet.mode = LineDataSet.Mode.LINEAR
-                                        val linePropDataSet = LineDataSet(arrPropane, "Propano")
-                                        linePropDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.naranja)
-                                        linePropDataSet.setDrawFilled(true)
-                                        linePropDataSet.circleRadius = 5f
-                                        linePropDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.naranja)
-                                        linePropDataSet.mode = LineDataSet.Mode.LINEAR
-                                        val lineSmokeDataSet = LineDataSet(arrSmoke, "Humo")
-                                        lineSmokeDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.negro)
-                                        lineSmokeDataSet.setDrawFilled(true)
-                                        lineSmokeDataSet.circleRadius = 5f
-                                        lineSmokeDataSet.fillColor = ContextCompat.getColor(this@StationActivity,R.color.gris)
-                                        lineSmokeDataSet.mode = LineDataSet.Mode.LINEAR
-                                        // Creando el linedata de la grafica (es como un dataset de lineas)
-                                        val datos = LineData()
-                                        datos.addDataSet(lineSmokeDataSet)
-                                        datos.addDataSet(linePropDataSet)
-                                        datos.addDataSet(lineGLPDataSet)
-                                        datos.addDataSet(lineCoDataSet)
-                                        layGraf.data = datos
-                                        layGraf.description.text = "Sensor de Gases: $nomEsta (PPM)"
-                                        layGraf.description.textSize = 15f
-                                        layGraf.setBackgroundColor(ContextCompat.getColor(this@StationActivity,R.color.blanco))
-                                        // Fin de Codigo de Establecer Grafica
+                                        layGraf.invalidate() // Este metodo sirve para refrescar la informacion de la grafica, ese sera ejecutado en cada seleccion de informacion
                                     }
                                     override fun onCancelled(error: DatabaseError) {
                                         lifecycleScope.launch(Dispatchers.Main){

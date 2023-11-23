@@ -21,21 +21,27 @@ class MenuStationsActivity : AppCompatActivity() {
     private lateinit var linLayEsta12: LinearLayout
     private lateinit var linLayBtn1: LinearLayout
     private lateinit var btnSta1: ImageButton
+    private lateinit var lblBtn1: TextView
     private lateinit var linLayBtn2: LinearLayout
     private lateinit var btnSta2: ImageButton
+    private lateinit var lblBtn2: TextView
     private lateinit var linLayEsta34: LinearLayout
     private lateinit var linLayBtn31: LinearLayout
     private lateinit var btnSta31: ImageButton
+    private lateinit var lblBtn31: TextView
     private lateinit var linLayBtn4: LinearLayout
     private lateinit var btnSta4: ImageButton
+    private lateinit var lblBtn4: TextView
     private lateinit var linLayEsta3Ala: LinearLayout
     private lateinit var linLayBtn32: LinearLayout
     private lateinit var btnSta32: ImageButton
+    private lateinit var lblBtn32: TextView
     private lateinit var linLayAlarm2: LinearLayout
     private lateinit var btnAlarma2: ImageButton
     private lateinit var linLayEsta5Ala: LinearLayout
     private lateinit var linLayBtn5: LinearLayout
     private lateinit var btnSta5: ImageButton
+    private lateinit var lblBtn5: TextView
     private lateinit var linLayAlarm: LinearLayout
     private lateinit var btnAlarma: ImageButton
     // Variables de evaluacion para determinar la cantidad de botones a mostrar
@@ -75,21 +81,27 @@ class MenuStationsActivity : AppCompatActivity() {
         linLayEsta12 = findViewById(R.id.linLayEsta12)
         linLayBtn1 = findViewById(R.id.LinBtnEsta1)
         btnSta1 = findViewById(R.id.btnStat1)
+        lblBtn1 = findViewById(R.id.lblBtnStat1)
         linLayBtn2 = findViewById(R.id.LinBtnEsta2)
         btnSta2 = findViewById(R.id.btnStat2)
+        lblBtn2 = findViewById(R.id.lblBtnStat2)
         linLayEsta34 = findViewById(R.id.linLayEsta34)
         linLayBtn31 = findViewById(R.id.LinBtnEsta31)
         btnSta31 = findViewById(R.id.btnStat31)
-        linLayBtn4 = findViewById(R.id.LinBtnEsta41)
-        btnSta4 = findViewById(R.id.btnStat41)
+        lblBtn31 = findViewById(R.id.lblBtnStat31)
+        linLayBtn4 = findViewById(R.id.LinBtnEsta4)
+        btnSta4 = findViewById(R.id.btnStat4)
+        lblBtn4 = findViewById(R.id.lblBtnStat4)
         linLayEsta3Ala = findViewById(R.id.linLayEsta3Ala)
         linLayBtn32 = findViewById(R.id.LinBtnEsta32)
         btnSta32 = findViewById(R.id.btnStat32)
+        lblBtn32 = findViewById(R.id.lblBtnStat32)
         linLayAlarm2 = findViewById(R.id.LinBtnAlarm2)
         btnAlarma2 = findViewById(R.id.btnAlarma2)
         linLayEsta5Ala = findViewById(R.id.linLayEsta5Ala)
         linLayBtn5 = findViewById(R.id.LinBtnEsta5)
         btnSta5 = findViewById(R.id.btnStat5)
+        lblBtn5 = findViewById(R.id.lblBtnStat5)
         linLayAlarm = findViewById(R.id.LinBtnAlarm)
         btnAlarma = findViewById(R.id.btnAlarma)
 
@@ -149,16 +161,49 @@ class MenuStationsActivity : AppCompatActivity() {
                                         linLayEsta34.isGone = false
                                         linLayEsta5Ala.isGone = false
                                     }
-                                    else -> {
-                                        Toast.makeText(this@MenuStationsActivity,"Error: Cantidad del sistema inadecuada",Toast.LENGTH_SHORT).show()
-                                    }
                                 }
                                 // Obteniendo las ID de las estaciones
                                 val refEsta = refSnap.ref
                                 refEsta.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(objEsta in snapshot.children){
-                                           arrEstasKey.add(objEsta.key.toString())
+                                    override fun onDataChange(snapshot1: DataSnapshot) {
+                                        for(objEsta in snapshot1.children){
+                                            arrEstasKey.add(objEsta.key.toString())
+                                        }
+                                        for((estaIndex, estaVal) in arrEstasKey.withIndex()){
+                                            val ref2 = database.getReference("Estaciones")
+                                            ref2.addListenerForSingleValueEvent(object: ValueEventListener{
+                                                override fun onDataChange(snapshot2: DataSnapshot) {
+                                                    for(objEsta2 in snapshot2.children){
+                                                        when(estaIndex){
+                                                            0 -> {
+                                                                if(estaVal == objEsta2.key.toString())
+                                                                    lblBtn1.text = objEsta2.child("nombre").value.toString()
+                                                            }
+                                                            1 -> {
+                                                                if(estaVal == objEsta2.key.toString())
+                                                                    lblBtn2.text = objEsta2.child("nombre").value.toString()
+                                                            }
+                                                            2 -> {
+                                                                if(estaVal == objEsta2.key.toString()){
+                                                                    lblBtn31.text = objEsta2.child("nombre").value.toString()
+                                                                    lblBtn32.text = objEsta2.child("nombre").value.toString()
+                                                                }
+                                                            }
+                                                            3 -> {
+                                                                if(estaVal == objEsta2.key.toString())
+                                                                    lblBtn4.text = objEsta2.child("nombre").value.toString()
+                                                            }
+                                                            4 -> {
+                                                                if(estaVal == objEsta2.key.toString())
+                                                                    lblBtn5.text = objEsta2.child("nombre").value.toString()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                override fun onCancelled(error: DatabaseError) {
+                                                    Toast.makeText(this@MenuStationsActivity,"Error: Consulta incompleta",Toast.LENGTH_SHORT).show()
+                                                }
+                                            })
                                         }
                                     }
                                     override fun onCancelled(error: DatabaseError) {

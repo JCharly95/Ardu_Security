@@ -18,9 +18,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <LinearLayout
@@ -28,6 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -62,154 +61,156 @@
                     android:layout_width="match_parent"
                     android:layout_height="10dp" />
 
-                <LinearLayout
-                    android:id="@+id/rbGroupEstaciones"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:gravity="center"
+                    android:text="@string/lblEstaciones"
+                    android:textColor="@color/negro"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
 
-                    <TextView
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/lightGray"
+                    app:cardCornerRadius="4dp"
+                    app:strokeColor="@color/negro"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:id="@+id/rbGroupEstaciones"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/lblEstaciones"
-                        android:textColor="@color/negro"
-                        android:textSize="20sp"
-                        android:visibility="visible" />
+                        android:orientation="vertical">
 
-                    <RadioGroup
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingStart="55dp"
+                            android:paddingEnd="55dp">
 
-                        <RadioButton
-                            android:id="@+id/rbSelEsta1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbEsta1"
-                            android:textColor="@color/negro" />
+                            <RadioButton
+                                android:id="@+id/rbSelEsta1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btnSta1"
+                                android:textColor="@color/negro" />
 
-                        <Space
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            <RadioButton
+                                android:id="@+id/rbSelEsta2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btnSta2"
+                                android:textColor="@color/negro" />
 
-                        <RadioButton
-                            android:id="@+id/rbSelEsta2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbEsta2"
-                            android:textColor="@color/negro" />
+                            <RadioButton
+                                android:id="@+id/rbSelEsta3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btnSta3"
+                                android:textColor="@color/negro" />
 
-                        <Space
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            <RadioButton
+                                android:id="@+id/rbSelEsta4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btnSta4"
+                                android:textColor="@color/negro"
+                                android:visibility="gone"
+                                tools:visibility="visible"/>
 
-                        <RadioButton
-                            android:id="@+id/rbSelEsta3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbEsta3"
-                            android:textColor="@color/negro" />
-
-                        <Space
-                            android:id="@+id/spaEsta4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"/>
-
-                        <RadioButton
-                            android:id="@+id/rbSelEsta4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbEsta4"
-                            android:textColor="@color/negro"/>
-
-                        <Space
-                            android:id="@+id/spaEsta5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"/>
-
-                        <RadioButton
-                            android:id="@+id/rbSelEsta5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbEsta5"
-                            android:textColor="@color/negro"/>
-                    </RadioGroup>
-                </LinearLayout>
+                            <RadioButton
+                                android:id="@+id/rbSelEsta5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/btnSta5"
+                                android:textColor="@color/negro"
+                                android:visibility="gone"
+                                tools:visibility="visible"/>
+                        </RadioGroup>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="10dp" />
 
-                <LinearLayout
-                    android:id="@+id/rbGroupSensores"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:gravity="center"
+                    android:text="@string/lblSensor"
+                    android:textColor="@color/negro"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
 
-                    <TextView
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/lightGray"
+                    app:cardCornerRadius="4dp"
+                    app:strokeColor="@color/negro"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:id="@+id/rbGroupSensores"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/lblSensor"
-                        android:textColor="@color/negro"
-                        android:textSize="20sp"
-                        android:visibility="visible" />
+                        android:orientation="vertical">
 
-                    <RadioGroup
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:paddingStart="70dp">
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingStart="55dp"
+                            android:paddingEnd="55dp">
 
-                        <RadioButton
-                            android:id="@+id/rbSelSenGLP"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbSenGLP"
-                            android:textColor="@color/negro" />
+                            <RadioButton
+                                android:id="@+id/rbSelSenCO"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:shadowColor="@color/blanco"
+                                android:text="@string/rbSCO"
+                                android:textColor="@color/negro" />
 
-                        <Space
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            <Space
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
 
-                        <RadioButton
-                            android:id="@+id/rbSelSenCO2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbSCO2"
-                            android:textColor="@color/negro" />
+                            <RadioButton
+                                android:id="@+id/rbSelSenGLP"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/rbSenGLP"
+                                android:textColor="@color/negro" />
 
-                        <Space
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            <Space
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
 
-                        <RadioButton
-                            android:id="@+id/rbSelSenProp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbSenProp"
-                            android:textColor="@color/negro" />
+                            <RadioButton
+                                android:id="@+id/rbSelSenProp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/rbSenProp"
+                                android:textColor="@color/negro" />
 
-                        <Space
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            <Space
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
 
-                        <RadioButton
-                            android:id="@+id/rbSelSenHumo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rbSenHumo"
-                            android:textColor="@color/negro" />
-                    </RadioGroup>
-                </LinearLayout>
+                            <RadioButton
+                                android:id="@+id/rbSelSenHumo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/rbSenHumo"
+                                android:textColor="@color/negro" />
+                        </RadioGroup>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <Space
                     android:layout_width="match_parent"
@@ -225,124 +226,275 @@
                     android:textSize="20sp"
                     android:visibility="visible" />
 
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp" />
-
-                <LinearLayout
-                    android:id="@+id/linLayLblFechIni"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/lblFechaIni"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/lblFechIni"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/lblValFecha"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/calIni"
-                    android:textColor="@color/negro"
-                    android:textSize="16sp"
-                    android:visibility="visible" />
-
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/mateCardCalIni"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
                     app:cardCornerRadius="4dp"
+                    android:backgroundTint="@color/azulAlicia"
                     app:strokeColor="@color/negro"
                     app:strokeWidth="1dp">
 
-                    <DatePicker
-                        android:id="@+id/calRangoIni"
+                    <LinearLayout
+                        android:id="@+id/linLayRanIni"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:calendarViewShown="false"
-                        android:datePickerMode="spinner"/>
+                        android:padding="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/calIni"
+                            android:textColor="@color/negro"
+                            android:textSize="18sp"
+                            android:visibility="visible" />
+                        <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/teal_400"
+                            app:cardCornerRadius="4dp"
+                            app:strokeColor="@color/negro"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:id="@+id/linLayLblFechIni"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:padding="5dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblFechaIni"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+
+                                <Space
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1" />
+
+                                <TextView
+                                    android:id="@+id/lblFechIni"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblValFecha"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp" />
+
+                        <Button
+                            android:id="@+id/btnSelFechIni"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/teal_700"
+                            android:text="@string/btnSelFechaIni"
+                            android:textSize="16sp"/>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/salmon"
+                            app:cardCornerRadius="4dp"
+                            app:strokeColor="@color/negro"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:id="@+id/linLayLblHoraIni"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:padding="5dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblHoraIni"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+
+                                <Space
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1" />
+
+                                <TextView
+                                    android:id="@+id/lblHoraIni"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblValHora"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp" />
+
+                        <Button
+                            android:id="@+id/btnSelHoraIni"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/indianRed"
+                            android:text="@string/btnSelHoraIni"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="10dp" />
 
-                <LinearLayout
-                    android:id="@+id/linLayLblFechFin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/lblFechaFin"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-                    <TextView
-                        android:id="@+id/lblFechFin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/lblValFecha"
-                        android:textColor="@color/negro"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/calFin"
-                    android:textColor="@color/negro"
-                    android:textSize="16sp"
-                    android:visibility="visible" />
-
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/mateCardCalFin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
                     app:cardCornerRadius="4dp"
+                    android:backgroundTint="@color/azulAlicia"
                     app:strokeColor="@color/negro"
                     app:strokeWidth="1dp">
 
-                    <DatePicker
-                        android:id="@+id/calRangoFin"
+                    <LinearLayout
+                        android:id="@+id/linLayRanFin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:calendarViewShown="false"
-                        android:datePickerMode="spinner" />
+                        android:padding="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/calFin"
+                            android:textColor="@color/negro"
+                            android:textSize="18sp"
+                            android:visibility="visible" />
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/teal_400"
+                            app:cardCornerRadius="4dp"
+                            app:strokeColor="@color/negro"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:id="@+id/linLayLblFechFin"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:padding="5dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblFechaFin"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+
+                                <Space
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1" />
+
+                                <TextView
+                                    android:id="@+id/lblFechFin"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblValFecha"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp" />
+
+                        <Button
+                            android:id="@+id/btnSelFechFin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/teal_700"
+                            android:text="@string/btnSelFechaFin"
+                            android:textSize="16sp"/>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/salmon"
+                            app:cardCornerRadius="4dp"
+                            app:strokeColor="@color/negro"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:id="@+id/linLayLblHoraFin"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:padding="5dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblHoraFin"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+
+                                <Space
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1" />
+
+                                <TextView
+                                    android:id="@+id/lblHoraFin"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lblValHora"
+                                    android:textColor="@color/blanco"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp" />
+
+                        <Button
+                            android:id="@+id/btnSelHoraFin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/indianRed"
+                            android:text="@string/btnSelHoraFin"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <Space
@@ -354,41 +506,87 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/btnGenGrafRepo"
-                    android:textSize="20sp" />
+                    android:textSize="18sp"/>
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/linLayGraficaRepo"
+            <Space
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_height="10dp" />
+
+            <LinearLayout
+                android:id="@+id/linLayGrafRepo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/lblSensGraf"
                     android:textColor="@color/negro"
                     android:textSize="25sp" />
 
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/areaGrafRepo"
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
-                    android:layout_height="350dp"/>
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="4dp"
+                    app:strokeColor="@color/negro"
+                    app:strokeWidth="1dp">
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/areaGrafRepo"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:layout_height="350dp"/>
+                </com.google.android.material.card.MaterialCardView>
 
                 <Space
                     android:layout_width="match_parent"
-                    android:layout_height="10dp" />
+                    android:layout_height="20dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/lblViewRepo"
+                    android:textColor="@color/negro"
+                    android:textSize="25sp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="4dp"
+                    app:strokeColor="@color/negro"
+                    app:strokeWidth="1dp">
+
+                    <WebView
+                        android:id="@+id/webViewRepoPrev"
+                        android:layout_width="match_parent"
+                        android:layout_height="450dp"/>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/btnConfGenRepo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/btnGenRepo"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"/>
             </LinearLayout>
 
             <Space
