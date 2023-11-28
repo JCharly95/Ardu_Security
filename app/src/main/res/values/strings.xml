@@ -189,4 +189,13 @@
         <item>Seleccione su nueva alarma</item>
     </string-array>
     <string name="btnConfAlaChg">Confirmar seleccion y\nrealizar cambio</string>
+    <!-- Strings de la plantilla de reportes-->
+    <string name="lblHeadRepo">Reporte del Sensor:\nSensor Seleccionado</string>
+    <string name="lblRangoRepo">Registros entre:</string>
+    <string name="lblFechaIniRepo">FechaIni</string>
+    <string name="lblHoraIniRepo">HoraIni</string>
+    <string name="lblFechaFinRepo">FechaFin</string>
+    <string name="lblHoraFinRepo">HoraFin</string>
+    <string name="txtRegistro">- KeyRegistro; valor ppm</string>
+    <string name="lblHeadGrafRepo">Grafica del Sensor:\nSensor Seleccionado</string>
 </resources>

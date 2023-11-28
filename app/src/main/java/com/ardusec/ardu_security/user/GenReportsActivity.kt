@@ -4,12 +4,20 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
-import android.webkit.WebView
-import android.widget.*
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.RadioButton
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -19,7 +27,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +39,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 import java.util.TimeZone
 
 
@@ -53,7 +64,7 @@ class GenReportsActivity : AppCompatActivity() {
     private lateinit var btnSelHoraFin: Button
     private lateinit var btnGenGraf: Button
     private lateinit var layGraf: LineChart
-    private lateinit var wbRepoPrev: WebView
+    private lateinit var wbRepoPrev: View
     private lateinit var btnGenRepo: Button
     // Arraylists de valores para los datasets de las graficas
     private val arrCo = ArrayList<Entry>()
@@ -576,5 +587,32 @@ class GenReportsActivity : AppCompatActivity() {
             }
             getEstaKey.await()
         }
+    }
+
+    private fun getPlantilla(){
+        // Instanciando la plantilla
+        val inflater = LayoutInflater.from(this@GenReportsActivity)
+        val view = inflater.inflate(R.layout.plantilla_reporte, null)
+        val tablaRegistros = view.findViewById<TableLayout>(R.id.tblLayRegistros)
+
+        val nFila = TableRow(this@GenReportsActivity)
+        nFila.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.WRAP_CONTENT)
+        nFila.layout(dpToPx(3),dpToPx(3),dpToPx(3),dpToPx(3))
+
+        val nRegistro = TextView(this@GenReportsActivity)
+        nRegistro.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        nRegistro.setText("Prueba de Agregado")
+        nRegistro.gravity = Gravity.CENTER
+        nRegistro.setTextColor(ContextCompat.getColor(this,R.color.negro))
+        nRegistro.textSize = spToPx(15).toFloat()
+    }
+
+    // Funciones de Conversiones
+    private fun dpToPx(dp: Int): Int {
+        return TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), this@GenReportsActivity.resources.displayMetrics ).toInt()
+    }
+
+    private fun spToPx(sp: Int): Int {
+        return TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), this@GenReportsActivity.resources.displayMetrics ).toInt()
     }
 }

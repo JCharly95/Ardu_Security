@@ -562,7 +562,7 @@
                     app:strokeColor="@color/negro"
                     app:strokeWidth="1dp">
 
-                    <WebView
+                    <View
                         android:id="@+id/webViewRepoPrev"
                         android:layout_width="match_parent"
                         android:layout_height="450dp"/>
