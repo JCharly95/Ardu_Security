@@ -1052,7 +1052,7 @@ class EditDataTxtActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("CST"))
         val dia = calendar.get(Calendar.DAY_OF_MONTH); val mes = calendar.get(Calendar.MONTH) + 1; val year = calendar.get(Calendar.YEAR)
         val hora = calendar.get(Calendar.HOUR_OF_DAY); val minuto = calendar.get(Calendar.MINUTE)
-        val fechaCambio = "${transFecha(dia)}/${transFecha(mes)}/${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)} CST"
+        val fechaCambio = "${transFecha(dia)}-${transFecha(mes)}-${transFecha(year)} ${transFecha(hora)}:${transFecha(minuto)} CST"
 
         lifecycleScope.launch(Dispatchers.IO){
             val upNomSis = async {

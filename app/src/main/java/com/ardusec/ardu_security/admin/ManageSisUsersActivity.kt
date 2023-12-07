@@ -171,21 +171,7 @@ class ManageSisUsersActivity : AppCompatActivity() {
                             if (objUser.key.toString() == username){
                                 txtNombre.setText(objUser.child("nombre").value.toString())
                                 txtUsername.setText(objUser.child("username").value.toString())
-                                // Seteando el tipo
-                                ref = database.getReference("Sistemas")
-                                ref.addListenerForSingleValueEvent(object : ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(objSis in snapshot.children){
-                                            if(objSis.key.toString() == sistema){
-                                                txtTipo.setText(objSis.child("usuarios").child(username).value.toString())
-                                                break
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@ManageSisUsersActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                                    }
-                                })
+                                txtTipo.setText(objUser.child("tipo_Usuario").value.toString())
                                 break
                             }
                         }

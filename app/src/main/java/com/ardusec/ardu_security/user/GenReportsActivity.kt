@@ -3,21 +3,20 @@ package com.ardusec.ardu_security.user
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.drawable.ColorDrawable
+import android.graphics.pdf.PdfDocument
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.RadioButton
-import android.widget.TableLayout
-import android.widget.TableRow
+import android.widget.Space
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -37,13 +36,26 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
-
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Paint
+import android.os.Environment
+import android.view.LayoutInflater
+import android.view.View
+import java.io.IOException
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 class GenReportsActivity : AppCompatActivity() {
-    // Estableciendo los elementos de interaccion
+    // Estableciendo los elementos de interaccion; Seccion Formulario de Seleccion
+    private lateinit var linLaySel: LinearLayout
     private lateinit var btnAyuda: ImageButton
     private lateinit var rbSelEst1: RadioButton
     private lateinit var rbSelEst2: RadioButton
@@ -62,9 +74,17 @@ class GenReportsActivity : AppCompatActivity() {
     private lateinit var btnSelFechaFin: Button
     private lateinit var lblHoraFin: TextView
     private lateinit var btnSelHoraFin: Button
-    private lateinit var btnGenGraf: Button
+    private lateinit var btnGenRepoPrev: Button
+    // Estableciendo los elementos de interaccion; Seccion Formulario del Reporte
+    private lateinit var linLayRepo: LinearLayout
+    private lateinit var lblHeadRepo: TextView
+    private lateinit var txtFechaIni: TextView
+    private lateinit var txtHoraIni: TextView
+    private lateinit var txtFechaFin: TextView
+    private lateinit var txtHoraFin: TextView
+    private lateinit var linLayRegs: LinearLayout
     private lateinit var layGraf: LineChart
-    private lateinit var wbRepoPrev: View
+    private lateinit var linlayBtnRepo: LinearLayout
     private lateinit var btnGenRepo: Button
     // Arraylists de valores para los datasets de las graficas
     private val arrCo = ArrayList<Entry>()
@@ -89,6 +109,8 @@ class GenReportsActivity : AppCompatActivity() {
     private var valHoraIni: String = ""
     private var valFechaFin: String = ""
     private var valHoraFin: String = ""
+    // Elementos del reporte
+    private val codSoliRepo = 125
     // Estableciendo el calendario de uso en la zona horaria de la CDMX
     private val calendar = Calendar.getInstance(TimeZone.getTimeZone("CST"))
 
@@ -115,7 +137,8 @@ class GenReportsActivity : AppCompatActivity() {
     private fun setUp() {
         // Titulo de la pantalla
         title = "Reportes"
-        // Relacionando los elementos con su objeto de la interfaz
+        // Relacionando los elementos con su objeto de la interfaz; Seccion Formulario de Seleccion
+        linLaySel = findViewById(R.id.formSelDatosRepo)
         btnAyuda = findViewById(R.id.btnHelpGenRepo)
         rbSelEst1 = findViewById(R.id.rbSelEsta1)
         rbSelEst2 = findViewById(R.id.rbSelEsta2)
@@ -134,10 +157,24 @@ class GenReportsActivity : AppCompatActivity() {
         btnSelFechaFin = findViewById(R.id.btnSelFechFin)
         lblHoraFin = findViewById(R.id.lblHoraFin)
         btnSelHoraFin = findViewById(R.id.btnSelHoraFin)
-        btnGenGraf = findViewById(R.id.btnGenGrafRepo)
+        btnGenRepoPrev = findViewById(R.id.btnGenPrevRepo)
+        // Relacionando los elementos con su objeto de la interfaz; Seccion Formulario del Reporte
+        linLayRepo = findViewById(R.id.linLayReporte)
+        lblHeadRepo = findViewById(R.id.lblHeadRepoPlanti)
+        txtFechaIni = findViewById(R.id.txtFechaIniRepo)
+        txtHoraIni = findViewById(R.id.txtHoraIniRepo)
+        txtFechaFin = findViewById(R.id.txtFechaFinRepo)
+        txtHoraFin = findViewById(R.id.txtHoraFinRepo)
+        linLayRegs = findViewById(R.id.linLayRegistros)
         layGraf = findViewById(R.id.areaGrafRepo)
-        wbRepoPrev = findViewById(R.id.webViewRepoPrev)
+        linlayBtnRepo = findViewById(R.id.linLayBtnRepo)
         btnGenRepo = findViewById(R.id.btnConfGenRepo)
+
+        // Mostrando solo el formulario de seleccion
+        linLaySel.isGone = false
+        linLayRepo.isGone = true
+        linlayBtnRepo.isGone = true
+
         // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
         auth = FirebaseAuth.getInstance()
         database = Firebase.database
@@ -217,6 +254,7 @@ class GenReportsActivity : AppCompatActivity() {
                     }
                     valFechaIni = "$dayCon-$monCon-$year"
                     lblFechaIni.text = valFechaIni
+                    txtFechaIni.text = valFechaIni
                 },
                 anio,
                 mes,
@@ -243,6 +281,7 @@ class GenReportsActivity : AppCompatActivity() {
                     }
                     valHoraIni = "$hourCon:$minCon"
                     lblHoraIni.text = valHoraIni
+                    txtHoraIni.text = valHoraIni
                 },
                 hora,
                 minuto,
@@ -271,6 +310,7 @@ class GenReportsActivity : AppCompatActivity() {
                     }
                     valFechaFin = "$dayCon-$monCon-$year"
                     lblFechaFin.text = valFechaFin
+                    txtFechaFin.text = valFechaFin
                 },
                 anio,
                 mes,
@@ -297,6 +337,7 @@ class GenReportsActivity : AppCompatActivity() {
                     }
                     valHoraFin = "$hourCon:$minCon"
                     lblHoraFin.text = valHoraFin
+                    txtHoraFin.text = valHoraFin
                 },
                 hora,
                 minuto,
@@ -304,10 +345,22 @@ class GenReportsActivity : AppCompatActivity() {
             )
             horaDialog.show()
         }
-        btnGenGraf.setOnClickListener {
+        btnGenRepoPrev.setOnClickListener {
+            linLayRepo.isGone = false
             // Para generar la grafica, se debieron haber llenado todos los valores previos, si no, se lanzará el aviso correspondiente
             if((estaSel != "") && (sensoSel != "") && (valFechaIni != "") && (valHoraIni != "") && (valFechaFin != "") && (valHoraFin != "")){
+                // Generar la grafica del reporte en base a la seleccion
                 genGraficaRepo()
+                // AlertDialog para ocultar el formulario de seleccion de elementos para el filtrado
+                avisoRepo()
+
+                // Dado que se almacenaá el reporte, se debera verificar si se conceden los permisos de guardado, previo al boton de generacion de reporte
+                if(checarPermisos()){
+                    // Si se autorizaron los permisos previamente, se mostrara un aviso, sino se solicitaran
+                    Toast.makeText(this@GenReportsActivity, "Permiso de Almacenamiento Concedido...", Toast.LENGTH_SHORT).show()
+                }else{
+                    pedirPermiso()
+                }
             }else{
                 if((estaSel == "") && (sensoSel == "") && (valFechaIni == "") && (valHoraIni == "") && (valFechaFin == "") && (valHoraFin == "")){
                     avisoGenRepo("Favor de seleccionar TODOS los valores solicitados")
@@ -322,7 +375,8 @@ class GenReportsActivity : AppCompatActivity() {
             }
         }
         btnGenRepo.setOnClickListener {
-
+            // Una vez garantizados los permisos, se procedera con la generacion del PDF
+            generarReportePDF()
         }
     }
 
@@ -427,6 +481,25 @@ class GenReportsActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun avisoRepo(){
+        val avisoReporte = AlertDialog.Builder(this)
+        avisoReporte.setTitle("Aviso")
+        avisoReporte.setMessage("Al continuar con la generación del reporte, el formulario de selección se ocultará")
+        avisoReporte.setPositiveButton("Generar Vista Previa") { _, _ ->
+            linLaySel.isGone = true
+            linLayRepo.isGone = false
+            linlayBtnRepo.isGone = false
+        }
+        avisoReporte.setNegativeButton("Cancelar"){ dialog, _ ->
+            dialog.cancel()
+            linLaySel.isGone = false
+            linLayRepo.isGone = true
+            linlayBtnRepo.isGone = true
+        }
+        val popUpReporte: AlertDialog = avisoReporte.create()
+        popUpReporte.show()
+    }
+
     private fun evalFecha(fechCmp: String, datosFechIni: String, datosFechFin: String): Boolean{
         // Formato de fecha usado para comparar las fechas textuales
         val fechFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
@@ -434,7 +507,7 @@ class GenReportsActivity : AppCompatActivity() {
         val dateIni = fechFormat.parse(datosFechIni); val dateFin = fechFormat.parse(datosFechFin); val dateCmp = fechFormat.parse(fechCmp)
         // Comparaciones de la fecha obtenida, con la fecha de inicio y la fecha de fin
         val cmpIni = dateCmp?.compareTo(dateIni); val cmpFin = dateCmp?.compareTo(dateFin)
-
+        // Retorna true si la fecha esta dentro del rango seleccionado
         return (cmpIni!!>=0) && (cmpFin!!<=0)
     }
 
@@ -455,6 +528,9 @@ class GenReportsActivity : AppCompatActivity() {
                                     override fun onDataChange(snapshot1: DataSnapshot) {
                                         for(objSen in snapshot1.children){
                                             if(objSen.child("estacion_Rel").value.toString() == estaKey){
+                                                // Obteniendo el nombre del sensor seleccionado para el reporte
+                                                val nomSensoRepo = lblHeadRepo.text.toString() + objSen.child("nom_Sen").value.toString()
+                                                lblHeadRepo.text = nomSensoRepo
                                                 // Obtener el tipo del sensor de la estacion para generar grafica solo si es sensor de gases
                                                 val tipo = objSen.child("tipo").value.toString()
                                                 when(tipo){
@@ -474,7 +550,11 @@ class GenReportsActivity : AppCompatActivity() {
                                                                             // Para cada registro, se evaluará si este fue obtenido dentro del rango de fechas establecidos
                                                                             val fechObte = objRegi.key.toString().split(" ")[0]+ " " + objRegi.key.toString().split(" ")[1]
                                                                             if(evalFecha(fechObte, fechIni, fechFin)){
+                                                                                // Agregando el valor del registro al dataset de la grafica
                                                                                 arrCo.add(Entry(contePosX, objRegi.child("co").value.toString().toFloat()))
+                                                                                // Agregando el registro a la plantilla del reporte
+                                                                                addRegistro(fechObte, "%.4f".format(objRegi.child("co").value.toString().toFloat()))
+                                                                                // Incrementar el contador de las posiciones X para el dataset de la grafica
                                                                                 contePosX += 3
                                                                             }
                                                                         }
@@ -496,7 +576,11 @@ class GenReportsActivity : AppCompatActivity() {
                                                                             // Para cada registro, se evaluará si este fue obtenido dentro del rango de fechas establecidos
                                                                             val fechObte = objRegi.key.toString().split(" ")[0]+ " " + objRegi.key.toString().split(" ")[1]
                                                                             if(evalFecha(fechObte, fechIni, fechFin)){
+                                                                                // Agregando el valor del registro al dataset de la grafica
                                                                                 arrGLP.add(Entry(contePosX, objRegi.child("lpg").value.toString().toFloat()))
+                                                                                // Agregando el registro a la plantilla del reporte
+                                                                                addRegistro(fechObte, "%.4f".format(objRegi.child("lpg").value.toString().toFloat()))
+                                                                                // Incrementar el contador de las posiciones X para el dataset de la grafica
                                                                                 contePosX += 3
                                                                             }
                                                                         }
@@ -518,7 +602,11 @@ class GenReportsActivity : AppCompatActivity() {
                                                                             // Para cada registro, se evaluará si este fue obtenido dentro del rango de fechas establecidos
                                                                             val fechObte = objRegi.key.toString().split(" ")[0]+ " " + objRegi.key.toString().split(" ")[1]
                                                                             if(evalFecha(fechObte, fechIni, fechFin)){
+                                                                                // Agregando el valor del registro al dataset de la grafica
                                                                                 arrProp.add(Entry(contePosX, objRegi.child("propane").value.toString().toFloat()))
+                                                                                // Agregando el registro a la plantilla del reporte
+                                                                                addRegistro(fechObte, "%.4f".format(objRegi.child("propane").value.toString().toFloat()))
+                                                                                // Incrementar el contador de las posiciones X para el dataset de la grafica
                                                                                 contePosX += 3
                                                                             }
                                                                         }
@@ -540,7 +628,11 @@ class GenReportsActivity : AppCompatActivity() {
                                                                             // Para cada registro, se evaluará si este fue obtenido dentro del rango de fechas establecidos
                                                                             val fechObte = objRegi.key.toString().split(" ")[0]+ " " + objRegi.key.toString().split(" ")[1]
                                                                             if(evalFecha(fechObte, fechIni, fechFin)){
+                                                                                // Agregando el valor del registro al dataset de la grafica
                                                                                 arrHumo.add(Entry(contePosX, objRegi.child("smoke").value.toString().toFloat()))
+                                                                                // Agregando el registro a la plantilla del reporte
+                                                                                addRegistro(fechObte, "%.4f".format(objRegi.child("smoke").value.toString().toFloat()))
+                                                                                // Incrementar el contador de las posiciones X para el dataset de la grafica
                                                                                 contePosX += 3
                                                                             }
                                                                         }
@@ -589,30 +681,171 @@ class GenReportsActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPlantilla(){
-        // Instanciando la plantilla
-        val inflater = LayoutInflater.from(this@GenReportsActivity)
-        val view = inflater.inflate(R.layout.plantilla_reporte, null)
-        val tablaRegistros = view.findViewById<TableLayout>(R.id.tblLayRegistros)
-
-        val nFila = TableRow(this@GenReportsActivity)
-        nFila.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.WRAP_CONTENT)
-        nFila.layout(dpToPx(3),dpToPx(3),dpToPx(3),dpToPx(3))
-
-        val nRegistro = TextView(this@GenReportsActivity)
-        nRegistro.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        nRegistro.setText("Prueba de Agregado")
-        nRegistro.gravity = Gravity.CENTER
-        nRegistro.setTextColor(ContextCompat.getColor(this,R.color.negro))
-        nRegistro.textSize = spToPx(15).toFloat()
+    private fun addRegistro(fechaRegistro: String, valRegi: String){
+        // Crear el contenedor linearlayout horizontal
+        val nLinLay = LinearLayout(this@GenReportsActivity)
+        nLinLay.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        nLinLay.orientation = LinearLayout.HORIZONTAL
+        // Crear los textview, primero la fecha
+        val nTextFecha = TextView(this@GenReportsActivity)
+        nTextFecha.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1F)
+        nTextFecha.gravity = Gravity.CENTER
+        nTextFecha.setTextColor(ContextCompat.getColor(this@GenReportsActivity,R.color.negro))
+        nTextFecha.textSize = spToPx(6F)
+        nTextFecha.text = fechaRegistro
+        // Despues el valor del registro
+        val nTextRegi = TextView(this@GenReportsActivity)
+        nTextRegi.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1F)
+        nTextRegi.setPadding(dpToPx(60F).toInt(), 0, dpToPx(10F).toInt(), 0)
+        nTextRegi.setTextColor(ContextCompat.getColor(this@GenReportsActivity,R.color.negro))
+        nTextRegi.textSize = spToPx(6F)
+        nTextRegi.text = valRegi
+        // Agregar un espacio
+        val nEspacio = Space(this@GenReportsActivity)
+        nEspacio.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(5F).toInt())
+        // Agregar las vistas al linearLayout
+        nLinLay.addView(nTextFecha)
+        nLinLay.addView(nTextRegi)
+        // Agregando al layout de registros el nuevo registro y el espacio
+        linLayRegs.addView(nLinLay)
+        linLayRegs.addView(nEspacio)
     }
 
     // Funciones de Conversiones
-    private fun dpToPx(dp: Int): Int {
-        return TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), this@GenReportsActivity.resources.displayMetrics ).toInt()
+    private fun dpToPx(dp: Float): Float {
+        return dp * resources.displayMetrics.density
     }
 
-    private fun spToPx(sp: Int): Int {
-        return TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), this@GenReportsActivity.resources.displayMetrics ).toInt()
+    private fun spToPx(sp: Float): Float {
+        return sp * resources.displayMetrics.scaledDensity
+    }
+
+    // Fecha reporte
+    private fun fechaReporte(): String {
+        // Creando la fecha del cambio
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("CST"))
+        val dia = calendar.get(Calendar.DAY_OF_MONTH); val mes = calendar.get(Calendar.MONTH) + 1; val year = calendar.get(Calendar.YEAR)
+        val hora = calendar.get(Calendar.HOUR_OF_DAY); val minuto = calendar.get(Calendar.MINUTE)
+
+        return "${transFecha(dia)}-${transFecha(mes)}-${transFecha(year)}_${transFecha(hora)}:${transFecha(minuto)}"
+    }
+
+    // Transformacion de fecha agregando 0 si es menor de 10
+    private fun transFecha(valor: Int):String {
+        return if(valor < 10){
+            "0$valor"
+        }else{
+            valor.toString()
+        }
+    }
+
+    // Elementos de la creacion del reporte
+    fun checarPermisos(): Boolean {
+        // on below line we are creating a variable for both of our permissions.
+        // on below line we are creating a variable for
+        // writing to external storage permission
+        val writeStoragePermission = ContextCompat.checkSelfPermission( this@GenReportsActivity, WRITE_EXTERNAL_STORAGE )
+
+        // on below line we are creating a variable
+        // for reading external storage permission
+        val readStoragePermission = ContextCompat.checkSelfPermission( this@GenReportsActivity, READ_EXTERNAL_STORAGE )
+
+        // on below line we are returning true if both the
+        // permissions are granted and returning false
+        // if permissions are not granted.
+        return writeStoragePermission == PackageManager.PERMISSION_GRANTED && readStoragePermission == PackageManager.PERMISSION_GRANTED
+    }
+
+    // on below line we are creating a function to request permission.
+    fun pedirPermiso(){
+        // on below line we are requesting read and write to
+        // storage permission for our application.
+        ActivityCompat.requestPermissions(this@GenReportsActivity, arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE), codSoliRepo )
+    }
+
+    // on below line we are calling
+    // on request permission result.
+    override fun onRequestPermissionsResult( requestCode: Int, permissions: Array<out String>, grantResults: IntArray ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // on below line we are checking if the
+        // request code is equal to permission code.
+        if (requestCode == codSoliRepo) {
+            // on below line we are checking if result size is > 0
+            if (grantResults.isNotEmpty()) {
+                // on below line we are checking
+                // if both the permissions are granted.
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    // if permissions are granted we are displaying a toast message.
+                    Toast.makeText(this@GenReportsActivity, "Permiso Concedido...", Toast.LENGTH_SHORT).show()
+                } else {
+                    // if permissions are not granted we are
+                    // displaying a toast message as permission denied.
+                    Toast.makeText(this@GenReportsActivity, "Permiso Denegado..", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun retorno(){
+        return this.onBackPressedDispatcher.onBackPressed()
+    }
+
+    private fun generarReportePDF(){
+        // "Inflar la interfaz", obteniendo las dimensiones de la vista de la activity
+        val vista = LayoutInflater.from(this@GenReportsActivity).inflate(R.layout.user_activity_gen_reports, linLayRepo)
+        val layoutWidth = linLayRepo.width
+        val layoutHeight = linLayRepo.height
+        // Estableciendo el tamaño de la vista y creando el layout del documento en base a este tamaño
+        vista.measure(View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(layoutHeight, View.MeasureSpec.EXACTLY))
+        vista.layout(0, 0, layoutWidth, layoutHeight)
+
+        // Crear el documento PDF
+        val documento = PdfDocument()
+        // Obteniendo el ancho y alto de la vista
+        val vistaWidth = vista.measuredWidth
+        val vistaHeight = vista.measuredHeight
+        // Crear el pageInfo para establecer las caracteristicas de las paginas del PDF
+        val infoPagi = PdfDocument.PageInfo.Builder(vistaWidth, vistaHeight, 1).create()
+        // Crear una nueva pagina
+        val pagina = documento.startPage(infoPagi)
+        // Crear un canvas para dibujar en la pagina
+        val canvas = pagina.canvas
+        // Crear un objeto paint para establecer el estilo de la vista
+        val paint = Paint()
+        paint.color = ContextCompat.getColor(this,R.color.blanco)
+        // Dibujar la vista en el canvas
+        vista.draw(canvas)
+        // Finalizar la pagina
+        documento.finishPage(pagina)
+
+        // Especificar la ruta de descargas, el nombre de archivo de guardado y la ruta completa de guardado
+        val rutaDescarga = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val nombre = "Reporte Ardu_Security ${fechaReporte()}.pdf"
+        val rutaGuardado = File(rutaDescarga, nombre)
+
+        try {
+            // Guardando el documento
+            val archivo = FileOutputStream(rutaGuardado)
+            documento.writeTo(archivo)
+            documento.close()
+            archivo.close()
+            // Parchado de muestra de formularios
+            linLaySel.isGone = true
+            linLayRepo.isGone = false
+            linlayBtnRepo.isGone = true
+            // Mensaje de descarga completada con exito
+            Toast.makeText(this@GenReportsActivity, "El reporte ha sido guardado satisfactoriamente en sus descargas", Toast.LENGTH_SHORT).show()
+            // Retornando al dashboard
+            Timer().schedule(2000) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    retorno()
+                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                    finish()
+                }
+            }
+        }catch (exception: IOException){
+            Toast.makeText(this@GenReportsActivity, "Error: No se pudo crear el reporte; razon:\n${exception.printStackTrace()}", Toast.LENGTH_SHORT).show()
+        }
     }
 }

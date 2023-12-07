@@ -48,7 +48,7 @@ class StationActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var user: String
     private lateinit var estaKey: String
-    private lateinit var nomEsta: String
+    private var nomEsta = ""
     private var dirIP = ""
     private var camURL = ""
     // Instancias de Firebase; Database y ReferenciaDB

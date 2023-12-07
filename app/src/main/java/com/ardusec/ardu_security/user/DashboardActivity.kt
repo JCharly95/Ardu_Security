@@ -150,7 +150,7 @@ class DashboardActivity : AppCompatActivity() {
         }
         btnCerSes.setOnClickListener {
             // Cerrar Sesion en Firebase
-            FirebaseAuth.getInstance().signOut()
+            auth.signOut()
             // Lanzar la app hacia la primera ventana
             avisoDash("Cerrando Sesion... Espere un momento")
             Timer().schedule(1500){
