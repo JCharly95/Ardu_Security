@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <!--Permisos de Accesos al Dispositivo: Internet, Estado de la conexion, Lectura de Archivos, Escritura de Archivos-->
+    <!-- Permisos de Accesos al Dispositivo: Internet, Estado de la conexion, Lectura de Archivos, Escritura de Archivos -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -19,13 +18,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".admin.ManageSisStationsActivity"
+            android:exported="false" />
+        <activity
             android:name=".admin.ManageSisUsersActivity"
             android:exported="false"
-            android:screenOrientation="portrait"  />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".admin.ManageSisActivity"
             android:exported="false"
-            android:screenOrientation="portrait"  />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".EditDataSpActivity"
             android:exported="false"

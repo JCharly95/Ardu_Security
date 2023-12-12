@@ -90,7 +90,7 @@ class ManageSisUsersActivity : AppCompatActivity() {
 
     private fun addListeners(){
         //Agregar los listener
-        spUsuarios.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spUsuarios.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -228,26 +228,27 @@ class ManageSisUsersActivity : AppCompatActivity() {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         for(objUser in snapshot.children){
                                             if(objUser.key.toString() == userKey){
-                                                objUser.ref.removeValue().addOnSuccessListener {
+                                                val removeUser = objUser.ref.removeValue()
+                                                removeUser.addOnSuccessListener {
+                                                    lifecycleScope.launch(Dispatchers.Main){
+                                                        val msg = "El usuario $userKey fue eliminado del sistema ${objSis.child("nombre_Sis").value} \n\n" +
+                                                                "Favor de notificar al usuario por medios externos a la aplicacion en caso de que no tenga otro sistema relacionado"
+                                                        avisoManSis(msg)
+                                                    }
+                                                    Timer().schedule(1500){
                                                         lifecycleScope.launch(Dispatchers.Main){
-                                                            val msg = "El usuario $userKey fue eliminado del sistema ${objSis.child("nombre_Sis").value} \n\n" +
-                                                                    "Favor de notificar al usuario por medios externos a la aplicacion en caso de que no tenga otro sistema relacionado"
-                                                            avisoManSis(msg)
-                                                        }
-                                                        Timer().schedule(1500){
-                                                            lifecycleScope.launch(Dispatchers.Main){
-                                                                Intent(this@ManageSisUsersActivity, DashboardActivity::class.java).apply {
-                                                                    putExtra("username", userKey)
-                                                                    putExtra("tipo", txtTipo.text.toString())
-                                                                    startActivity(this)
-                                                                    finish()
-                                                                }
+                                                            Intent(this@ManageSisUsersActivity, DashboardActivity::class.java).apply {
+                                                                putExtra("username", userKey)
+                                                                putExtra("tipo", txtTipo.text.toString())
+                                                                startActivity(this)
+                                                                finish()
                                                             }
                                                         }
                                                     }
-                                                    .addOnFailureListener {
-                                                        Toast.makeText(this@ManageSisUsersActivity,"Error: No se pudo remover al usuario del sistema",Toast.LENGTH_SHORT).show()
-                                                    }
+                                                }
+                                                removeUser.addOnFailureListener {
+                                                    Toast.makeText(this@ManageSisUsersActivity,"Error: No se pudo remover al usuario del sistema",Toast.LENGTH_SHORT).show()
+                                                }
                                                 break
                                             }
                                         }
