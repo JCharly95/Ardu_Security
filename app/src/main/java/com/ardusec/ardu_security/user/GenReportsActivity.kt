@@ -484,7 +484,7 @@ class GenReportsActivity : AppCompatActivity() {
     private fun avisoRepo(){
         val avisoReporte = AlertDialog.Builder(this)
         avisoReporte.setTitle("Aviso")
-        avisoReporte.setMessage("Al continuar con la generación del reporte, el formulario de selección se ocultará")
+        avisoReporte.setMessage("Al continuar con la generación del reporte,\nel formulario de selección se ocultará")
         avisoReporte.setPositiveButton("Generar Vista Previa") { _, _ ->
             linLaySel.isGone = true
             linLayRepo.isGone = false
@@ -681,6 +681,7 @@ class GenReportsActivity : AppCompatActivity() {
         }
     }
 
+
     private fun addRegistro(fechaRegistro: String, valRegi: String){
         // Crear el contenedor linearlayout horizontal
         val nLinLay = LinearLayout(this@GenReportsActivity)
@@ -711,7 +712,7 @@ class GenReportsActivity : AppCompatActivity() {
         linLayRegs.addView(nEspacio)
     }
 
-    // Funciones de Conversiones
+    // Funciones de conversion
     private fun dpToPx(dp: Float): Float {
         return dp * resources.displayMetrics.density
     }
@@ -740,47 +741,33 @@ class GenReportsActivity : AppCompatActivity() {
     }
 
     // Elementos de la creacion del reporte
-    fun checarPermisos(): Boolean {
-        // on below line we are creating a variable for both of our permissions.
-        // on below line we are creating a variable for
-        // writing to external storage permission
+    private fun checarPermisos(): Boolean {
+        // Constante de evaluacion para el checar permiso de escritura en el dispositivo
         val writeStoragePermission = ContextCompat.checkSelfPermission( this@GenReportsActivity, WRITE_EXTERNAL_STORAGE )
-
-        // on below line we are creating a variable
-        // for reading external storage permission
+        // Constante de evaluacion para el checar permiso de lectura en el dispositivo
         val readStoragePermission = ContextCompat.checkSelfPermission( this@GenReportsActivity, READ_EXTERNAL_STORAGE )
-
-        // on below line we are returning true if both the
-        // permissions are granted and returning false
-        // if permissions are not granted.
+        // Regresa un true si se cuentan con ambos permisos
         return writeStoragePermission == PackageManager.PERMISSION_GRANTED && readStoragePermission == PackageManager.PERMISSION_GRANTED
     }
 
-    // on below line we are creating a function to request permission.
-    fun pedirPermiso(){
-        // on below line we are requesting read and write to
-        // storage permission for our application.
+    // Peticion de permisos, se hace un request permision, similar al startActivityResult
+    private fun pedirPermiso(){
         ActivityCompat.requestPermissions(this@GenReportsActivity, arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE), codSoliRepo )
     }
 
-    // on below line we are calling
-    // on request permission result.
     override fun onRequestPermissionsResult( requestCode: Int, permissions: Array<out String>, grantResults: IntArray ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // on below line we are checking if the
-        // request code is equal to permission code.
+
         if (requestCode == codSoliRepo) {
-            // on below line we are checking if result size is > 0
+            // Se evalua si el arreglo de los permisos no esta vacio
             if (grantResults.isNotEmpty()) {
-                // on below line we are checking
-                // if both the permissions are granted.
+                // Se evalua si ambos permisos estan autorizados; READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    // if permissions are granted we are displaying a toast message.
-                    Toast.makeText(this@GenReportsActivity, "Permiso Concedido...", Toast.LENGTH_SHORT).show()
+                    // Si los permisos fueron concedidos, se mostrara el mensaje de permisos concedidos
+                    Toast.makeText(this@GenReportsActivity, "Permisos Concedidos...", Toast.LENGTH_SHORT).show()
                 } else {
-                    // if permissions are not granted we are
-                    // displaying a toast message as permission denied.
-                    Toast.makeText(this@GenReportsActivity, "Permiso Denegado..", Toast.LENGTH_SHORT).show()
+                    // En caso contrario, se mostrara el mensaje de permisos denegados y se terminara el activity permisions
+                    Toast.makeText(this@GenReportsActivity, "Permisos Denegados...", Toast.LENGTH_SHORT).show()
                     finish()
                 }
             }
@@ -792,7 +779,7 @@ class GenReportsActivity : AppCompatActivity() {
     }
 
     private fun generarReportePDF(){
-        // "Inflar la interfaz", obteniendo las dimensiones de la vista de la activity
+        // "Inflar la interfaz", obteniendo las dimensiones del layout del reporte en la vista de la activity
         val vista = LayoutInflater.from(this@GenReportsActivity).inflate(R.layout.user_activity_gen_reports, linLayRepo)
         val layoutWidth = linLayRepo.width
         val layoutHeight = linLayRepo.height
@@ -825,9 +812,11 @@ class GenReportsActivity : AppCompatActivity() {
         val rutaGuardado = File(rutaDescarga, nombre)
 
         try {
-            // Guardando el documento
+            // Guardando el documento; Creando el objeto de archivo de salida
             val archivo = FileOutputStream(rutaGuardado)
+            // Escribiendo el PDF en el archivo de salida
             documento.writeTo(archivo)
+            // Cerrando la elaboracion del documento PDF y el archivo de salida
             documento.close()
             archivo.close()
             // Parchado de muestra de formularios
@@ -837,7 +826,7 @@ class GenReportsActivity : AppCompatActivity() {
             // Mensaje de descarga completada con exito
             Toast.makeText(this@GenReportsActivity, "El reporte ha sido guardado satisfactoriamente en sus descargas", Toast.LENGTH_SHORT).show()
             // Retornando al dashboard
-            Timer().schedule(2000) {
+            Timer().schedule(1500) {
                 lifecycleScope.launch(Dispatchers.Main) {
                     retorno()
                     overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)

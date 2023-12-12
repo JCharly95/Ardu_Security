@@ -167,28 +167,28 @@
     <!-- Strings de la vista de manejo de sistema admin-->
     <string name="headMenSis">Gestion del Sistema</string>
     <string name="btnUpSisNam">Cambiar\nNombre</string>
-    <string name="btnUpSisAla">Gestionar\nAlarma</string>
-    <string name="btnUpSisSta">Cambiar\nEstaciones</string>
+    <string name="btnUpSisSta">Administrar\nEstaciones</string>
     <string name="btnUpSisUse">Administrar\nUsuarios</string>
+    <string name="btnUpSisAla">Gestionar\nAlarma</string>
     <!-- Strings de la vista de manejo de usuarios admin-->
     <string name="headMenSisUs">Gestion de Usuarios</string>
     <string name="lblListUsSis">Estos son los usuarios pertenencientes al sistema:</string>
     <string-array name="lstUsersSis">
-        <item>Seleccione el usuario en cuestion</item>
+        <item>Seleccione el usuario…</item>
     </string-array>
     <string name="lblTipoUsSel">Tipo:</string>
     <string name="btnDelSisUser">Eliminar\nUsuario\ndel Sistema</string>
-    <!-- Strings de la vista de manejo de alarmas admin-->
-    <string name="headManAla">Gestion de Alarma</string>
-    <string name="lblAlarma">Alarma Actual:</string>
-    <string name="btnAlaCrea">Crear y Enlazar\nAlarma</string>
-    <string name="btnAlaChg">Cambiar\nAlarma</string>
-    <string name="lblHeadAlaChg">Cambio de Alarma</string>
-    <string name="lblMsgAlaChg">Estas son las alarmas disponibles para seleccion:</string>
-    <string-array name="lstAlarmas">
-        <item>Seleccione su nueva alarma</item>
+    <!-- Strings de la vista de manejo de estaciones admin-->
+    <string name="headMenSisSta">Gestion de Estaciones</string>
+    <string name="lblListStaSis">Estas son las estaciones pertenencientes al sistema:</string>
+    <string-array name="lstStaSis">
+        <item>Seleccione la estación…</item>
     </string-array>
-    <string name="btnConfAlaChg">Confirmar seleccion y\nrealizar cambio</string>
+    <string name="lblDirEsta">Direcion IP:</string>
+    <string name="btnHabiChgNomEsta">Habilitar\nActualización\ndel Nombre</string>
+    <string name="btnChgNomEsta">Confirmar\nActualización\ndel Nombre</string>
+    <string name="btnHabiChgDirEsta">Habilitar\nActualización\nde la\nDirección IP</string>
+    <string name="btnChgDirEsta">Confirmar\nActualización\nde la\nDirección IP</string>
     <!-- Strings de la plantilla de reportes-->
     <string name="lblHeadRepo">Reporte del Sensor:\n</string>
     <string name="lblRangoRepo">Registros entre:</string>

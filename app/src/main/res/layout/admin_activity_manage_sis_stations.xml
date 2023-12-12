@@ -6,10 +6,10 @@
     android:background="@color/azulAlicia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admin.ManageSisUsersActivity">
+    tools:context=".admin.ManageSisStationsActivity">
 
     <ScrollView
-        android:id="@+id/AdminMenUsView"
+        android:id="@+id/AdminMenStaView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="20dp"
@@ -24,11 +24,11 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/lblHeadMenSisUs"
+                android:id="@+id/lblHeadMenSisSta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/headMenSisUs"
+                android:text="@string/headMenSisSta"
                 android:textColor="@color/negro"
                 android:textSize="25sp" />
 
@@ -37,10 +37,10 @@
                 android:layout_height="10dp" />
 
             <TextView
-                android:id="@+id/lblMsgMenSisUs"
+                android:id="@+id/lblMsgMenSisSta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lblListUsSis"
+                android:text="@string/lblListStaSis"
                 android:textColor="@color/negro"
                 android:gravity="center"
                 android:textSize="18sp"
@@ -51,7 +51,7 @@
                 android:layout_height="5dp" />
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/linLaySistemUsers"
+                android:id="@+id/linLaySistemStations"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:strokeWidth="1dp"
@@ -59,13 +59,13 @@
                 app:cardCornerRadius="4dp">
 
                 <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spSistemUsers"
+                    android:id="@+id/spSistemStations"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:spinnerMode="dropdown"
                     android:textColor="@color/negro"
                     android:dropDownWidth="wrap_content"
-                    android:entries="@array/lstUsersSis"/>
+                    android:entries="@array/lstStaSis"/>
             </com.google.android.material.card.MaterialCardView>
 
             <Space
@@ -73,7 +73,7 @@
                 android:layout_height="10dp" />
 
             <TextView
-                android:id="@+id/lblAdminNomSel"
+                android:id="@+id/lblNomSelStation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/lblName"
@@ -82,7 +82,7 @@
                 android:visibility="visible" />
 
             <EditText
-                android:id="@+id/txtAdminNomSel"
+                android:id="@+id/txtNomSelStation"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:ems="10"
@@ -98,48 +98,23 @@
                 android:layout_height="10dp" />
 
             <TextView
-                android:id="@+id/lblAdminUserSel"
+                android:id="@+id/lblDirIPSelStation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lblUser"
+                android:text="@string/lblDirEsta"
                 android:textColor="@color/negro"
                 android:textSize="20sp"
                 android:visibility="visible" />
 
             <EditText
-                android:id="@+id/txtAdminUserSel"
+                android:id="@+id/txtDirIPSelStation"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:ems="10"
                 android:inputType="text"
                 android:autofillHints="text"
                 android:textColor="@color/negro"
-                android:hint="@string/lblUser"
-                android:textColorHint="@color/darkgray"
-                android:enabled="false"/>
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <TextView
-                android:id="@+id/lblAdminTipoSel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lblTipoUsSel"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible" />
-
-            <EditText
-                android:id="@+id/txtAdminTipoSel"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:ems="10"
-                android:inputType="text"
-                android:autofillHints="text"
-                android:textColor="@color/negro"
-                android:hint="@string/lblTipoUsSel"
+                android:hint="@string/lblDirEsta"
                 android:textColorHint="@color/darkgray"
                 android:enabled="false"/>
 
@@ -159,13 +134,13 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnEditTipUser"
+                        android:id="@+id/btnHabiChgNomEsta"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_tipo_usuario"
-                        android:contentDescription="@string/btnEditTipUser" />
+                        app:srcCompat="@drawable/editar_nombre_estacion"
+                        android:contentDescription="@string/btnHabiChgNomEsta" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -173,7 +148,7 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnEditTipUser"
+                        android:text="@string/btnHabiChgNomEsta"
                         android:textColor="@color/negro" />
                 </LinearLayout>
 
@@ -183,18 +158,57 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
+                    android:id="@+id/linLayChgNomEsta"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <ImageButton
-                        android:id="@+id/btnDelSisUs"
+                        android:id="@+id/btnChgNomEsta"
                         android:layout_width="124dp"
                         android:layout_height="match_parent"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/eliminar_usuario_sistema"
-                        android:contentDescription="@string/btnDelSisUser" />
+                        app:srcCompat="@drawable/confirmar_nombre_estacion"
+                        android:contentDescription="@string/btnChgNomEsta" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:gravity="center"
+                        android:text="@string/btnChgNomEsta"
+                        android:textColor="@color/negro"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageButton
+                        android:id="@+id/btnHabiChgDirEsta"
+                        android:layout_width="124dp"
+                        android:layout_height="124dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/editar_direccion_ip"
+                        android:contentDescription="@string/btnHabiChgDirEsta" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -202,14 +216,48 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnDelSisUser"
-                        android:textColor="@color/negro"/>
+                        android:text="@string/btnHabiChgDirEsta"
+                        android:textColor="@color/negro" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/linLayChgDirEsta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <ImageButton
+                        android:id="@+id/btnChgDirEsta"
+                        android:layout_width="124dp"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/confirmar_direccion_ip"
+                        android:contentDescription="@string/btnChgDirEsta" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:gravity="center"
+                        android:text="@string/btnChgDirEsta"
+                        android:textColor="@color/negro"
+                        android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
 
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="20dp" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

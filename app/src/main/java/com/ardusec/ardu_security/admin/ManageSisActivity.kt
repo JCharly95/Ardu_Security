@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 class ManageSisActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var btnSisChgNam: ImageButton
-    private lateinit var btnSisAla: ImageButton
     private lateinit var btnSisChgSta: ImageButton
     private lateinit var btnAdminUs: ImageButton
     // Elementos del bundle de usuario
@@ -65,7 +64,6 @@ class ManageSisActivity : AppCompatActivity() {
         title = "Menu del Administrador del Sistema"
         // Relacionando los elementos con su objeto de la interfaz
         btnSisChgNam = findViewById(R.id.btnSisNam)
-        btnSisAla = findViewById(R.id.btnSisAla)
         btnSisChgSta = findViewById(R.id.btnSisSta)
         btnAdminUs = findViewById(R.id.btnSisGesUs)
         // Inicializando instancia hacia el nodo raiz de la BD
@@ -79,7 +77,7 @@ class ManageSisActivity : AppCompatActivity() {
                 val getSisData = async {
                     // Creando la referencia de la coleccion de sistemas en la BD
                     ref = database.getReference("Sistemas")
-                    // Agregando un ValueEventListener para operar con las instancias de pregunta
+                    // Agregando un ValueEventListener para operar con las instancias de los sistemas
                     ref.addListenerForSingleValueEvent(object: ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for (objSis in dataSnapshot.children) {
@@ -107,16 +105,16 @@ class ManageSisActivity : AppCompatActivity() {
                 val getSisData = async {
                     // Creando la referencia de la coleccion de sistemas en la BD
                     ref = database.getReference("Sistemas")
-                    // Agregando un ValueEventListener para operar con las instancias de pregunta
+                    // Agregando un ValueEventListener para operar con las instancias de los sistemas
                     ref.addListenerForSingleValueEvent(object: ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for (objSis in dataSnapshot.children) {
                                 if(objSis.key.toString() == sistema){
-                                    val menAdUserActi = Intent(this@ManageSisActivity, ManageSisUsersActivity::class.java).apply {
+                                    val menGesUserActi = Intent(this@ManageSisActivity, ManageSisUsersActivity::class.java).apply {
                                         putExtra("sistema", sistema)
                                         putExtra("usuario", user)
                                     }
-                                    startActivity(menAdUserActi)
+                                    startActivity(menGesUserActi)
                                     break
                                 }
                             }
@@ -129,13 +127,32 @@ class ManageSisActivity : AppCompatActivity() {
                 getSisData.await()
             }
         }
-        btnSisAla.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-
-            }
-        }
         btnSisChgSta.setOnClickListener {
-
+            lifecycleScope.launch(Dispatchers.IO) {
+                val getSisData = async {
+                    // Creando la referencia de la coleccion de sistemas en la BD
+                    ref = database.getReference("Sistemas")
+                    // Agregando un ValueEventListener para operar con las instancias de los sistemas
+                    ref.addListenerForSingleValueEvent(object: ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            for (objSis in dataSnapshot.children) {
+                                if(objSis.key.toString() == sistema){
+                                    val menGesStaActi = Intent(this@ManageSisActivity, ManageSisStationsActivity::class.java).apply {
+                                        putExtra("sistema", sistema)
+                                        putExtra("usuario", user)
+                                    }
+                                    startActivity(menGesStaActi)
+                                    break
+                                }
+                            }
+                        }
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Toast.makeText(this@ManageSisActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
+                getSisData.await()
+            }
         }
     }
 }
