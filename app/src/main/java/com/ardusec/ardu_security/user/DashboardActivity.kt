@@ -1,18 +1,23 @@
 package com.ardusec.ardu_security.user
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import com.ardusec.ardu_security.MainActivity
+import com.ardusec.ardu_security.ManualUserActivity
 import com.ardusec.ardu_security.R
 import com.ardusec.ardu_security.admin.ManageSisActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -23,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -49,6 +55,15 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
+    private lateinit var notifications: FirebaseMessaging
+    // Verificando el permiso de notificaciones de la aplicacion
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(this@DashboardActivity, "Permiso de notificaciones concedido", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this@DashboardActivity,"Ardu Security no puede enviarle notificaciones hasta que autorice el permiso adecuado",Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,9 +106,10 @@ class DashboardActivity : AppCompatActivity() {
         linLayGesSis = findViewById(R.id.linLayBtnGesSis)
         btnMenGesSis = findViewById(R.id.btnGesSis)
         btnCerSes = findViewById(R.id.btnCerrSes)
-        // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
-        auth = FirebaseAuth.getInstance()
+        // Inicializando instancia hacia el nodo raiz de la BD, la de la autenticacion y el servicio de mensajes
         database = Firebase.database
+        auth = FirebaseAuth.getInstance()
+        notifications = FirebaseMessaging.getInstance()
         // Inicializando las variables de tipo y sistema
         tipo = ""
         sistema = ""
@@ -138,7 +154,9 @@ class DashboardActivity : AppCompatActivity() {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnMenManu.setOnClickListener {
-
+            val manuActi = Intent(this@DashboardActivity, ManualUserActivity::class.java)
+            startActivity(manuActi)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnMenGesSis.setOnClickListener {
             val gesSisActi = Intent(this@DashboardActivity, ManageSisActivity::class.java).apply {
@@ -152,7 +170,8 @@ class DashboardActivity : AppCompatActivity() {
             // Cerrar Sesion en Firebase
             auth.signOut()
             // Lanzar la app hacia la primera ventana
-            avisoDash("Cerrando Sesion... Espere un momento")
+            Toast.makeText(this@DashboardActivity, "Cerrando Sesion... Espere un momento", Toast.LENGTH_SHORT).show()
+            //avisoDash("Cerrando Sesion... Espere un momento")
             Timer().schedule(1500){
                 val endActi = Intent(this@DashboardActivity, MainActivity::class.java)
                 startActivity(endActi)
@@ -185,6 +204,14 @@ class DashboardActivity : AppCompatActivity() {
                                 }
                                 // Estableciendo el sistema del usuario
                                 sistema = objUser.child("sistema_Rel").value.toString()
+                                // Token de notificaciones del dispositivo de usuario
+                                notifications.token.addOnCompleteListener { taskTokNoti ->
+                                    if(!taskTokNoti.isSuccessful){
+                                        Toast.makeText(this@DashboardActivity, "No se pudo obtener el token para las notificaciones de Ardu Security", Toast.LENGTH_SHORT).show()
+                                    }
+                                    objUser.child("tokenNotificaciones").ref.setValue(taskTokNoti.result)
+                                    Toast.makeText(this@DashboardActivity, "Token de notificaciones Ardu Security creado", Toast.LENGTH_SHORT).show()
+                                }
                                 break
                             }
                         }
@@ -195,6 +222,22 @@ class DashboardActivity : AppCompatActivity() {
                 })
             }
             infoFire.await()
+        }
+
+        // Despues de la configuracion inicial se pregunta por el permiso de notificaciones
+        preguntarPermisoNotificaciones()
+    }
+
+    private fun preguntarPermisoNotificaciones(){
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this@DashboardActivity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                // FCM SDK (and your app) can post notifications.
+                Toast.makeText(this@DashboardActivity, "Su dispositivo podrá recibir notificaciones de la aplicación", Toast.LENGTH_SHORT).show()
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
     }
 }

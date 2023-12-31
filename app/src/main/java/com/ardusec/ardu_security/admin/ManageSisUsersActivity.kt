@@ -192,21 +192,8 @@ class ManageSisUsersActivity : AppCompatActivity() {
                 ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(objUser in dataSnapshot.children){
-                            if(objUser.key.toString() == userKey){
-                                val refSisUs = objUser.ref.child("sistemas")
-                                refSisUs.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(objSis in snapshot.children){
-                                            if(objSis.key.toString() == sisKey){
-                                                objSis.ref.removeValue()
-                                                break
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@ManageSisUsersActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                                    }
-                                })
+                            if(objUser.key.toString() == userKey && objUser.child("sistema_Rel").value.toString() == sisKey){
+                                objUser.child("sistema_Rel").ref.setValue("User Not System")
                                 break
                             }
                         }
@@ -241,6 +228,7 @@ class ManageSisUsersActivity : AppCompatActivity() {
                                                                 putExtra("username", userKey)
                                                                 putExtra("tipo", txtTipo.text.toString())
                                                                 startActivity(this)
+                                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                                                                 finish()
                                                             }
                                                         }

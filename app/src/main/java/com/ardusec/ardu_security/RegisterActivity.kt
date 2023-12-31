@@ -70,8 +70,8 @@ class RegisterActivity : AppCompatActivity() {
 
     // Data clases para objetos virtuales (simulados) de kotlin
     data class Acceso(val correo: String, val google: String)
-    data class UserCliente(val nombre: String, val username: String, val accesos: Acceso, val sistema: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String)
-    data class UserAdmin(val nombre: String, val username: String, val accesos: Acceso, val sistema: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Long)
+    data class UserCliente(val nombre: String, val username: String, val accesos: Acceso, val sistema_Rel: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String)
+    data class UserAdmin(val nombre: String, val username: String, val accesos: Acceso, val sistema_Rel: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Long)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -636,56 +636,58 @@ class RegisterActivity : AppCompatActivity() {
             ref.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for (objSis in dataSnapshot.children) {
-                        if (objSis.child("nombre_Sis").value.toString() == sistema)
+                        if (objSis.child("nombre_Sis").value.toString() == sistema) {
                             objSis.ref.child("usuarios").child(usuario).setValue(true)
+                            val sisKey = objSis.key.toString()
+                            // Preparando el objeto del usuario para el registro en la BD
+                            val nAcc = Acceso(correo = emaLimp, google = "")
+                            if(tipo == "Cliente"){
+                                // Usuario cliente
+                                val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta)
+                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                ref = database.getReference("Usuarios")
+                                val regCliente = ref.child(usuario).setValue(nUser)
+                                regCliente.addOnCompleteListener {
+                                    // Se procede a lanzar al usuario a la activity de dashboard
+                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                        putExtra("username", usuario)
+                                    }
+                                    startActivity(intentDash)
+                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                }
+                                regCliente.addOnFailureListener {
+                                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                }
+                            }else{
+                                // Usuario administrador
+                                val telefono = txtTel.text.toString().toLong()
+                                val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
+                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                ref = database.getReference("Usuarios")
+                                val regAdmin = ref.child(usuario).setValue(nUser)
+                                regAdmin.addOnCompleteListener {
+                                    // Se procede a lanzar al usuario a la activity de dashboard
+                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                        putExtra("username", usuario)
+                                    }
+                                    startActivity(intentDash)
+                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                }
+                                regAdmin.addOnFailureListener {
+                                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
                     Toast.makeText(this@RegisterActivity, "Error: Registro de usuario parte 2, no completado",Toast.LENGTH_SHORT).show()
                 }
             })
-            // Preparando el objeto del usuario para el registro en la BD
-            val nAcc = Acceso(correo = emaLimp, google = "")
-            if(tipo == "Cliente"){
-                // Usuario cliente
-                val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc, sistema = sistema, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta)
-                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                ref = database.getReference("Usuarios")
-                val regCliente = ref.child(usuario).setValue(nUser)
-                regCliente.addOnCompleteListener {
-                    // Se procede a lanzar al usuario a la activity de dashboard
-                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                        putExtra("username", usuario)
-                    }
-                    startActivity(intentDash)
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                }
-                regCliente.addOnFailureListener {
-                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
-                }
-            }else{
-                // Usuario administrador
-                val telefono = txtTel.text.toString().toLong()
-                val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc, sistema = sistema, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
-                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                ref = database.getReference("Usuarios")
-                val regAdmin = ref.child(usuario).setValue(nUser)
-                regAdmin.addOnCompleteListener {
-                    // Se procede a lanzar al usuario a la activity de dashboard
-                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                        putExtra("username", usuario)
-                    }
-                    startActivity(intentDash)
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                }
-                regAdmin.addOnFailureListener {
-                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
-                }
-            }
         }
         crearUsuario.addOnFailureListener {
             avisoReg("Ocurrio un error en el proceso de creacion del usuario, favor de intentarlo después")
@@ -761,60 +763,62 @@ class RegisterActivity : AppCompatActivity() {
                     ref.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for (objSis in dataSnapshot.children) {
-                                if (objSis.child("nombre_Sis").value.toString() == sistema)
+                                if (objSis.child("nombre_Sis").value.toString() == sistema) {
                                     objSis.ref.child("usuarios").child(usuario).setValue(true)
+                                    val sisKey = objSis.key.toString()
+                                    // En este caso, como es necesario extraer el correo desde la autenticacion de google, se tiene usar el let
+                                    authUs.let { _ ->
+                                        val correo = authUs?.email
+                                        // Preparando el objeto del usuario para el registro en la BD
+                                        val nAcc = correo?.let { Acceso(correo = "", google = it) }
+                                        if(tipo == "Cliente"){
+                                            // Usuario cliente
+                                            val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc!!, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta)
+                                            // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                            ref = database.getReference("Usuarios")
+                                            val accGooClien = ref.child(usuario).setValue(nUser)
+                                            accGooClien.addOnSuccessListener {
+                                                // Se procede a lanzar al usuario a la activity de dashboard
+                                                Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                                // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                                val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                                    putExtra("username", usuario)
+                                                }
+                                                startActivity(intentDash)
+                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                            }
+                                            accGooClien.addOnFailureListener {
+                                                Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }else{
+                                            // Usuario administrador
+                                            val telefono = txtTel.text.toString().toLong()
+                                            val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc!!, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
+                                            // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                            ref = database.getReference("Usuarios")
+                                            val accGooAdmin = ref.child(usuario).setValue(nUser)
+                                            accGooAdmin.addOnCompleteListener{
+                                                // Se procede a lanzar al usuario a la activity de dashboard
+                                                Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                                // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                                val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                                    putExtra("username", usuario)
+                                                }
+                                                startActivity(intentDash)
+                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                            }
+                                            accGooAdmin.addOnFailureListener {
+                                                Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                         override fun onCancelled(error: DatabaseError) {
                             Toast.makeText(this@RegisterActivity, "Error: Registro de usuario parte 2, no completado",Toast.LENGTH_SHORT).show()
                         }
                     })
-                    // En este caso, como es necesario extraer el correo desde la autenticacion de google, se tiene usar el let
-                    authUs.let { _ ->
-                        val correo = authUs?.email
-                        // Preparando el objeto del usuario para el registro en la BD
-                        val nAcc = correo?.let { Acceso(correo = "", google = it) }
-                        if(tipo == "Cliente"){
-                            // Usuario cliente
-                            val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc!!, sistema = sistema, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta)
-                            // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                            ref = database.getReference("Usuarios")
-                            val accGooClien = ref.child(usuario).setValue(nUser)
-                            accGooClien.addOnSuccessListener {
-                                // Se procede a lanzar al usuario a la activity de dashboard
-                                Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                                // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                                    putExtra("username", usuario)
-                                }
-                                startActivity(intentDash)
-                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                            }
-                            accGooClien.addOnFailureListener {
-                                Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
-                            }
-                        }else{
-                            // Usuario administrador
-                            val telefono = txtTel.text.toString().toLong()
-                            val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc!!, sistema = sistema, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
-                            // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                            ref = database.getReference("Usuarios")
-                            val accGooAdmin = ref.child(usuario).setValue(nUser)
-                            accGooAdmin.addOnCompleteListener{
-                                // Se procede a lanzar al usuario a la activity de dashboard
-                                Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                                // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                                    putExtra("username", usuario)
-                                }
-                                startActivity(intentDash)
-                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                            }
-                            accGooAdmin.addOnFailureListener {
-                                Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
                 }
                 accGoo.addOnFailureListener {
                     avisoReg("Ocurrio un error en el proceso de creacion del usuario, favor de intentarlo despues")

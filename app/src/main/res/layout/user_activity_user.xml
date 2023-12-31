@@ -339,21 +339,19 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/linLayEditTel"
+                    android:id="@+id/linLayDelAcco"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    tools:visibility="visible">
+                    android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/btnEditTel"
+                        android:id="@+id/btnDelAcco"
                         android:layout_width="124dp"
                         android:layout_height="124dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_telefono" />
+                        app:srcCompat="@drawable/eliminar_cuenta" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -361,13 +359,178 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:clickable="false"
-                        android:text="@string/btnEditTel"
+                        android:text="@string/btnDelCuenta"
                         android:textColor="@color/negro"/>
                 </LinearLayout>
             </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <LinearLayout
+                android:id="@+id/linLayBtnEditTel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/linLayEditTel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditTel"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_telefono" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:text="@string/btnEditTel"
+                            android:textColor="@color/negro"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mateCardConfEli"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/negro"
+                app:cardBackgroundColor="@color/azulAlicia"
+                app:cardCornerRadius="4dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lblHeadDelCuenta"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:textColor="@color/negro"/>
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="10dp" />
+
+                    <TextView
+                        android:id="@+id/lblPregConfEli"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/lblPregunta"
+                        android:textColor="@color/negro"
+                        android:textSize="16sp" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="10dp" />
+
+                    <EditText
+                        android:id="@+id/txtConfRespEli"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:ems="10"
+                        android:inputType="text"
+                        android:autofillHints="text"
+                        android:textColor="@color/negro"
+                        android:hint="@string/txtRespuesta"
+                        android:textColorHint="@color/darkgray" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="10dp" />
+
+                    <LinearLayout
+                        android:id="@+id/linLayConfEmailEli"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+
+                        <EditText
+                            android:id="@+id/txtConfEmailEli"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:autofillHints="emailAddress"
+                            android:hint="@string/txtConfEma"
+                            android:inputType="textEmailAddress"
+                            android:textColor="@color/negro"
+                            android:textColorHint="@color/darkgray" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="10dp" />
+
+                        <EditText
+                            android:id="@+id/txtConfPassEli"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:autofillHints="password"
+                            android:ems="10"
+                            android:hint="@string/txtConfCamb"
+                            android:inputType="textPassword"
+                            android:textColor="@color/negro"
+                            android:textColorHint="@color/darkgray" />
+
+                        <CheckBox
+                            android:id="@+id/chbConfPassEli"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/chbPass"
+                            android:textSize="14sp"
+                            android:textColor="@color/negro" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnConfEliCuen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btnConfDelCuenta"
+                        android:textSize="20sp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space
+                android:layout_width="wrap_content"
                 android:layout_height="20dp" />
         </LinearLayout>
     </ScrollView>

@@ -1,9 +1,13 @@
 package com.ardusec.ardu_security
 
 import android.content.Intent
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -13,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
@@ -24,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUp(){
-        // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
+        // Inicializando instancia hacia el nodo raiz de la BD, la de la autenticacion
         database = Firebase.database
         auth = FirebaseAuth.getInstance()
         //insertValues()
@@ -51,6 +57,7 @@ class MainActivity : AppCompatActivity() {
                         for (objUser in dataSnapshot.children) {
                             val dirCor = objUser.child("accesos").child("correo").value.toString()
                             val dirGoo = objUser.child("accesos").child("google").value.toString()
+
                             if(dirCor == correo || dirGoo == correo) {
                                 // Nueva adicion, se agrego una nueva funcion de pantallas de carga y para eso se deja la pantalla por un segundo y luego se llama a la ventana de carga
                                 Timer().schedule(1000) {

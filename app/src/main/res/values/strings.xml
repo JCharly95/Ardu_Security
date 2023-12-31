@@ -97,6 +97,9 @@
     <string name="btnEditRespu">Cambiar\nRespuesta</string>
     <string name="btnEditSisRel">Cambiar\nSistema</string>
     <string name="btnEditTipUser">Cambiar Tipo\nde Usuario</string>
+    <string name="btnDelCuenta">Eliminar\nCuenta\nde Usuario</string>
+    <string name="lblHeadDelCuenta">Confirmar Eliminación</string>
+    <string name="btnConfDelCuenta">Eliminar</string>
     <string name="btnEditTel">Cambiar\nTelefono</string>
     <!-- Strings de la vista de ajustes-->
     <string name="headAjus">Ajustes</string>
@@ -199,4 +202,6 @@
     <string name="lblFechaHora">Fecha/Hora</string>
     <string name="lblValRegistro">Valor (ppm)</string>
     <string name="lblHeadGrafRepo">Grafica del Sensor</string>
+    <!-- Strings de la plantilla del manual-->
+    <string name="lblHeadManual">Manual del Usuario Digital</string>
 </resources>
