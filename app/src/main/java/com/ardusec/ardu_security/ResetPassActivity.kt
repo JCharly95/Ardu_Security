@@ -96,11 +96,11 @@ class ResetPassActivity : AppCompatActivity(){
         txtRespRec = findViewById(R.id.txtResPregForPass)
         btnRecPass = findViewById(R.id.btnSendRecPass)
 
-        // Invocacion a la funcion para rellenar el spinner de las preguntas
-        rellSpinPregs()
         // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
         database = Firebase.database
         auth = FirebaseAuth.getInstance()
+        // Invocacion a la funcion para rellenar el spinner de las preguntas
+        rellSpinPregs()
     }
 
     private fun avisoForPass(mensaje: String){

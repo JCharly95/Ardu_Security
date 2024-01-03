@@ -72,15 +72,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="10dp" />
 
-            <TextView
-                android:id="@+id/lblAdminNomSel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lblName"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible" />
-
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,16 +92,7 @@
 
             <Space
                 android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <TextView
-                android:id="@+id/lblAdminUserSel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lblUser"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible" />
+                android:layout_height="15dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -132,16 +114,7 @@
 
             <Space
                 android:layout_width="wrap_content"
-                android:layout_height="10dp" />
-
-            <TextView
-                android:id="@+id/lblAdminTipoSel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lblTipoUsSel"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible" />
+                android:layout_height="15dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -151,7 +124,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtAdminTipoSel"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="text"
                     android:autofillHints="text"
@@ -163,7 +136,7 @@
 
             <Space
                 android:layout_width="wrap_content"
-                android:layout_height="10dp" />
+                android:layout_height="15dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -39,20 +39,19 @@
             android:layout_width="match_parent"
             android:layout_height="10dp"/>
 
-        <ProgressBar
-            android:id="@+id/barChargeMan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp"/>
-
-        <ImageView
+        <com.ahmer.pdfviewer.PDFView
             android:id="@+id/webManSis"
             android:layout_width="match_parent"
-            android:layout_height="450dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp" />
+            android:layout_height="match_parent" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/pdfView" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

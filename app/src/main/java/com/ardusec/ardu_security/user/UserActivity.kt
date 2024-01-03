@@ -44,6 +44,7 @@ import kotlin.concurrent.schedule
 
 class UserActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
+    private lateinit var linLayBotones: LinearLayout
     private lateinit var lblNom: TextView
     private lateinit var lblUser: TextView
     private lateinit var btnEditNom: ImageButton
@@ -99,6 +100,7 @@ class UserActivity : AppCompatActivity() {
         // Titulo de la pantalla
         title = "Editar Informacion"
         // Relacionando los elementos con su objeto de la interfaz
+        linLayBotones = findViewById(R.id.linLayUserBtns)
         lblNom = findViewById(R.id.lblNomVal)
         lblUser = findViewById(R.id.lblUserVal)
         btnEditNom = findViewById(R.id.btnEditNam)
@@ -182,8 +184,24 @@ class UserActivity : AppCompatActivity() {
                 })
             }
             getPreg.await()
-            // Preparar la peticion de google por si se usa el correo de google
-            crearPeticionGoogle()
+            // Si se tiene como proveedor de acceso el correo, se mostraran los campos de confirmacion para ingresar correo
+            val getProvAcc = async {
+                ref = database.getReference("Usuarios")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for(objUser in dataSnapshot.children){
+                            if(objUser.key.toString() == user && objUser.child("accesos").child("correo").value != ""){
+                                linLayEmaConf.isGone = false
+                                break
+                            }
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@UserActivity, "Error: Datos no obtenidos", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            getProvAcc.await()
         }
     }
 
@@ -271,6 +289,7 @@ class UserActivity : AppCompatActivity() {
                 // Establecer elementos de interaccion en el formulario de confirmacion y mostrarlo
                 setFormularioConf()
                 mateLayConfEli.isGone = false
+                linLayBotones.isGone = true
             }
             avisoEliminacion.setNegativeButton("Cancelar"){ dialog, _ ->
                 dialog.cancel()
@@ -279,7 +298,145 @@ class UserActivity : AppCompatActivity() {
             popUpEliminacion.show()
         }
         btnConfEli.setOnClickListener {
-            eliAccesos()
+            // Averiguar si se confirmará con correo la eliminacion
+            if(!linLayEmaConf.isGone){
+                delAccEma()
+            }else{
+                delAccGoo()
+            }
+        }
+    }
+
+    private fun avisoEli(mensaje: String){
+        val aviso = AlertDialog.Builder(this)
+        aviso.setTitle("Aviso")
+        aviso.setMessage(mensaje)
+        aviso.setPositiveButton("Aceptar", null)
+        val dialog: AlertDialog = aviso.create()
+        dialog.show()
+    }
+
+    private fun validarResp(respuesta: Editable): Boolean{
+        return if(TextUtils.isEmpty(respuesta)){
+            avisoEli("Error: Favor de introducir una respuesta a su pregunta")
+            false
+        }else{
+            true
+        }
+    }
+
+    private fun validarCorreo(correo: Editable): Boolean{
+        // Si se detectan espacios en el correo, estos seran removidos
+        val correoFil1 = correo.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val correoFil2 = correoFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si el correo esta vacio
+            TextUtils.isEmpty(correoFil2) ->{
+                lifecycleScope.launch(Dispatchers.Main) {
+                    avisoEli("Error: Favor de introducir un correo")
+                }
+                txtConfEmaEli.text!!.clear()
+                return false
+            }
+            // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil2).matches() -> {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    avisoEli("Error: Favor de introducir un correo valido")
+                }
+                txtConfEmaEli.text!!.clear()
+                return false
+            }
+            else -> { return true }
+        }
+    }
+    private fun validarContra(contra: Editable): Boolean{
+        // Si se detectan espacios en la contraseña, estos seran removidos
+        val contraFil1 = contra.replace("\\s".toRegex(), "")
+        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
+        val contraFil2 = contraFil1.replace("\\p{Zs}+".toRegex(), "")
+        when {
+            // Si la contraseña esta vacia
+            TextUtils.isEmpty(contraFil2) -> {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    avisoEli("Error: Favor de introducir una contraseña")
+                }
+                txtConfPassEli.text!!.clear()
+                return false
+            }
+            // Extension minima de 8 caracteres
+            (contraFil2.length < 8) -> {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    avisoEli("Error: La contraseña debera tener una extension minima de 8 caracteres")
+                }
+                txtConfPassEli.text!!.clear()
+                return false
+            }
+            // No se tiene al menos una mayuscula
+            (!Regex("[A-Z]+").containsMatchIn(contraFil2)) -> {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    avisoEli("Error: La contraseña debera tener al menos una letra mayuscula")
+                }
+                txtConfPassEli.text!!.clear()
+                return false
+            }
+            // No se tiene al menos un numero
+            (!Regex("""\d""").containsMatchIn(contraFil2)) -> {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    avisoEli("Error: La contraseña debera tener al menos un numero")
+                }
+                txtConfPassEli.text!!.clear()
+                return false
+            }
+            // No se tiene al menos un caracter especial
+            (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil2)) -> {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    avisoEli("Error: Favor de incluir al menos un caracter especial en su contraseña")
+                }
+                txtConfPassEli.text!!.clear()
+                return false
+            }
+            else -> { return true }
+        }
+    }
+
+    private fun delAccEma(){
+        // Si los 3 campos fueron validados correctamente, se procede con la comparacion de valores para la eliminacion
+        if(validarResp(txtConfRespEli.text!!) && validarCorreo(txtConfEmaEli.text!!) && validarContra(txtConfPassEli.text!!)){
+            lifecycleScope.launch(Dispatchers.IO){
+                val cmpInfo = async {
+                    ref = database.getReference("Usuarios")
+                    ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            for(objUser in dataSnapshot.children){
+                                if(objUser.key.toString() == user){
+                                    // Una vez encontrado el usuario se comparará la respuesta y el correo que se tiene
+                                    val emaFire = objUser.child("accesos").child("correo").value.toString()
+                                    val respFire = objUser.child("resp_Seguri").value.toString()
+                                    if(emaFire == txtConfEmaEli.text!!.toString() && respFire == txtConfRespEli.text!!.toString()){
+                                        //Primero se eliminará la informacion del usuario en firebase y luego el acceso de auth
+                                        delUserInfoFire()
+                                        delUserEmail()
+                                    }else{
+                                        avisoEli("Error: La informacion ingresada en la confirmación, no coincide con los registros")
+                                    }
+                                }
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
+                cmpInfo.await()
+            }
+        }
+    }
+
+    private fun delAccGoo(){
+        // En el caso de google, solo se podra validar primero la respuesta y se debera hacer todo el proceso de eliminacion en la activity result
+        if(validarResp(txtConfRespEli.text!!)){
+            accederGoogle()
         }
     }
 
@@ -348,25 +505,8 @@ class UserActivity : AppCompatActivity() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(objUser in dataSnapshot.children){
                             if(objUser.key.toString() == user){
-                                val removeUser = objUser.ref.removeValue()
-                                removeUser.addOnSuccessListener {
-                                    lifecycleScope.launch(Dispatchers.Main){
-                                        val msg = "El usuario $user ha sido eliminado satifactoriamente"
-                                        avisoEli(msg)
-                                    }
-                                    Timer().schedule(1500){
-                                        lifecycleScope.launch(Dispatchers.Main){
-                                            Intent(this@UserActivity, MainActivity::class.java).apply {
-                                                startActivity(this)
-                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                                finish()
-                                            }
-                                        }
-                                    }
-                                }
-                                removeUser.addOnFailureListener {
-                                    Toast.makeText(this@UserActivity,"Error: No se pudo eliminar al usuario",Toast.LENGTH_SHORT).show()
-                                }
+                                objUser.ref.removeValue()
+                                break
                             }
                         }
                     }
@@ -379,215 +519,8 @@ class UserActivity : AppCompatActivity() {
         }
     }
 
-    private fun eliAccesos(){
-        lifecycleScope.launch(Dispatchers.IO){
-            val getAccesos = async {
-                ref = database.getReference("Usuarios")
-                ref.addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(objUser in dataSnapshot.children){
-                            if(objUser.key.toString() == user){
-                                val refAccUs = objUser.ref.child("accesos")
-                                refAccUs.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot1: DataSnapshot) {
-                                        // Si los 2 accesos posibles no estan vacios, se invocaran ambos metodos de eliminacion en auth
-                                        if(snapshot1.child("correo").value.toString() != "" && snapshot1.child("google").value.toString() != ""){
-                                            // Para el caso del correo es necesario validar la informacion ingresada en los campos de confirmacion
-                                            if(validarCorreo(txtConfEmaEli.text!!) && validarContra(txtConfPassEli.text!!)){
-                                                delEmail()
-                                            }
-                                            delGoogle()
-                                            // En cualquiera de los casos, se debera eliminar la informacion de Firebase
-                                            eliminarInfoFire()
-                                        }
-                                        // EL caso de haber correo pero no google
-                                        if(snapshot1.child("correo").value.toString() != "" && snapshot1.child("google").value.toString() == ""){
-                                            // Para el caso del correo es necesario validar la informacion ingresada en los campos de confirmacion
-                                            if(validarCorreo(txtConfEmaEli.text!!) && validarContra(txtConfPassEli.text!!)){
-                                                delEmail()
-                                            }
-                                            // En cualquiera de los casos, se debera eliminar la informacion de Firebase
-                                            eliminarInfoFire()
-                                        }
-                                        // En caso de haber google, pero no correo
-                                        if(snapshot1.child("google").value.toString() != "" && snapshot1.child("correo").value.toString() == ""){
-                                            delGoogle()
-                                            // En cualquiera de los casos, se debera eliminar la informacion de Firebase
-                                            eliminarInfoFire()
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                                    }
-                                })
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
-            getAccesos.await()
-        }
-    }
-
-    private fun eliminarInfoFire(){
-        lifecycleScope.launch(Dispatchers.IO){
-            val delSisUs = async {
-                ref = database.getReference("Usuarios")
-                ref.addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(objUser in dataSnapshot.children){
-                            if(objUser.key.toString() == user && objUser.child("sistema_Rel").value.toString() == sistema){
-                                objUser.child("sistema_Rel").ref.setValue("User Not System")
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
-            delSisUs.await()
-            val delUsSis = async {
-                ref = database.getReference("Sistemas")
-                ref.addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(objSis in dataSnapshot.children){
-                            if(objSis.key.toString() == sistema){
-                                val refUsSis = objSis.ref.child("usuarios")
-                                refUsSis.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(objUser in snapshot.children){
-                                            if(objUser.key.toString() == user){
-                                                val removeUser = objUser.ref.removeValue()
-                                                removeUser.addOnSuccessListener {
-                                                    lifecycleScope.launch(Dispatchers.Main){
-                                                        val msg = "El usuario $user fue eliminado del sistema satifactoriamente"
-                                                        avisoEli(msg)
-                                                    }
-                                                    Timer().schedule(1500){
-                                                        lifecycleScope.launch(Dispatchers.Main){
-                                                            Intent(this@UserActivity, MainActivity::class.java).apply {
-                                                                startActivity(this)
-                                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                                                finish()
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                removeUser.addOnFailureListener {
-                                                    Toast.makeText(this@UserActivity,"Error: No se pudo remover al usuario del sistema",Toast.LENGTH_SHORT).show()
-                                                }
-                                                break
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                                    }
-                                })
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
-            delUsSis.await()
-        }
-    }
-
-    private fun avisoEli(mensaje: String){
-        val aviso = AlertDialog.Builder(this)
-        aviso.setTitle("Aviso")
-        aviso.setMessage(mensaje)
-        aviso.setPositiveButton("Aceptar", null)
-        val dialog: AlertDialog = aviso.create()
-        dialog.show()
-    }
-    private fun validarCorreo(correo: Editable): Boolean{
-        // Si se detectan espacios en el correo, estos seran removidos
-        val correoFil1 = correo.replace("\\s".toRegex(), "")
-        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
-        val correoFil2 = correoFil1.replace("\\p{Zs}+".toRegex(), "")
-        when {
-            // Si el correo esta vacio
-            TextUtils.isEmpty(correoFil2) ->{
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoEli("Error: Favor de introducir un correo")
-                }
-                txtConfEmaEli.text.clear()
-                return false
-            }
-            // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(correoFil2).matches() -> {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoEli("Error: Favor de introducir un correo valido")
-                }
-                txtConfEmaEli.text.clear()
-                return false
-            }
-            else -> { return true }
-        }
-    }
-    private fun validarContra(contra: Editable): Boolean{
-        // Si se detectan espacios en la contraseña, estos seran removidos
-        val contraFil1 = contra.replace("\\s".toRegex(), "")
-        // Si se detectan espacios en blanco (no estandarizados), seran eliminados
-        val contraFil2 = contraFil1.replace("\\p{Zs}+".toRegex(), "")
-        when {
-            // Si la contraseña esta vacia
-            TextUtils.isEmpty(contraFil2) -> {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoEli("Error: Favor de introducir una contraseña")
-                }
-                txtConfPassEli.text.clear()
-                return false
-            }
-            // Extension minima de 8 caracteres
-            (contraFil2.length < 8) -> {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoEli("Error: La contraseña debera tener una extension minima de 8 caracteres")
-                }
-                txtConfPassEli.text.clear()
-                return false
-            }
-            // No se tiene al menos una mayuscula
-            (!Regex("[A-Z]+").containsMatchIn(contraFil2)) -> {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoEli("Error: La contraseña debera tener al menos una letra mayuscula")
-                }
-                txtConfPassEli.text.clear()
-                return false
-            }
-            // No se tiene al menos un numero
-            (!Regex("""\d""").containsMatchIn(contraFil2)) -> {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoEli("Error: La contraseña debera tener al menos un numero")
-                }
-                txtConfPassEli.text.clear()
-                return false
-            }
-            // No se tiene al menos un caracter especial
-            (!Regex("""[^A-Za-z ]+""").containsMatchIn(contraFil2)) -> {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoEli("Error: Favor de incluir al menos un caracter especial en su contraseña")
-                }
-                txtConfPassEli.text.clear()
-                return false
-            }
-            else -> { return true }
-        }
-    }
-
     // Proceso de correo y contraseña
-    private fun delEmail(){
+    private fun delUserEmail(){
         lifecycleScope.launch(Dispatchers.IO) {
             val delCorreo = async {
                 val userAuth = auth.currentUser!!
@@ -598,10 +531,21 @@ class UserActivity : AppCompatActivity() {
                     // Cuando se reautentique el usuario se eliminara el valor en auth
                     val eliminar = userAuth.delete()
                     eliminar.addOnSuccessListener {
-                        Toast.makeText(this@UserActivity,"Eliminación en proceso, aguarde...",Toast.LENGTH_SHORT).show()
+                        lifecycleScope.launch(Dispatchers.Main){
+                            Toast.makeText(this@UserActivity,"El usuario $user fue eliminado satifactoriamente",Toast.LENGTH_LONG).show()
+                            chgPanta()
+                        }
+                        Timer().schedule(1500){
+                            lifecycleScope.launch(Dispatchers.Main){
+                                Intent(this@UserActivity, MainActivity::class.java).apply {
+                                    startActivity(this)
+                                    finish()
+                                }
+                            }
+                        }
                     }
                     eliminar.addOnFailureListener {
-                        Toast.makeText(this@UserActivity,"Su informacion no pudo ser eliminada, proceso incompleto",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@UserActivity,"El usuario no pudo ser eliminado, proceso incompleto",Toast.LENGTH_SHORT).show()
                     }
                 }
                 reautenticar.addOnFailureListener {
@@ -613,7 +557,7 @@ class UserActivity : AppCompatActivity() {
     }
 
     // Proceso de google
-    private fun crearPeticionGoogle() {
+    private fun accederGoogle(){
         // Bloque de codigo de la funcion crearPeticionGoogle() con el fin de optimizar las funciones
         // Configuracion google
         googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -623,9 +567,7 @@ class UserActivity : AppCompatActivity() {
         // Obteniendo el cliente de google
         googleCli = GoogleSignIn.getClient(this@UserActivity, googleConf)
         // Fin de crearPeticionGoogle() y preparar la peticion de google
-    }
 
-    private fun delGoogle() {
         // Obteniendo el intent de google
         val intentGoo = googleCli.signInIntent
         // Implementando el launcher result posterior al haber obtenido el intent de google
@@ -636,27 +578,66 @@ class UserActivity : AppCompatActivity() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
         if (requestCode == GoogleAcces) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-
+            val userAuth = auth.currentUser!!
             try {
                 val cuenta = task.getResult(ApiException::class.java)
                 // Obteniendo la credencial
                 val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
-                val userAuth = auth.currentUser!!
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val updValsGoo = async {
-                        val reautenticar = userAuth.reauthenticate(credencial)
-                        reautenticar.addOnSuccessListener {
-                            Toast.makeText(this@UserActivity,"Eliminación en proceso, aguarde...",Toast.LENGTH_SHORT).show()
-                        }
-                        reautenticar.addOnFailureListener {
-                            Toast.makeText(this@UserActivity,"El usuario no pudo ser reautenticado",Toast.LENGTH_SHORT).show()
-                        }
+                // Comparando la informacion obtenida contra la almacenada
+                lifecycleScope.launch(Dispatchers.IO){
+                    val cmpInfo = async {
+                        ref = database.getReference("Usuarios")
+                        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for(objUser in dataSnapshot.children){
+                                    if(objUser.key.toString() == user){
+                                        // Una vez encontrado el usuario se comparará la respuesta y el correo que se tiene
+                                        val gooFire = objUser.child("accesos").child("google").value.toString()
+                                        val respFire = objUser.child("resp_Seguri").value.toString()
+                                        if(gooFire == cuenta.email && respFire == txtConfRespEli.text!!.toString()){
+                                            //Primero se eliminará la informacion del usuario en firebase y luego el acceso de auth
+                                            delUserInfoFire()
+                                            val reautenticar = userAuth.reauthenticate(credencial)
+                                            reautenticar.addOnSuccessListener {
+                                                // Cuando se reautentique el usuario se eliminara el valor en auth y en este caso se saldra de la sesion de Google solicitada
+                                                val eliminar = userAuth.delete()
+                                                googleCli.signOut()
+                                                eliminar.addOnSuccessListener {
+                                                    lifecycleScope.launch(Dispatchers.Main){
+                                                        Toast.makeText(this@UserActivity,"El usuario $user fue eliminado satifactoriamente",Toast.LENGTH_LONG).show()
+                                                        chgPanta()
+                                                    }
+                                                    Timer().schedule(1500){
+                                                        lifecycleScope.launch(Dispatchers.Main){
+                                                            Intent(this@UserActivity, MainActivity::class.java).apply {
+                                                                startActivity(this)
+                                                                finish()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                eliminar.addOnFailureListener {
+                                                    Toast.makeText(this@UserActivity,"El usuario no pudo ser eliminado, proceso incompleto",Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                            reautenticar.addOnFailureListener {
+                                                Toast.makeText(this@UserActivity,"El usuario no pudo ser reautenticado",Toast.LENGTH_SHORT).show()
+                                            }
+                                        }else{
+                                            avisoEli("Error: La informacion ingresada en la confirmación, no coincide con los registros")
+                                        }
+                                    }
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                            }
+                        })
                     }
-                    updValsGoo.await()
+                    cmpInfo.await()
                 }
             }catch (error: ApiException){
                 avisoEli("Error: No se pudo eliminar la informacion solicitada")
@@ -664,103 +645,8 @@ class UserActivity : AppCompatActivity() {
         }
     }
 
-    private fun accederGoogle(){
-        // Bloque de codigo de la funcion crearPeticionGoogle() con el fin de optimizar las funciones
-        // Configuracion google
-        googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        // Obteniendo el cliente de google
-        googleCli = GoogleSignIn.getClient(this@LoginActivity, googleConf)
-        // Fin de crearPeticionGoogle() y preparar la peticion de google
-
-        // Obteniendo el intent de google
-        val intentGoo = googleCli.signInIntent
-        // Implementando el launcher result posterior al haber obtenido el intent de google
-        //startForResult.launch(intentGoo)
-        startActivityForResult(intentGoo, GoogleAcces)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
-        if (requestCode == GoogleAcces) {
-            val usuario = txtUser.text!!.toString().trim()
-            val taskGoo = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val cuenta = taskGoo.getResult(ApiException::class.java)
-                // Obteniendo la credencial
-                val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
-                // Accediendo con los datos de la cuenta de google
-                val loginGoo = auth.signInWithCredential(credencial)
-                loginGoo.addOnSuccessListener {
-                    val user = Firebase.auth.currentUser
-                    user?.let{
-                        // Buscando al usuario en la BD
-                        ref = database.getReference("Usuarios")
-                        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                for (objUser in dataSnapshot.children) {
-                                    if (objUser.key.toString() == usuario){
-                                        // Obtencion de la direccion de correo guardada en firebase y verificacion de igualdad con el obtenido en la peticion a google
-                                        val googleFire = objUser.child("accesos").child("google").value.toString()
-                                        if(googleFire == cuenta.email){
-                                            // Nueva adicion, se agrego una nueva funcion de pantallas de carga y para eso se deja la pantalla por un segundo y luego se llama a la ventana de carga
-                                            Timer().schedule(1000) {
-                                                lifecycleScope.launch(Dispatchers.Main) {
-                                                    chgPanta()
-                                                }
-                                            }
-                                            Timer().schedule(3000) {
-                                                lifecycleScope.launch(Dispatchers.Main) {
-                                                    Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
-                                                    val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
-                                                        putExtra("username", usuario)
-                                                    }
-                                                    startActivity(intentoDash)
-                                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                                }
-                                            }
-                                        }else{
-                                            avisoLog("La dirección de correo obtenida no coincidió con la información del usuario")
-                                        }
-                                        break
-                                    }
-                                }
-                            }
-                            override fun onCancelled(error: DatabaseError) {
-                                lifecycleScope.launch(Dispatchers.Main) {
-                                    Toast.makeText(this@LoginActivity, "Error: Busqueda sin exito", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        })
-                    }
-                }
-                loginGoo.addOnFailureListener {
-                    // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
-                        txtUser.text!!.clear()
-                    }
-                }
-            }catch (error: ApiException){
-                if(error.statusCode == 12501){
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        avisoLog("Error: No se pudo acceder ya que no seleccionó una cuenta, favor de intentarlo nuevamente")
-                    }
-                }else{
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        avisoLog("Error: No se pudo acceder con la informacion ingresada. Causa:\n${error.statusCode}")
-                    }
-                }
-            }
-        }
-    }
-
     private fun chgPanta(){
-        val builder = AlertDialog.Builder(this@LoginActivity).create()
+        val builder = AlertDialog.Builder(this@UserActivity).create()
         val view = layoutInflater.inflate(R.layout.charge_transition,null)
         builder.setView(view)
         builder.show()

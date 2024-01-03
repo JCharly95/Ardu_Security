@@ -123,7 +123,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableStart="@android:drawable/sym_action_email"
-                        android:drawableEnd="@drawable/key"
+                        android:drawablePadding="3dp"
                         android:text="@string/btnAccUsPass"
                         android:textColor="@color/negro" />
 
@@ -137,6 +137,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/common_google_signin_btn_icon_dark"
+                        android:drawablePadding="3dp"
                         android:text="@string/btnAccGoogle"
                         android:textColor="@color/negro" />
                 </RadioGroup>

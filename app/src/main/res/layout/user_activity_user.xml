@@ -23,389 +23,90 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/lblHeadUser"
+            <LinearLayout
+                android:id="@+id/linLayUserBtns"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/headPerfi"
-                android:textSize="24sp"
-                android:visibility="visible"
-                android:textColor="@color/negro" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/lblNombre"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/lblHeadUser"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/lblName"
-                    android:textSize="15sp"
+                    android:gravity="center"
+                    android:text="@string/headPerfi"
+                    android:textSize="24sp"
+                    android:visibility="visible"
                     android:textColor="@color/negro" />
 
                 <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/lblNomVal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lblNameVal"
-                    android:textSize="15sp"
-                    android:textColor="@color/negro" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="15dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/lblUser"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lblUser"
-                    android:textSize="15sp"
-                    android:textColor="@color/negro" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/lblUserVal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lblUserVal"
-                    android:textSize="15sp"
-                    android:textColor="@color/negro" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditNam"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_nombre" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditNombre"
-                        android:textColor="@color/negro"/>
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditCorr"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_email" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditCorreo"
-                        android:textColor="@color/negro" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditContra"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_contra" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditContra"
-                        android:textColor="@color/negro"/>
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditPreg"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_pregunta" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditPregun"
-                        android:textColor="@color/negro" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditResp"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_respuesta" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditRespu"
-                        android:textColor="@color/negro"/>
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditSisRel"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_sistema" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditSisRel"
-                        android:textColor="@color/negro" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnEditUsNam"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/editar_username" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnEditUsername"
-                        android:textColor="@color/negro"/>
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:id="@+id/linLayDelAcco"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btnDelAcco"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/eliminar_cuenta" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:clickable="false"
-                        android:text="@string/btnDelCuenta"
-                        android:textColor="@color/negro"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <LinearLayout
-                android:id="@+id/linLayBtnEditTel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
-                    <LinearLayout
-                        android:id="@+id/linLayEditTel"
+                    <TextView
+                        android:id="@+id/lblNombre"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:text="@string/lblName"
+                        android:textSize="15sp"
+                        android:textColor="@color/negro" />
 
-                        <ImageButton
-                            android:id="@+id/btnEditTel"
-                            android:layout_width="124dp"
-                            android:layout_height="124dp"
-                            android:adjustViewBounds="true"
-                            android:scaleType="fitXY"
-                            app:srcCompat="@drawable/editar_telefono" />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:clickable="false"
-                            android:gravity="center"
-                            android:text="@string/btnEditTel"
-                            android:textColor="@color/negro"
-                            android:textSize="20sp" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/lblNomVal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lblNameVal"
+                        android:textSize="15sp"
+                        android:textColor="@color/negro" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/lblUser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lblUser"
+                        android:textSize="15sp"
+                        android:textColor="@color/negro" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/lblUserVal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lblUserVal"
+                        android:textSize="15sp"
+                        android:textColor="@color/negro" />
 
                     <Space
                         android:layout_width="0dp"
@@ -416,6 +117,313 @@
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="20dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditNam"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_nombre" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnEditNombre"
+                            android:textColor="@color/negro"/>
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditCorr"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_email" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnEditCorreo"
+                            android:textColor="@color/negro" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditContra"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_contra" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnEditContra"
+                            android:textColor="@color/negro"/>
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditPreg"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_pregunta" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnEditPregun"
+                            android:textColor="@color/negro" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditResp"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_respuesta" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnEditRespu"
+                            android:textColor="@color/negro"/>
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditSisRel"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_sistema" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnEditSisRel"
+                            android:textColor="@color/negro" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnEditUsNam"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/editar_username" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnEditUsername"
+                            android:textColor="@color/negro"/>
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/linLayDelAcco"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnDelAcco"
+                            android:layout_width="124dp"
+                            android:layout_height="124dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/eliminar_cuenta" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:clickable="false"
+                            android:text="@string/btnDelCuenta"
+                            android:textColor="@color/negro"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <LinearLayout
+                    android:id="@+id/linLayBtnEditTel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/linLayEditTel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btnEditTel"
+                                android:layout_width="124dp"
+                                android:layout_height="124dp"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitXY"
+                                app:srcCompat="@drawable/editar_telefono" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="false"
+                                android:gravity="center"
+                                android:text="@string/btnEditTel"
+                                android:textColor="@color/negro"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp" />
+                </LinearLayout>
             </LinearLayout>
 
             <com.google.android.material.card.MaterialCardView
@@ -470,7 +478,6 @@
                             android:id="@+id/txtConfRespEli"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:ems="10"
                             android:inputType="text"
                             android:autofillHints="text"
                             android:textColor="@color/negro"
@@ -499,7 +506,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtConfEmailEli"
                                 android:layout_width="match_parent"
-                                android:layout_height="48dp"
+                                android:layout_height="wrap_content"
                                 android:autofillHints="emailAddress"
                                 android:hint="@string/txtConfEma"
                                 android:inputType="textEmailAddress"
@@ -521,9 +528,8 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtConfPassEli"
                                 android:layout_width="match_parent"
-                                android:layout_height="48dp"
+                                android:layout_height="wrap_content"
                                 android:autofillHints="password"
-                                android:ems="10"
                                 android:hint="@string/txtConfCamb"
                                 android:inputType="textPassword"
                                 android:textColor="@color/negro"

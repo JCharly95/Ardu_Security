@@ -280,6 +280,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun accederCorreo(){
+        var busUser = false
         // Se busca al usuario en la BD para verificar que el correo que ingreso coincide con el que esta almacenado
         lifecycleScope.launch(Dispatchers.IO){
             val logEma = async {
@@ -329,14 +330,17 @@ class LoginActivity : AppCompatActivity() {
                                 }else{
                                     avisoLog("La dirección de correo ingresada no coincidió con la información del usuario")
                                 }
+                                busUser = true
                                 break
                             }
                         }
-                        // Si se llego a este punto, es porque no se encontro el usuario en la BD y por lo tanto no se va a proceder, mostrando mensaje y vaciando los campos
-                        avisoLog("El usuario solicitado no fue encontrado, favor de revisar su informacion")
-                        txtUser.text!!.clear()
-                        txtEmail.text!!.clear()
-                        txtContra.text!!.clear()
+                        if(!busUser){
+                            // Si se llego a este punto, es porque no se encontro el usuario en la BD y por lo tanto no se va a proceder, mostrando mensaje y vaciando los campos
+                            avisoLog("El usuario solicitado no fue encontrado, favor de revisar su informacion")
+                            txtUser.text!!.clear()
+                            txtEmail.text!!.clear()
+                            txtContra.text!!.clear()
+                        }
                     }
                     override fun onCancelled(error: DatabaseError) {
                         lifecycleScope.launch(Dispatchers.Main) {

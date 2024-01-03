@@ -20,7 +20,6 @@ import com.ardusec.ardu_security.MainActivity
 import com.ardusec.ardu_security.ManualUserActivity
 import com.ardusec.ardu_security.R
 import com.ardusec.ardu_security.admin.ManageSisActivity
-import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth

@@ -19,6 +19,7 @@ import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import com.ardusec.ardu_security.R
 import com.ardusec.ardu_security.user.DashboardActivity
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -36,8 +37,8 @@ import kotlin.concurrent.schedule
 class ManageSisStationsActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var spEstaciones: AppCompatSpinner
-    private lateinit var txtNomEsta: EditText
-    private lateinit var txtDirEsta: EditText
+    private lateinit var txtNomEsta: TextInputEditText
+    private lateinit var txtDirEsta: TextInputEditText
     private lateinit var btnHabiChgNom: ImageButton
     private lateinit var linLayChgNom: LinearLayout
     private lateinit var btnChgNom: ImageButton
