@@ -1,19 +1,20 @@
 <resources>
     <string name="app_name">Ardu_Security</string>
     <string name="prefs_file">com.ardusec.ardu_security.PREFERENCE_FILE_KEY</string>
+    <string name="firebase_web_client_id">221885248757-g3mm3pnnnanhlqh7anbf28htakoi0vae.apps.googleusercontent.com</string>
     <!--Strings de la vista de login-->
     <string name="imgLogo">AppLogoImage</string>
     <string name="lblAcces">Elegir metodo de acceso:</string>
-    <string name="btnAccUsPass">Email/Pass</string>
+    <string name="btnAccUsPass">Correo</string>
     <string name="btnAccGoogle">Google</string>
     <string name="txtUsName">Username</string>
     <string name="txtEmail">Correo</string>
     <string name="txtPass">Contraseña</string>
-    <string name="chbPass">Mostrar Contraseña</string>
+    <string name="chbPass">Mostrar</string>
     <string name="btnLogEma">Acceder con Correo</string>
     <string name="btnLogGoo">Acceder con Google</string>
     <string name="btnLstCPass">¿Olvido su Contraseña?</string>
-    <string name="lblReg">Registro</string>
+    <string name="lblReg">Registrarse</string>
     <string name="btnRegCor">Correo</string>
     <string name="btnRegGoo">Google</string>
     <string name="lblCopyright">Ardu Security 2023\n Copyright © Todos los derechos reservados</string>

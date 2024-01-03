@@ -28,9 +28,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -57,11 +59,10 @@ class UserActivity : AppCompatActivity() {
     // Formulario de confirmacion de eliminacion de cuenta
     private lateinit var mateLayConfEli: MaterialCardView
     private lateinit var lblConfPregEli: TextView
-    private lateinit var txtConfRespEli: EditText
+    private lateinit var txtConfRespEli: TextInputEditText
     private lateinit var linLayEmaConf: LinearLayout
-    private lateinit var txtConfEmaEli: EditText
-    private lateinit var txtConfPassEli: EditText
-    private lateinit var chbConfChgEli: CheckBox
+    private lateinit var txtConfEmaEli: TextInputEditText
+    private lateinit var txtConfPassEli: TextInputEditText
     private lateinit var btnConfEli: Button
     // Elementos del bundle de usuario
     private lateinit var bundle: Bundle
@@ -117,7 +118,6 @@ class UserActivity : AppCompatActivity() {
         linLayEmaConf = findViewById(R.id.linLayConfEmailEli)
         txtConfEmaEli = findViewById(R.id.txtConfEmailEli)
         txtConfPassEli = findViewById(R.id.txtConfPassEli)
-        chbConfChgEli = findViewById(R.id.chbConfPassEli)
         btnConfEli = findViewById(R.id.btnConfEliCuen)
 
         // Inicializando instancia hacia el nodo raiz de la BD y la autenticacion
@@ -262,13 +262,6 @@ class UserActivity : AppCompatActivity() {
             startActivity(editTel)
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
-        chbConfChgEli.setOnClickListener {
-            if(!chbConfChgEli.isChecked){
-                txtConfPassEli.transformationMethod = PasswordTransformationMethod.getInstance()
-            }else{
-                txtConfPassEli.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            }
-        }
         btnDelUsAcc.setOnClickListener {
             val avisoEliminacion = AlertDialog.Builder(this)
             avisoEliminacion.setTitle("Aviso")
@@ -278,8 +271,6 @@ class UserActivity : AppCompatActivity() {
                 // Establecer elementos de interaccion en el formulario de confirmacion y mostrarlo
                 setFormularioConf()
                 mateLayConfEli.isGone = false
-                // Determinar con que accesos cuenta el usuario
-                obteAccesos()
             }
             avisoEliminacion.setNegativeButton("Cancelar"){ dialog, _ ->
                 dialog.cancel()
@@ -292,27 +283,90 @@ class UserActivity : AppCompatActivity() {
         }
     }
 
-    private fun obteAccesos(){
+    private fun delUserInfoFire(){
         lifecycleScope.launch(Dispatchers.IO){
-            val getAccesos = async {
+            // Eliminacion de informacion, parte 1: Relacion con preguntas
+            val delUsPreg = async {
+                ref = database.getReference("Preguntas")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for(objPregs in dataSnapshot.children){
+                            val refPregUs = objPregs.child("usuarios").ref
+                            refPregUs.addListenerForSingleValueEvent(object: ValueEventListener{
+                                override fun onDataChange(snapshot1: DataSnapshot) {
+                                    for(objUs in snapshot1.children){
+                                        if(objUs.key.toString() == user){
+                                            objUs.ref.removeValue()
+                                            break
+                                        }
+                                    }
+                                }
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            delUsPreg.await()
+            // Eliminacion de informacion, parte 2: Relacion con sistemas
+            val delUsSis = async {
+                ref = database.getReference("Sistemas")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for(objSis in dataSnapshot.children){
+                            val refSisUs = objSis.child("usuarios").ref
+                            refSisUs.addListenerForSingleValueEvent(object: ValueEventListener{
+                                override fun onDataChange(snapshot1: DataSnapshot) {
+                                    for(objUs in snapshot1.children){
+                                        if(objUs.key.toString() == user){
+                                            objUs.ref.removeValue()
+                                            break
+                                        }
+                                    }
+                                }
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            delUsSis.await()
+            // Eliminacion de informacion, parte 3: Entidad Usuarios
+            val delUser = async {
                 ref = database.getReference("Usuarios")
                 ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(objUser in dataSnapshot.children){
                             if(objUser.key.toString() == user){
-                                val refAccUs = objUser.ref.child("accesos")
-                                refAccUs.addListenerForSingleValueEvent(object: ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        // Si se contempla algun caso en el que se cuente con correo, se necesitara el
-                                        if(snapshot.child("correo").value.toString() != ""){
-                                            linLayEmaConf.isGone = false
+                                val removeUser = objUser.ref.removeValue()
+                                removeUser.addOnSuccessListener {
+                                    lifecycleScope.launch(Dispatchers.Main){
+                                        val msg = "El usuario $user ha sido eliminado satifactoriamente"
+                                        avisoEli(msg)
+                                    }
+                                    Timer().schedule(1500){
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            Intent(this@UserActivity, MainActivity::class.java).apply {
+                                                startActivity(this)
+                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                finish()
+                                            }
                                         }
                                     }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@UserActivity,"Error: Datos parcialmente obtenidos",Toast.LENGTH_SHORT).show()
-                                    }
-                                })
-                                break
+                                }
+                                removeUser.addOnFailureListener {
+                                    Toast.makeText(this@UserActivity,"Error: No se pudo eliminar al usuario",Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
@@ -321,7 +375,7 @@ class UserActivity : AppCompatActivity() {
                     }
                 })
             }
-            getAccesos.await()
+            delUser.await()
         }
     }
 
@@ -339,7 +393,7 @@ class UserActivity : AppCompatActivity() {
                                         // Si los 2 accesos posibles no estan vacios, se invocaran ambos metodos de eliminacion en auth
                                         if(snapshot1.child("correo").value.toString() != "" && snapshot1.child("google").value.toString() != ""){
                                             // Para el caso del correo es necesario validar la informacion ingresada en los campos de confirmacion
-                                            if(validarCorreo(txtConfEmaEli.text) && validarContra(txtConfPassEli.text)){
+                                            if(validarCorreo(txtConfEmaEli.text!!) && validarContra(txtConfPassEli.text!!)){
                                                 delEmail()
                                             }
                                             delGoogle()
@@ -349,7 +403,7 @@ class UserActivity : AppCompatActivity() {
                                         // EL caso de haber correo pero no google
                                         if(snapshot1.child("correo").value.toString() != "" && snapshot1.child("google").value.toString() == ""){
                                             // Para el caso del correo es necesario validar la informacion ingresada en los campos de confirmacion
-                                            if(validarCorreo(txtConfEmaEli.text) && validarContra(txtConfPassEli.text)){
+                                            if(validarCorreo(txtConfEmaEli.text!!) && validarContra(txtConfPassEli.text!!)){
                                                 delEmail()
                                             }
                                             // En cualquiera de los casos, se debera eliminar la informacion de Firebase
@@ -607,6 +661,111 @@ class UserActivity : AppCompatActivity() {
             }catch (error: ApiException){
                 avisoEli("Error: No se pudo eliminar la informacion solicitada")
             }
+        }
+    }
+
+    private fun accederGoogle(){
+        // Bloque de codigo de la funcion crearPeticionGoogle() con el fin de optimizar las funciones
+        // Configuracion google
+        googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        // Obteniendo el cliente de google
+        googleCli = GoogleSignIn.getClient(this@LoginActivity, googleConf)
+        // Fin de crearPeticionGoogle() y preparar la peticion de google
+
+        // Obteniendo el intent de google
+        val intentGoo = googleCli.signInIntent
+        // Implementando el launcher result posterior al haber obtenido el intent de google
+        //startForResult.launch(intentGoo)
+        startActivityForResult(intentGoo, GoogleAcces)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
+        if (requestCode == GoogleAcces) {
+            val usuario = txtUser.text!!.toString().trim()
+            val taskGoo = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val cuenta = taskGoo.getResult(ApiException::class.java)
+                // Obteniendo la credencial
+                val credencial = GoogleAuthProvider.getCredential(cuenta.idToken, null)
+                // Accediendo con los datos de la cuenta de google
+                val loginGoo = auth.signInWithCredential(credencial)
+                loginGoo.addOnSuccessListener {
+                    val user = Firebase.auth.currentUser
+                    user?.let{
+                        // Buscando al usuario en la BD
+                        ref = database.getReference("Usuarios")
+                        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for (objUser in dataSnapshot.children) {
+                                    if (objUser.key.toString() == usuario){
+                                        // Obtencion de la direccion de correo guardada en firebase y verificacion de igualdad con el obtenido en la peticion a google
+                                        val googleFire = objUser.child("accesos").child("google").value.toString()
+                                        if(googleFire == cuenta.email){
+                                            // Nueva adicion, se agrego una nueva funcion de pantallas de carga y para eso se deja la pantalla por un segundo y luego se llama a la ventana de carga
+                                            Timer().schedule(1000) {
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    chgPanta()
+                                                }
+                                            }
+                                            Timer().schedule(3000) {
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
+                                                    val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
+                                                        putExtra("username", usuario)
+                                                    }
+                                                    startActivity(intentoDash)
+                                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                }
+                                            }
+                                        }else{
+                                            avisoLog("La dirección de correo obtenida no coincidió con la información del usuario")
+                                        }
+                                        break
+                                    }
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    Toast.makeText(this@LoginActivity, "Error: Busqueda sin exito", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        })
+                    }
+                }
+                loginGoo.addOnFailureListener {
+                    // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
+                        txtUser.text!!.clear()
+                    }
+                }
+            }catch (error: ApiException){
+                if(error.statusCode == 12501){
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        avisoLog("Error: No se pudo acceder ya que no seleccionó una cuenta, favor de intentarlo nuevamente")
+                    }
+                }else{
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        avisoLog("Error: No se pudo acceder con la informacion ingresada. Causa:\n${error.statusCode}")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun chgPanta(){
+        val builder = AlertDialog.Builder(this@LoginActivity).create()
+        val view = layoutInflater.inflate(R.layout.charge_transition,null)
+        builder.setView(view)
+        builder.show()
+        Timer().schedule(2000){
+            builder.dismiss()
         }
     }
 }

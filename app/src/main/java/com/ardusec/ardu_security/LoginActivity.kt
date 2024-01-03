@@ -16,10 +16,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import com.ardusec.ardu_security.user.DashboardActivity
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -39,10 +45,9 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var rbSelAccEma: RadioButton
     private lateinit var rbSelAccGoo: RadioButton
     private lateinit var linLayEma: LinearLayout
-    private lateinit var txtUser: EditText
-    private lateinit var txtEmail: EditText
-    private lateinit var txtContra: EditText
-    private lateinit var chbVerPass: CheckBox
+    private lateinit var txtUser: TextInputEditText
+    private lateinit var txtEmail: TextInputEditText
+    private lateinit var txtContra: TextInputEditText
     private lateinit var btnAccEma: Button
     private lateinit var btnAccGoo: Button
     private lateinit var btnRegister: Button
@@ -51,14 +56,9 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
-    // Banderas de validacion
-    private var valiUser = false
-    private var valiCorr = false
-    private var valiPass = false
     // Variables de acceso para google
     private lateinit var googleConf: GoogleSignInOptions
     private lateinit var googleCli: GoogleSignInClient
-    // ID del acceso de google
     private val GoogleAcces = 195
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,7 +90,7 @@ class LoginActivity : AppCompatActivity() {
         txtUser = findViewById(R.id.txtUserLogin)
         txtEmail = findViewById(R.id.txtEmail)
         txtContra = findViewById(R.id.txtPass)
-        chbVerPass = findViewById(R.id.chbPass)
+        //chbVerPass = findViewById(R.id.chbPass)
         btnAccEma = findViewById(R.id.btnLogEma)
         btnAccGoo = findViewById(R.id.btnLogGoo)
         btnRegister = findViewById(R.id.btnRegistro)
@@ -132,17 +132,15 @@ class LoginActivity : AppCompatActivity() {
                 btnAccGoo.isGone = true
             }
         }
-        chbVerPass.setOnClickListener{
-            if(!chbVerPass.isChecked)
-                txtContra.transformationMethod = PasswordTransformationMethod.getInstance()
-            else
-                txtContra.transformationMethod = HideReturnsTransformationMethod.getInstance()
-        }
         btnAccEma.setOnClickListener{
-            buscarUsBD()
+            // Validacion individual de los campos
+            if(validarUsuario(txtUser.text!!) && validarCorreo(txtEmail.text!!) && validarContra(txtContra.text!!))
+                accederCorreo()
         }
         btnAccGoo.setOnClickListener {
-            buscarUsBD()
+            // Validacion individual de los campos
+            if(validarUsuario(txtUser.text!!))
+                accederGoogle()
         }
         btnRegister.setOnClickListener{
             val intentRegister = Intent(this@LoginActivity, RegisterActivity::class.java)
@@ -165,51 +163,6 @@ class LoginActivity : AppCompatActivity() {
         dialog.show()
     }
 
-
-    private fun buscarUsBD(){
-        lifecycleScope.launch(Dispatchers.IO){
-            val busUser = async {
-                valiUser = validarUsuario(txtUser.text)
-                // Preparando variables para la obtencion de valores de los campos
-                val usuario = txtUser.text.toString().trim()
-                var busUser = false
-
-                if(valiUser){
-                    // Buscando al usuario en la BD
-                    ref = database.getReference("Usuarios")
-                    ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            for (objUser in dataSnapshot.children) {
-                                if (objUser.key.toString() == usuario){
-                                    busUser = true
-                                    break
-                                }
-                            }
-                            if(busUser){
-                                if(rbSelAccEma.isChecked)
-                                    valiLogEmail()
-                                else if(rbSelAccGoo.isChecked)
-                                    valiLogGoo()
-                            }else{
-                                // Si se llego a este punto, es porque no se encontro el usuario en la BD y por lo tanto no se va a proceder, mostrando mensaje y vaciando los campos
-                                avisoLog("El usuario solicitado no fue encontrado, favor de revisar su informacion")
-                                txtUser.text.clear()
-                                txtEmail.text.clear()
-                                txtContra.text.clear()
-                            }
-                        }
-                        override fun onCancelled(error: DatabaseError) {
-                            lifecycleScope.launch(Dispatchers.Main) {
-                                Toast.makeText(this@LoginActivity, "Error: Busqueda sin exito", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    })
-                }
-            }
-            busUser.await()
-        }
-    }
-
     private fun validarUsuario(usuario: Editable): Boolean{
         // Si se detectan espacios en blanco en el usuario, seran removidos
         val usuarioFil1 = usuario.replace("\\s".toRegex(), "")
@@ -221,7 +174,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: Favor de introducir un nombre de usuario")
                 }
-                txtUser.text.clear()
+                txtUser.text!!.clear()
                 return false
             }
             // Extension minima de 8 caracteres
@@ -229,7 +182,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
                 }
-                txtUser.text.clear()
+                txtUser.text!!.clear()
                 return false
             }
             // No se tiene al menos una mayuscula
@@ -237,7 +190,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: El nombre de usuario debera tener al menos una letra mayuscula")
                 }
-                txtUser.text.clear()
+                txtUser.text!!.clear()
                 return false
             }
             // No se tiene al menos un numero
@@ -245,7 +198,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: El nombre de usuario debera tener al menos un numero")
                 }
-                txtUser.text.clear()
+                txtUser.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -262,7 +215,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: Favor de introducir un correo")
                 }
-                txtEmail.text.clear()
+                txtEmail.text!!.clear()
                 return false
             }
             // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
@@ -270,7 +223,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: Favor de introducir un correo valido")
                 }
-                txtEmail.text.clear()
+                txtEmail.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -287,7 +240,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: Favor de introducir una contraseña")
                 }
-                txtContra.text.clear()
+                txtContra.text!!.clear()
                 return false
             }
             // Extension minima de 8 caracteres
@@ -295,7 +248,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: La contraseña debera tener una extension minima de 8 caracteres")
                 }
-                txtContra.text.clear()
+                txtContra.text!!.clear()
                 return false
             }
             // No se tiene al menos una mayuscula
@@ -303,7 +256,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: La contraseña debera tener al menos una letra mayuscula")
                 }
-                txtContra.text.clear()
+                txtContra.text!!.clear()
                 return false
             }
             // No se tiene al menos un numero
@@ -311,7 +264,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: La contraseña debera tener al menos un numero")
                 }
-                txtContra.text.clear()
+                txtContra.text!!.clear()
                 return false
             }
             // No se tiene al menos un caracter especial
@@ -319,75 +272,84 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoLog("Error: Favor de incluir al menos un caracter especial en su contraseña")
                 }
-                txtContra.text.clear()
+                txtContra.text!!.clear()
                 return false
             }
             else -> { return true }
         }
     }
 
-    private fun valiLogEmail(){
+    private fun accederCorreo(){
+        // Se busca al usuario en la BD para verificar que el correo que ingreso coincide con el que esta almacenado
         lifecycleScope.launch(Dispatchers.IO){
             val logEma = async {
-                // Validacion individual de los campos (para este punto ya se valido el username previamente)
-                valiCorr = validarCorreo(txtEmail.text)
-                valiPass = validarContra(txtContra.text)
-
-                if(valiCorr && valiPass){
-                    val usuario = txtUser.text.toString().trim()
-                    val emaLimp = txtEmail.text.toString().trim()
-                    val pasLimp = txtContra.text.toString().trim()
-                    // Accediendo a la ppa usando el correo
-                    val loginEma = auth.signInWithEmailAndPassword(emaLimp,pasLimp)
-                    loginEma.addOnSuccessListener {
-                        val user = Firebase.auth.currentUser
-                        user?.let{
-                            Timer().schedule(1000) {
-                                lifecycleScope.launch(Dispatchers.Main) {
-                                    chgPanta()
-                                }
-                            }
-                            Timer().schedule(3000) {
-                                lifecycleScope.launch(Dispatchers.Main){
-                                    Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
-                                    val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
-                                        putExtra("username", usuario)
+                val usuario = txtUser.text!!.toString().trim()
+                val emaLimp = txtEmail.text!!.toString().trim()
+                val pasLimp = txtContra.text!!.toString().trim()
+                // Accediendo a la entidad de los usuarios para buscar al usuario en cuestion
+                ref = database.getReference("Usuarios")
+                ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (objUser in dataSnapshot.children) {
+                            if (objUser.key.toString() == usuario){
+                                // Obtencion de la direccion de correo guardada en firebase y verificacion de igualdad con el ingresado
+                                val correoFire = objUser.child("accesos").child("correo").value.toString()
+                                if(correoFire == emaLimp){
+                                    // Accediendo a la app usando el correo
+                                    val loginEma = auth.signInWithEmailAndPassword(emaLimp,pasLimp)
+                                    loginEma.addOnSuccessListener {
+                                        val user = Firebase.auth.currentUser
+                                        user?.let{
+                                            Timer().schedule(1000) {
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    chgPanta()
+                                                }
+                                            }
+                                            Timer().schedule(3000) {
+                                                lifecycleScope.launch(Dispatchers.Main){
+                                                    Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
+                                                    val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
+                                                        putExtra("username", usuario)
+                                                    }
+                                                    startActivity(intentoDash)
+                                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                }
+                                            }
+                                        }
                                     }
-                                    startActivity(intentoDash)
-                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                    loginEma.addOnFailureListener {
+                                        // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
+                                        lifecycleScope.launch(Dispatchers.Main){
+                                            avisoLog("Error: No se pudo acceder con la informacion ingresada")
+                                        }
+                                        txtEmail.text!!.clear()
+                                        txtContra.text!!.clear()
+                                        txtUser.text!!.clear()
+                                    }
+                                }else{
+                                    avisoLog("La dirección de correo ingresada no coincidió con la información del usuario")
                                 }
+                                break
                             }
                         }
+                        // Si se llego a este punto, es porque no se encontro el usuario en la BD y por lo tanto no se va a proceder, mostrando mensaje y vaciando los campos
+                        avisoLog("El usuario solicitado no fue encontrado, favor de revisar su informacion")
+                        txtUser.text!!.clear()
+                        txtEmail.text!!.clear()
+                        txtContra.text!!.clear()
                     }
-                    loginEma.addOnFailureListener {
-                        // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
-                        lifecycleScope.launch(Dispatchers.Main){
-                            avisoLog("Error: No se pudo acceder con la informacion ingresada")
+                    override fun onCancelled(error: DatabaseError) {
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            Toast.makeText(this@LoginActivity, "Error: Busqueda sin exito", Toast.LENGTH_SHORT).show()
                         }
-                        txtEmail.text.clear()
-                        txtContra.text.clear()
-                        txtUser.text.clear()
                     }
-                }else if(!valiCorr){
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        avisoLog("El correo ingresado no cumplio todos los puntos de validacion, favor de verificar su informacion")
-                    }
-                }else{
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        avisoLog("Su contraseña no cumplio todos los puntos de validacion, favor de verificar su informacion")
-                    }
-                }
+                })
             }
             logEma.await()
         }
     }
 
-    private fun valiLogGoo(){
-        crearPeticionGoogle()
-        loginGoo()
-    }
-
-    private fun crearPeticionGoogle(){
+    private fun accederGoogle(){
         // Bloque de codigo de la funcion crearPeticionGoogle() con el fin de optimizar las funciones
         // Configuracion google
         googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -397,9 +359,7 @@ class LoginActivity : AppCompatActivity() {
         // Obteniendo el cliente de google
         googleCli = GoogleSignIn.getClient(this@LoginActivity, googleConf)
         // Fin de crearPeticionGoogle() y preparar la peticion de google
-    }
 
-    private fun loginGoo() {
         // Obteniendo el intent de google
         val intentGoo = googleCli.signInIntent
         // Implementando el launcher result posterior al haber obtenido el intent de google
@@ -412,7 +372,7 @@ class LoginActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         // Si el codigo de respuesta es el mismo que se planteo para el login de google, se procede con la preparacion del cliente google
         if (requestCode == GoogleAcces) {
-            val usuario = txtUser.text.toString().trim()
+            val usuario = txtUser.text!!.toString().trim()
             val taskGoo = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val cuenta = taskGoo.getResult(ApiException::class.java)
@@ -429,21 +389,27 @@ class LoginActivity : AppCompatActivity() {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 for (objUser in dataSnapshot.children) {
                                     if (objUser.key.toString() == usuario){
-                                        // Nueva adicion, se agrego una nueva funcion de pantallas de carga y para eso se deja la pantalla por un segundo y luego se llama a la ventana de carga
-                                        Timer().schedule(1000) {
-                                            lifecycleScope.launch(Dispatchers.Main) {
-                                                chgPanta()
-                                            }
-                                        }
-                                        Timer().schedule(3000) {
-                                            lifecycleScope.launch(Dispatchers.Main) {
-                                                Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
-                                                val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
-                                                    putExtra("username", usuario)
+                                        // Obtencion de la direccion de correo guardada en firebase y verificacion de igualdad con el obtenido en la peticion a google
+                                        val googleFire = objUser.child("accesos").child("google").value.toString()
+                                        if(googleFire == cuenta.email){
+                                            // Nueva adicion, se agrego una nueva funcion de pantallas de carga y para eso se deja la pantalla por un segundo y luego se llama a la ventana de carga
+                                            Timer().schedule(1000) {
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    chgPanta()
                                                 }
-                                                startActivity(intentoDash)
-                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                                             }
+                                            Timer().schedule(3000) {
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    Toast.makeText(this@LoginActivity, "Bienvenido ${user.displayName}", Toast.LENGTH_SHORT).show()
+                                                    val intentoDash = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
+                                                        putExtra("username", usuario)
+                                                    }
+                                                    startActivity(intentoDash)
+                                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                }
+                                            }
+                                        }else{
+                                            avisoLog("La dirección de correo obtenida no coincidió con la información del usuario")
                                         }
                                         break
                                     }
@@ -461,12 +427,18 @@ class LoginActivity : AppCompatActivity() {
                     // Si el usuario no accedio satisfactoriamente, se limpiaran los campos y se mostrara un error
                     lifecycleScope.launch(Dispatchers.Main) {
                         Toast.makeText(this@LoginActivity, "Error: No se pudo acceder con la informacion ingresada", Toast.LENGTH_SHORT).show()
-                        txtUser.text.clear()
+                        txtUser.text!!.clear()
                     }
                 }
             }catch (error: ApiException){
-                lifecycleScope.launch(Dispatchers.Main) {
-                    avisoLog("Error: No se pudo acceder con la informacion ingresada. Causa: ${error}")
+                if(error.statusCode == 12501){
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        avisoLog("Error: No se pudo acceder ya que no seleccionó una cuenta, favor de intentarlo nuevamente")
+                    }
+                }else{
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        avisoLog("Error: No se pudo acceder con la informacion ingresada. Causa:\n${error.statusCode}")
+                    }
                 }
             }
         }

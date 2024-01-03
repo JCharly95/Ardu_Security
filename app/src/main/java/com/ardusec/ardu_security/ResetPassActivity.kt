@@ -14,6 +14,7 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -29,10 +30,10 @@ import kotlin.concurrent.schedule
 class ResetPassActivity : AppCompatActivity(){
     // Estableciendo los elementos de interaccion
     private lateinit var btnAyuda: ImageButton
-    private lateinit var txtUserRec: EditText
-    private lateinit var txtEmaRec: EditText
+    private lateinit var txtUserRec: TextInputEditText
+    private lateinit var txtEmaRec: TextInputEditText
     private lateinit var spPregsRec: AppCompatSpinner
-    private lateinit var txtRespRec: EditText
+    private lateinit var txtRespRec: TextInputEditText
     private lateinit var btnRecPass: Button
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var database: FirebaseDatabase
@@ -183,9 +184,9 @@ class ResetPassActivity : AppCompatActivity(){
 
     private fun buscarUsBD(){
         // Cuando se solicite el registro independientemente del metodo, primero se validara el user y luego se buscara en la BD
-        valiUser = validarUsuario(txtUserRec.text)
+        valiUser = validarUsuario(txtUserRec.text!!)
         // Preparando variables para la obtencion de valores de los campos
-        val usuario = txtUserRec.text.toString().trim()
+        val usuario = txtUserRec.text!!.toString().trim()
         var busUser = false
 
         if(valiUser){
@@ -204,10 +205,10 @@ class ResetPassActivity : AppCompatActivity(){
                     }else{
                         // Mostrar mensaje de error y limpiar los campos
                         avisoForPass("Error: El username que desea recuperar no existe, favor de ingresar otro")
-                        txtUserRec.text.clear()
-                        txtEmaRec.text.clear()
+                        txtUserRec.text!!.clear()
+                        txtEmaRec.text!!.clear()
                         spPregsRec.setSelection(0)
-                        txtRespRec.text.clear()
+                        txtRespRec.text!!.clear()
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -221,9 +222,9 @@ class ResetPassActivity : AppCompatActivity(){
 
     private fun validaciones(){
         // Validacion individual de los campos
-        valiCorr = validarCorreo(txtEmaRec.text)
+        valiCorr = validarCorreo(txtEmaRec.text!!)
         valiPreg = validarSelPreg(spPregsRec)
-        valiResp = validarResp(txtRespRec.text)
+        valiResp = validarResp(txtRespRec.text!!)
         // En esta comprobacion tambien se deberia incluir la del username, pero este fue comprobado de manera previa a la llamada de la funcion
         if(valiCorr && valiPreg && valiResp) {
             // Una vez validados, se procede a comprobar la informacion ingresada
@@ -239,10 +240,10 @@ class ResetPassActivity : AppCompatActivity(){
 
     private fun comproInfo(){
         // Preparando variables para la comparacion de valores con lo almacenado en firebase
-        val usuario = txtUserRec.text.toString().trim()
-        val correo = txtEmaRec.text.toString().trim()
+        val usuario = txtUserRec.text!!.toString().trim()
+        val correo = txtEmaRec.text!!.toString().trim()
         val pregunta = "pregunta${spPregsRec.selectedItemPosition}"
-        val respuesta = txtRespRec.text.toString()
+        val respuesta = txtRespRec.text!!.toString()
         var comproUser = false
 
         // Buscando al usuario en la BD
@@ -261,14 +262,14 @@ class ResetPassActivity : AppCompatActivity(){
                     }
                 }
                 if(comproUser){
-                    recuPass(txtEmaRec.text.toString().trim())
+                    recuPass(txtEmaRec.text!!.toString().trim())
                 }else{
                     // Mostrar mensaje de error y limpiar los campos
                     avisoForPass("Error: La informacion ingresada no coincide con nuestros registros, favor de corroborarla")
-                    txtUserRec.text.clear()
-                    txtEmaRec.text.clear()
+                    txtUserRec.text!!.clear()
+                    txtEmaRec.text!!.clear()
                     spPregsRec.setSelection(0)
-                    txtRespRec.text.clear()
+                    txtRespRec.text!!.clear()
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -294,10 +295,10 @@ class ResetPassActivity : AppCompatActivity(){
         .addOnFailureListener {
             // Si no se pudo mandar el correo se procedera a mostrar el error y borrar los campos en cuestion
             avisoForPass("Error: No se pudo enviar el correo de recuperacion")
-            txtUserRec.text.clear()
-            txtEmaRec.text.clear()
+            txtUserRec.text!!.clear()
+            txtEmaRec.text!!.clear()
             spPregsRec.setSelection(0)
-            txtRespRec.text.clear()
+            txtRespRec.text!!.clear()
         }
     }
 }

@@ -31,6 +31,9 @@
     <color name="fireBrick">#B22222</color>
     <color name="hotPink">#FF69B4</color>
     <color name="lemonChiffon">#FFFACD</color>
+    <color name="azul_500">#2196F3</color>
+    <color name="lightBlue500">#03A9F4</color>
+    <color name="lightGray400">#BDBDBD</color>
     <!--Colores agregados-->
     <color name="indianRed">#CD5C5C</color>
     <color name="mediumAquamarine">#66CDAA</color>

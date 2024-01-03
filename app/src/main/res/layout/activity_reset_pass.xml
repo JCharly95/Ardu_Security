@@ -63,31 +63,43 @@
             android:layout_width="match_parent"
             android:layout_height="5dp" />
 
-        <EditText
-            android:id="@+id/txtUserForPass"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="text"
-            android:hint="@string/txtUsName"
-            android:inputType="textPersonName"
-            android:textColor="@color/negro"
-            android:textColorHint="@color/darkgray"
-            android:visibility="visible" />
+            android:layout_height="wrap_content"
+            app:boxBackgroundColor="@color/azulAlicia">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtUserForPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="text"
+                android:hint="@string/txtUsName"
+                android:inputType="textPersonName"
+                android:textColor="@color/negro"
+                android:textColorHint="@color/darkgray"
+                android:visibility="visible" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="5dp" />
 
-        <EditText
-            android:id="@+id/txtEmaForPass"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="email"
-            android:hint="@string/txtIngreCorr"
-            android:inputType="textEmailAddress"
-            android:textColor="@color/negro"
-            android:textColorHint="@color/darkgray"
-            android:visibility="visible" />
+            android:layout_height="wrap_content"
+            app:boxBackgroundColor="@color/azulAlicia">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtEmaForPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="email"
+                android:hint="@string/txtIngreCorr"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/negro"
+                android:textColorHint="@color/darkgray"
+                android:visibility="visible" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Space
             android:layout_width="match_parent"
@@ -128,16 +140,22 @@
             android:layout_width="match_parent"
             android:layout_height="5dp" />
 
-        <EditText
-            android:id="@+id/txtResPregForPass"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="text"
-            android:hint="@string/txtRespKey"
-            android:inputType="text"
-            android:textColor="@color/negro"
-            android:textColorHint="@color/darkgray"
-            android:visibility="visible" />
+            android:layout_height="wrap_content"
+            app:boxBackgroundColor="@color/azulAlicia">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtResPregForPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="text"
+                android:hint="@string/txtRespKey"
+                android:inputType="text"
+                android:textColor="@color/negro"
+                android:textColorHint="@color/darkgray"
+                android:visibility="visible" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Space
             android:layout_width="match_parent"

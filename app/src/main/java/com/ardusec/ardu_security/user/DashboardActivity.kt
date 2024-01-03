@@ -20,6 +20,9 @@ import com.ardusec.ardu_security.MainActivity
 import com.ardusec.ardu_security.ManualUserActivity
 import com.ardusec.ardu_security.R
 import com.ardusec.ardu_security.admin.ManageSisActivity
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -51,7 +54,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var user: String
     private lateinit var tipo: String
     private lateinit var sistema: String
-    // Instancias de Firebase; Database y ReferenciaDB
+    // Instancias de Firebase; Autenticacion, ReferenciaDB, DatabaseGen y Cloud Messasing
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
@@ -169,8 +172,10 @@ class DashboardActivity : AppCompatActivity() {
         btnCerSes.setOnClickListener {
             // Cerrar Sesion en Firebase
             auth.signOut()
+            // Cerrar sesion con el cliente de google (aunque no este activo, es una medida general)
+            closeGoogle()
             // Lanzar la app hacia la primera ventana
-            Toast.makeText(this@DashboardActivity, "Cerrando Sesion... Espere un momento", Toast.LENGTH_SHORT).show()
+            avisoDash("Cerrando Sesion... Espere un momento")
             //avisoDash("Cerrando Sesion... Espere un momento")
             Timer().schedule(1500){
                 val endActi = Intent(this@DashboardActivity, MainActivity::class.java)
@@ -204,13 +209,28 @@ class DashboardActivity : AppCompatActivity() {
                                 }
                                 // Estableciendo el sistema del usuario
                                 sistema = objUser.child("sistema_Rel").value.toString()
-                                // Token de notificaciones del dispositivo de usuario
-                                notifications.token.addOnCompleteListener { taskTokNoti ->
-                                    if(!taskTokNoti.isSuccessful){
-                                        Toast.makeText(this@DashboardActivity, "No se pudo obtener el token para las notificaciones de Ardu Security", Toast.LENGTH_SHORT).show()
+                                // Verificacion del token de notificaciones para el usuario
+                                if(objUser.child("tokenNotificaciones").exists()){
+                                    // Listener para el token de notificaciones del dispositivo de usuario
+                                    notifications.token.addOnCompleteListener { taskTokNoti ->
+                                        if(!taskTokNoti.isSuccessful){
+                                            Toast.makeText(this@DashboardActivity, "No se pudo obtener el token para las notificaciones de Ardu Security", Toast.LENGTH_SHORT).show()
+                                        }
+                                        // Comprobacion de similitud entre el token de acceso de registro guardado y el del sistema actual; este se actualiazará si se entra desde un nuevo dispositivo
+                                        if(objUser.child("tokenNotificaciones").value.toString() != taskTokNoti.result.toString()){
+                                            objUser.child("tokenNotificaciones").ref.setValue(taskTokNoti.result)
+                                            Toast.makeText(this@DashboardActivity, "Token de notificaciones actualizado", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
-                                    objUser.child("tokenNotificaciones").ref.setValue(taskTokNoti.result)
-                                    Toast.makeText(this@DashboardActivity, "Token de notificaciones Ardu Security creado", Toast.LENGTH_SHORT).show()
+                                }else{
+                                    // Si no existe el token del usuario previamente, se le asignara el de su dispositivo actual de acceso; Listener para el token de notificaciones del dispositivo de usuario
+                                    notifications.token.addOnCompleteListener { taskTokNoti ->
+                                        if(!taskTokNoti.isSuccessful){
+                                            Toast.makeText(this@DashboardActivity, "No se pudo obtener el token para las notificaciones", Toast.LENGTH_SHORT).show()
+                                        }
+                                        objUser.child("tokenNotificaciones").ref.setValue(taskTokNoti.result)
+                                        Toast.makeText(this@DashboardActivity, "Token de notificaciones creado", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 break
                             }
@@ -226,6 +246,18 @@ class DashboardActivity : AppCompatActivity() {
 
         // Despues de la configuracion inicial se pregunta por el permiso de notificaciones
         preguntarPermisoNotificaciones()
+    }
+
+    private fun closeGoogle(){
+        // Configuracion google
+        val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        // Obteniendo el cliente de google
+        val googleCliente = GoogleSignIn.getClient(this@DashboardActivity, googleConf)
+        // Cerrando la sesion de google
+        googleCliente.signOut()
     }
 
     private fun preguntarPermisoNotificaciones(){

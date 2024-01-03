@@ -54,32 +54,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp" />
 
-            <EditText
-                android:id="@+id/txtNomReg"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:autofillHints="name"
-                android:ems="10"
-                android:hint="@string/txtNam"
-                android:inputType="text"
-                android:textColor="@color/negro"
-                android:textColorHint="@color/darkgray"
-                android:visibility="visible" />
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtNomReg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="name"
+                    android:ems="10"
+                    android:hint="@string/txtNam"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/negro"
+                    android:textColorHint="@color/darkgray"
+                    android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="5dp" />
 
-            <EditText
-                android:id="@+id/txtUserReg"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:autofillHints="text"
-                android:hint="@string/txtUsName"
-                android:inputType="textPersonName"
-                android:textColor="@color/negro"
-                android:textColorHint="@color/darkgray"
-                android:visibility="visible" />
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtUserReg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="text"
+                    android:hint="@string/txtUsName"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/negro"
+                    android:textColorHint="@color/darkgray"
+                    android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="match_parent"
@@ -143,39 +155,47 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <EditText
-                    android:id="@+id/txtEmailReg"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:autofillHints="emailAddress"
-                    android:hint="@string/txtEmail"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/negro"
-                    android:textColorHint="@color/darkgray" />
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundColor="@color/azulAlicia">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtEmailReg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="emailAddress"
+                        android:hint="@string/txtEmail"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/negro"
+                        android:textColorHint="@color/darkgray" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="5dp" />
 
-                <EditText
-                    android:id="@+id/txtPassReg"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:autofillHints="password"
-                    android:hint="@string/txtPass"
-                    android:inputType="textPassword"
-                    android:textColor="@color/negro"
-                    android:textColorHint="@color/darkgray" />
-
-                <CheckBox
-                    android:id="@+id/chbRegPass"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/chbPass"
-                    android:textColor="@color/negro"
-                    android:textSize="14sp" />
+                    app:boxBackgroundColor="@color/azulAlicia"
+                    app:passwordToggleTint="@color/negro"
+                    app:passwordToggleEnabled="true">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtPassReg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="password"
+                        android:hint="@string/txtPass"
+                        android:inputType="textPassword"
+                        android:textColor="@color/negro"
+                        android:textColorHint="@color/darkgray" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
             </LinearLayout>
 
             <com.google.android.material.card.MaterialCardView
@@ -200,17 +220,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp" />
 
-            <EditText
-                android:id="@+id/txtRespSegur"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:autofillHints="text"
-                android:ems="10"
-                android:hint="@string/txtRespQues"
-                android:inputType="text"
-                android:textColor="@color/negro"
-                android:textColorHint="@color/darkgray"
-                android:visibility="visible" />
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtRespSegur"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="text"
+                    android:ems="10"
+                    android:hint="@string/txtRespQues"
+                    android:inputType="text"
+                    android:textColor="@color/negro"
+                    android:textColorHint="@color/darkgray"
+                    android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="match_parent"
@@ -288,18 +314,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp" />
 
-            <EditText
-                android:id="@+id/txtTel"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtLayTel"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:autofillHints="phone"
-                android:ems="10"
-                android:hint="@string/txtPhone"
-                android:inputType="phone"
-                android:textColorHint="@color/darkgray"
-                android:textColor="@color/negro"
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia"
                 android:visibility="gone"
-                tools:visibility="visible" />
+                tools:visibility="visible">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtTel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="phone"
+                    android:ems="10"
+                    android:hint="@string/txtPhone"
+                    android:inputType="phone"
+                    android:textColorHint="@color/darkgray"
+                    android:textColor="@color/negro" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="match_parent"
@@ -325,7 +358,7 @@
                 android:textColor="@color/negro"
                 android:textSize="16sp"
                 android:visibility="gone"
-                app:strokeColor="@color/negro"
+                app:strokeColor="@color/lightGray400"
                 app:strokeWidth="2dp"
                 tools:visibility="visible" />
 

@@ -81,17 +81,23 @@
                 android:textSize="20sp"
                 android:visibility="visible" />
 
-            <EditText
-                android:id="@+id/txtAdminNomSel"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:ems="10"
-                android:inputType="text"
-                android:autofillHints="text"
-                android:textColor="@color/negro"
-                android:hint="@string/lblName"
-                android:textColorHint="@color/darkgray"
-                android:enabled="false"/>
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtAdminNomSel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:autofillHints="text"
+                    android:textColor="@color/negro"
+                    android:hint="@string/lblName"
+                    android:textColorHint="@color/darkgray"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="wrap_content"
@@ -106,17 +112,23 @@
                 android:textSize="20sp"
                 android:visibility="visible" />
 
-            <EditText
-                android:id="@+id/txtAdminUserSel"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:ems="10"
-                android:inputType="text"
-                android:autofillHints="text"
-                android:textColor="@color/negro"
-                android:hint="@string/lblUser"
-                android:textColorHint="@color/darkgray"
-                android:enabled="false"/>
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtAdminUserSel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:autofillHints="text"
+                    android:textColor="@color/negro"
+                    android:hint="@string/lblUser"
+                    android:textColorHint="@color/darkgray"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="wrap_content"
@@ -131,17 +143,23 @@
                 android:textSize="20sp"
                 android:visibility="visible" />
 
-            <EditText
-                android:id="@+id/txtAdminTipoSel"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:ems="10"
-                android:inputType="text"
-                android:autofillHints="text"
-                android:textColor="@color/negro"
-                android:hint="@string/lblTipoUsSel"
-                android:textColorHint="@color/darkgray"
-                android:enabled="false"/>
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtAdminTipoSel"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:autofillHints="text"
+                    android:textColor="@color/negro"
+                    android:hint="@string/lblTipoUsSel"
+                    android:textColorHint="@color/darkgray"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="wrap_content"

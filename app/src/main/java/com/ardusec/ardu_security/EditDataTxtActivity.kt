@@ -6,9 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
-import android.text.method.HideReturnsTransformationMethod
-import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -20,6 +17,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -44,16 +43,22 @@ class EditDataTxtActivity : AppCompatActivity() {
     private lateinit var linLaySelProv: LinearLayout
     private lateinit var rbValNueEma: RadioButton
     private lateinit var rbValNueGoo: RadioButton
-    private lateinit var txtValNueGen: EditText
-    private lateinit var txtValNueEma: EditText
-    private lateinit var txtValNueNum: EditText
-    private lateinit var txtValNuePas: EditText
+    private lateinit var txtLayNueGen: TextInputLayout
+    private lateinit var txtValNueGen: TextInputEditText
+    private lateinit var txtLayNueEma: TextInputLayout
+    private lateinit var txtValNueEma: TextInputEditText
+    private lateinit var txtLayNueNum: TextInputLayout
+    private lateinit var txtValNueNum: TextInputEditText
+    private lateinit var txtLayNuePas: TextInputLayout
+    private lateinit var txtValNuePas: TextInputEditText
     private lateinit var mateLayConf: MaterialCardView
     private lateinit var lblConfPreg: TextView
-    private lateinit var txtConfResp: EditText
-    private lateinit var txtConfEma: EditText
-    private lateinit var txtConfPass: EditText
-    private lateinit var chbConfChg: CheckBox
+    private lateinit var txtLayConfResp: TextInputLayout
+    private lateinit var txtConfResp: TextInputEditText
+    private lateinit var txtLayConfEma: TextInputLayout
+    private lateinit var txtConfEma: TextInputEditText
+    private lateinit var txtLayConfPass: TextInputLayout
+    private lateinit var txtConfPass: TextInputEditText
     private lateinit var btnConfCamb: Button
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var auth: FirebaseAuth
@@ -102,16 +107,22 @@ class EditDataTxtActivity : AppCompatActivity() {
         linLaySelProv = findViewById(R.id.linLaySelProv)
         rbValNueEma = findViewById(R.id.rbSelEmaActu)
         rbValNueGoo = findViewById(R.id.rbSelGooActu)
+        txtLayNueGen = findViewById(R.id.txtLayNewDatGen)
         txtValNueGen = findViewById(R.id.txtNewDatGen)
+        txtLayNueEma = findViewById(R.id.txtLayNewDatEma)
         txtValNueEma = findViewById(R.id.txtNewDatEma)
+        txtLayNueNum = findViewById(R.id.txtLayNewDatNum)
         txtValNueNum = findViewById(R.id.txtNewDatNum)
+        txtLayNuePas = findViewById(R.id.txtLayNewDatPass)
         txtValNuePas = findViewById(R.id.txtNewDatPass)
         mateLayConf = findViewById(R.id.mateCardConfChg)
         lblConfPreg = findViewById(R.id.lblPregConf)
+        txtLayConfResp = findViewById(R.id.txtLayConfResp)
         txtConfResp = findViewById(R.id.txtConfResp)
+        txtLayConfEma = findViewById(R.id.txtLayConfEmail)
         txtConfEma = findViewById(R.id.txtConfEmail)
+        txtLayConfPass = findViewById(R.id.txtLayConfPass)
         txtConfPass = findViewById(R.id.txtConfPass)
-        chbConfChg = findViewById(R.id.chbConfPass)
         btnConfCamb = findViewById(R.id.btnConfEditDataTxt)
 
         // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
@@ -157,70 +168,59 @@ class EditDataTxtActivity : AppCompatActivity() {
             avisoActu(msg)
         }
         rbValNueEma.setOnClickListener {
-            txtConfEma.isGone = false
-            txtConfPass.isGone = false
-            chbConfChg.isGone = false
+            txtLayConfEma.isGone = false
+            txtLayConfPass.isGone = false
             lblConfPreg.isGone = true
-            txtConfResp.isGone = true
+            txtLayConfResp.isGone = true
         }
         rbValNueGoo.setOnClickListener {
-            txtConfEma.isGone = true
-            txtConfPass.isGone = true
-            chbConfChg.isGone = true
+            txtLayConfEma.isGone = true
+            txtLayConfPass.isGone = true
             lblConfPreg.isGone = false
-            txtConfResp.isGone = false
-        }
-        chbConfChg.setOnClickListener {
-            if(!chbConfChg.isChecked){
-                txtConfPass.transformationMethod = PasswordTransformationMethod.getInstance()
-                txtValNuePas.transformationMethod = PasswordTransformationMethod.getInstance()
-            }else{
-                txtConfPass.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                txtValNuePas.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            }
+            txtLayConfResp.isGone = false
         }
         btnConfCamb.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 val confChg = async {
                     when(campo){
                         "Nombre" -> {
-                            if(validarNombre(txtValNueGen.text))
-                                actNombre(txtValNueGen.text.toString(), user)
+                            if(validarNombre(txtValNueGen.text!!))
+                                actNombre(txtValNueGen.text!!.toString(), user)
                         }
                         "Correo" -> {
                             if(rbValNueEma.isChecked) {
-                                if(validarCorreo(txtValNueEma.text) && validarCorreo(txtConfEma.text) && validarContra(txtConfPass.text))
-                                    actCorreo(txtValNueEma.text.toString(), user)
+                                if(validarCorreo(txtValNueEma.text!!) && validarCorreo(txtConfEma.text!!) && validarContra(txtConfPass.text!!))
+                                    actCorreo(txtValNueEma.text!!.toString(), user)
                             }else if(rbValNueGoo.isChecked) {
                                 // Dado que cuando se accede con google no se cuenta como tal con una contra, se usara la respuesta de seguridad en su lugar
-                                if(validarCorreo(txtValNueEma.text) && (txtConfEma.text.toString() == respuesta))
+                                if(validarCorreo(txtValNueEma.text!!) && (txtConfEma.text!!.toString() == respuesta))
                                     chgGoogle("Correo")
                             }
                         }
                         "Username" -> {
-                            if(validarUsuario(txtValNueGen.text))
-                                actUsername(txtValNueGen.text.toString(), user)
+                            if(validarUsuario(txtValNueGen.text!!))
+                                actUsername(txtValNueGen.text!!.toString(), user)
                         }
                         "Contraseña" -> {
                             if(rbValNueEma.isChecked) {
-                                if(validarContra(txtValNuePas.text) && validarContra(txtConfPass.text))
-                                    actContra(txtValNuePas.text.toString())
+                                if(validarContra(txtValNuePas.text!!) && validarContra(txtConfPass.text!!))
+                                    actContra(txtValNuePas.text!!.toString())
                             }else if(rbValNueGoo.isChecked) {
-                                if(validarContra(txtConfPass.text) && (txtConfEma.text.toString() == respuesta))
+                                if(validarContra(txtConfPass.text!!) && (txtConfEma.text!!.toString() == respuesta))
                                     chgGoogle("Contraseña")
                             }
                         }
                         "Respuesta" -> {
-                            if(validarResp(txtValNueGen.text))
-                                actResp(txtValNueGen.text.toString(), user)
+                            if(validarResp(txtValNueGen.text!!))
+                                actResp(txtValNueGen.text!!.toString(), user)
                         }
                         "Telefono" -> {
-                            if(validarTel(txtValNueNum.text))
-                                actTel(txtValNueNum.text.toString().toLong(), user)
+                            if(validarTel(txtValNueNum.text!!))
+                                actTel(txtValNueNum.text!!.toString().toLong(), user)
                         }
                         "Nombre Sistema" -> {
-                            if(!txtValNueGen.text.isNullOrEmpty())
-                                actNomSis(txtValNueGen.text.toString(), sistema, user)
+                            if(txtValNueGen.text!!.isNotEmpty())
+                                actNomSis(txtValNueGen.text!!.toString(), sistema, user)
                         }
                         else -> {
                             Toast.makeText(this@EditDataTxtActivity, "Error: El campo solicitado no esta disponible", Toast.LENGTH_SHORT).show()
@@ -256,7 +256,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 when(campo){
                                     "Nombre" -> {
                                         txtValVie1.text = objUs.child("nombre").value.toString()
-                                        txtValNueGen.isGone = false
+                                        txtLayNueGen.isGone = false
                                     }
                                     "Correo" -> {
                                         Toast.makeText(this@EditDataTxtActivity,"Seleccione un proveedor de correo",Toast.LENGTH_SHORT).show()
@@ -267,7 +267,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                         txtValVie1.text = correo1
                                         letrero2.isGone = false
                                         txtValVie2.text = correo2
-                                        txtValNueEma.isGone = false
+                                        txtLayNueEma.isGone = false
                                         linLaySelProv.isGone = false
                                         mateLayConf.isGone = false
                                         // Obtener la respuesta y la pregunta del usuario
@@ -291,7 +291,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                     }
                                     "Username" -> {
                                         txtValVie1.text = objUs.child("username").value.toString()
-                                        txtValNueGen.isGone = false
+                                        txtLayNueGen.isGone = false
                                     }
                                     "Contraseña" -> {
                                         // Obtener la respuesta y la pregunta del usuario
@@ -312,17 +312,17 @@ class EditDataTxtActivity : AppCompatActivity() {
                                         })
                                         val avisoContra = "Por seguridad no se puede mostrar este valor, ingrese su nueva contraseña"
                                         txtValVie1.text = avisoContra
-                                        txtValNuePas.isGone = false
+                                        txtLayNuePas.isGone = false
                                         linLaySelProv.isGone = false
                                         mateLayConf.isGone = false
                                     }
                                     "Respuesta" -> {
                                         txtValVie1.text = objUs.child("resp_Seguri").value.toString()
-                                        txtValNueGen.isGone = false
+                                        txtLayNueGen.isGone = false
                                     }
                                     "Telefono" -> {
                                         txtValVie1.text = objUs.child("num_Tel").value.toString()
-                                        txtValNueNum.isGone = false
+                                        txtLayNueNum.isGone = false
                                     }
                                     "Nombre Sistema" -> {
                                         lifecycleScope.launch(Dispatchers.IO){
@@ -333,7 +333,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                                         for(objSis in snapshot3.children){
                                                             if(objSis.key.toString() == sistema){
                                                                 txtValVie1.text = objSis.child("nombre_Sis").value.toString()
-                                                                txtValNueGen.isGone = false
+                                                                txtLayNueGen.isGone = false
                                                                 break
                                                             }
                                                         }
@@ -368,7 +368,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoActu("Error: Favor de introducir un nombre")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             // Si se encuentra algun numero
@@ -376,7 +376,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoActu("Error: Su nombre no puede contener numeros")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
@@ -384,7 +384,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoActu("Error: Su nombre es muy corto, favor de agregar su nombre completo")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             // Si se encuentran caracteres especiales
@@ -392,7 +392,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoActu("Error: Su nombre no puede contener caracteres especiales")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -409,7 +409,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: Favor de introducir un nombre de usuario")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             // Extension minima de 8 caracteres
@@ -417,7 +417,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             // No se tiene al menos una mayuscula
@@ -425,7 +425,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: El nombre de usuario debera tener al menos una letra mayuscula")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             // No se tiene al menos un numero
@@ -433,7 +433,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: El nombre de usuario debera tener al menos un numero")
                 }
-                txtValNueGen.text.clear()
+                txtValNueGen.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -450,7 +450,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: Favor de introducir un correo")
                 }
-                txtValNueEma.text.clear()
+                txtValNueEma.text!!.clear()
                 return false
             }
             // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
@@ -458,7 +458,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: Favor de introducir un correo valido")
                 }
-                txtValNueEma.text.clear()
+                txtValNueEma.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -475,8 +475,8 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: Favor de introducir una contraseña")
                 }
-                txtValNuePas.text.clear()
-                txtConfPass.text.clear()
+                txtValNuePas.text!!.clear()
+                txtConfPass.text!!.clear()
                 return false
             }
             // Extension minima de 8 caracteres
@@ -484,8 +484,8 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: La contraseña debera tener una extension minima de 8 caracteres")
                 }
-                txtValNuePas.text.clear()
-                txtConfPass.text.clear()
+                txtValNuePas.text!!.clear()
+                txtConfPass.text!!.clear()
                 return false
             }
             // No se tiene al menos una mayuscula
@@ -493,8 +493,8 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: La contraseña debera tener al menos una letra mayuscula")
                 }
-                txtValNuePas.text.clear()
-                txtConfPass.text.clear()
+                txtValNuePas.text!!.clear()
+                txtConfPass.text!!.clear()
                 return false
             }
             // No se tiene al menos un numero
@@ -502,8 +502,8 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: La contraseña debera tener al menos un numero")
                 }
-                txtValNuePas.text.clear()
-                txtConfPass.text.clear()
+                txtValNuePas.text!!.clear()
+                txtConfPass.text!!.clear()
                 return false
             }
             // No se tiene al menos un caracter especial
@@ -511,8 +511,8 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: Favor de incluir al menos un caracter especial en su contraseña")
                 }
-                txtValNuePas.text.clear()
-                txtConfPass.text.clear()
+                txtValNuePas.text!!.clear()
+                txtConfPass.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -537,7 +537,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: Favor de introducir un numero telefonico")
                 }
-                txtValNueNum.text.clear()
+                txtValNueNum.text!!.clear()
                 return false
             }
             // Si se encuentra algun caracter ademas de numeros
@@ -545,7 +545,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Error: El numero de telefono solo puede contener digitos")
                 }
-                txtValNueNum.text.clear()
+                txtValNueNum.text!!.clear()
                 return false
             }
             // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
@@ -553,14 +553,14 @@ class EditDataTxtActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Advertencia: Favor de introducir su número telefonico fijo con lada o su número celular")
                 }
-                txtValNueNum.text.clear()
+                txtValNueNum.text!!.clear()
                 return false
             }
             (numTelFil2.length > 10) -> {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoActu("Advertencia: Por el momento solo se contemplan numeros telefonicos mexicanos, lamentamos las molestias")
                 }
-                txtValNueNum.text.clear()
+                txtValNueNum.text!!.clear()
                 return false
             }
             else -> return true
@@ -614,7 +614,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                         reautenticar.addOnSuccessListener {
                             when(campoGoo){
                                 "Correo" -> {
-                                    val actuDirGooFire = userAuth.updateEmail(txtValNueEma.text.toString())
+                                    val actuDirGooFire = userAuth.updateEmail(txtValNueEma.text!!.toString())
                                     actuDirGooFire.addOnSuccessListener {
                                         // Cuando se actualice correo en auth, se procedera con la actualizacion en la DB
                                         ref = database.getReference("Usuarios")
@@ -623,7 +623,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                                 for(objUs in dataSnapshot.children){
                                                     if(objUs.key.toString() == user){
                                                         val refEma = objUs.ref.child("accesos")
-                                                        val actuDirGoo = refEma.child("google").setValue(txtValNueEma.text.toString().trim())
+                                                        val actuDirGoo = refEma.child("google").setValue(txtValNueEma.text!!.toString().trim())
                                                         actuDirGoo.addOnSuccessListener {
                                                             // Cerrando la sesion de autenticacion para hacer el cambio adecuadamente
                                                             auth.signOut()
@@ -662,7 +662,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                     }
                                 }
                                 "Contraseña" -> {
-                                    val actuPassGoo = userAuth.updatePassword(txtValNuePas.text.toString())
+                                    val actuPassGoo = userAuth.updatePassword(txtValNuePas.text!!.toString())
                                     actuPassGoo.addOnSuccessListener {
                                         // Cerrando la sesion de autenticacion para hacer el cambio adecuadamente
                                         auth.signOut()
@@ -733,7 +733,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 }
                                 actuNombre.addOnFailureListener {
                                     Toast.makeText(this@EditDataTxtActivity,"Error: Su nombre no pudo ser actualizado, proceso fallido",Toast.LENGTH_SHORT).show()
-                                    txtValNueGen.text.clear()
+                                    txtValNueGen.text!!.clear()
                                 }
                             }
                         }
@@ -752,7 +752,7 @@ class EditDataTxtActivity : AppCompatActivity() {
             val updCorreo = async {
                 val userAuth = auth.currentUser!!
                 // Para poder actualizar el correo, es necesario renovar las credenciales de acceso
-                val credencial = EmailAuthProvider.getCredential(txtConfEma.text.toString(), txtConfPass.text.toString())
+                val credencial = EmailAuthProvider.getCredential(txtConfEma.text!!.toString(), txtConfPass.text!!.toString())
                 val reautenticar = userAuth.reauthenticate(credencial)
                 reautenticar.addOnSuccessListener {
                     // Cuando se reautentique el usuario se actualizara el valor en auth
@@ -926,7 +926,7 @@ class EditDataTxtActivity : AppCompatActivity() {
             val updContra = async {
                 val user = Firebase.auth.currentUser!!
                 // Para poder actualizar la contraseña, es necesario renovar las credenciales de acceso
-                val credencial = EmailAuthProvider.getCredential(txtConfEma.text.toString(), txtConfPass.text.toString())
+                val credencial = EmailAuthProvider.getCredential(txtConfEma.text!!.toString(), txtConfPass.text!!.toString())
                 val reautenticar = user.reauthenticate(credencial)
                 reautenticar.addOnSuccessListener {
                     val actuPass = user.updatePassword(nContra)
@@ -1086,7 +1086,7 @@ class EditDataTxtActivity : AppCompatActivity() {
                                 }
                                 setNSisNom.addOnFailureListener {
                                     Toast.makeText(this@EditDataTxtActivity, "Error: El nombre de su sistema no pudo ser actualizado", Toast.LENGTH_SHORT).show()
-                                    txtValNueGen.text.clear()
+                                    txtValNueGen.text!!.clear()
                                 }
                                 break
                             }

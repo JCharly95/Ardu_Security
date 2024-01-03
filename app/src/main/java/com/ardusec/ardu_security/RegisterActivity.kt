@@ -1,14 +1,16 @@
 package com.ardusec.ardu_security
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
-import android.text.method.HideReturnsTransformationMethod
-import android.text.method.PasswordTransformationMethod
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
@@ -18,12 +20,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -31,27 +36,28 @@ import kotlinx.coroutines.launch
 class RegisterActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var btnAyuda: ImageButton
-    private lateinit var txtNomReg: EditText
-    private lateinit var txtUsReg: EditText
+    private lateinit var txtNomReg: TextInputEditText
+    private lateinit var txtUsReg: TextInputEditText
     private lateinit var rbSelRegEma: RadioButton
     private lateinit var linLayEmaReg: LinearLayout
     private lateinit var rbSelRegGoo: RadioButton
-    private lateinit var txtEmailReg: EditText
-    private lateinit var txtPassReg: EditText
-    private lateinit var chbVerPassReg: CheckBox
+    private lateinit var txtEmailReg: TextInputEditText
+    private lateinit var txtPassReg: TextInputEditText
     private lateinit var spPregsSegur: Spinner
-    private lateinit var txtRespSeguri: EditText
+    private lateinit var txtRespSeguri: TextInputEditText
     private lateinit var rbSelCli: RadioButton
     private lateinit var rbSelAdmin: RadioButton
     private lateinit var spSisRel: Spinner
-    private lateinit var txtTel: EditText
+    private lateinit var txtLayTel: TextInputLayout
+    private lateinit var txtTel: TextInputEditText
     private lateinit var btnRegEma: Button
     private lateinit var btnRegGoo: Button
     // Estableciendo la obtencion de valores
-    // Instancias de Firebase; Database y ReferenciaDB
+    // Instancias de Firebase; Autenticacion, ReferenciaDB, DatabaseGen y Cloud Messasing
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
+    private lateinit var notifications: FirebaseMessaging
     // Banderas de validacion
     private var valiNam = false
     private var valiUser = false
@@ -67,11 +73,19 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var googleCli: GoogleSignInClient
     // ID del acceso de google
     private val GoogleAcces = 195
+    // Verificando el permiso de notificaciones de la aplicacion
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(this@RegisterActivity, "Permiso de notificaciones concedido", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this@RegisterActivity,"Ardu Security no puede enviarle notificaciones hasta que autorice el permiso adecuado",Toast.LENGTH_LONG).show()
+        }
+    }
 
     // Data clases para objetos virtuales (simulados) de kotlin
     data class Acceso(val correo: String, val google: String)
-    data class UserCliente(val nombre: String, val username: String, val accesos: Acceso, val sistema_Rel: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String)
-    data class UserAdmin(val nombre: String, val username: String, val accesos: Acceso, val sistema_Rel: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Long)
+    data class UserCliente(val nombre: String, val username: String, val accesos: Acceso, val sistema_Rel: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String, val tokenNotificaciones: String)
+    data class UserAdmin(val nombre: String, val username: String, val accesos: Acceso, val sistema_Rel: String, val tipo_Usuario: String, val pregunta_Seg: String, val resp_Seguri: String, val num_Tel: Long, val tokenNotificaciones: String)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,18 +109,19 @@ class RegisterActivity : AppCompatActivity() {
         rbSelRegGoo = findViewById(R.id.rbSelGooReg)
         txtEmailReg = findViewById(R.id.txtEmailReg)
         txtPassReg = findViewById(R.id.txtPassReg)
-        chbVerPassReg = findViewById(R.id.chbRegPass)
         spPregsSegur = findViewById(R.id.spSafQuKyReg)
         txtRespSeguri = findViewById(R.id.txtRespSegur)
         rbSelCli = findViewById(R.id.rbTipUsCli)
         rbSelAdmin = findViewById(R.id.rbTipUsAdmin)
         spSisRel = findViewById(R.id.spSistema)
+        txtLayTel = findViewById(R.id.txtLayTel)
         txtTel = findViewById(R.id.txtTel)
         btnRegEma = findViewById(R.id.btnRegEma)
         btnRegGoo = findViewById(R.id.btnRegGoo)
-        // Inicializando instancia hacia el nodo raiz de la BD y la de la autenticacion
+        // Inicializando instancia hacia el nodo raiz de la BD, la de la autenticacion y el servicio de mensajes
         database = Firebase.database
         auth = FirebaseAuth.getInstance()
+        notifications = FirebaseMessaging.getInstance()
 
         // Mensaje de bienvenida para decirle al usuario que debe hacer
         avisoReg("Bienvenido, por favor, ingrese los datos solicitados")
@@ -114,6 +129,9 @@ class RegisterActivity : AppCompatActivity() {
         rellSpinPregs()
         // Invocacion a la funcion para rellenar el spinner de los sistemas registrados
         rellSpinSis()
+
+        // Despues de la configuracion inicial se pregunta por el permiso de notificaciones
+        preguntarPermisoNotificaciones()
     }
 
     private fun addListeners(){
@@ -168,21 +186,15 @@ class RegisterActivity : AppCompatActivity() {
         }
         rbSelCli.setOnClickListener {
             if(rbSelCli.isChecked){
-                txtTel.isGone = true
+                txtLayTel.isGone = true
                 valiTipUser = false
             }
         }
         rbSelAdmin.setOnClickListener {
             if(rbSelAdmin.isChecked){
-                txtTel.isGone = false
+                txtLayTel.isGone = false
                 valiTipUser = true
             }
-        }
-        chbVerPassReg.setOnClickListener{
-            if(!chbVerPassReg.isChecked)
-                txtPassReg.transformationMethod = PasswordTransformationMethod.getInstance()
-            else
-                txtPassReg.transformationMethod = HideReturnsTransformationMethod.getInstance()
         }
         btnRegEma.setOnClickListener {
             buscarUsBD()
@@ -266,7 +278,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoReg("Error: Favor de introducir un nombre")
                 }
-                txtNomReg.text.clear()
+                txtNomReg.text!!.clear()
                 return false
             }
             // Si se encuentra algun numero
@@ -274,7 +286,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoReg("Error: Su nombre no puede contener numeros")
                 }
-                txtNomReg.text.clear()
+                txtNomReg.text!!.clear()
                 return false
             }
             // Si el nombre es mas corto a 10 caracteres (tomando como referencia de los nombres mas cortos posibles: Juan Lopez)
@@ -282,7 +294,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoReg("Error: Su nombre es muy corto, favor de agregar su nombre completo")
                 }
-                txtNomReg.text.clear()
+                txtNomReg.text!!.clear()
                 return false
             }
             // Si se encuentran caracteres especiales
@@ -290,7 +302,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main){
                     avisoReg("Error: Su nombre no puede contener caracteres especiales")
                 }
-                txtNomReg.text.clear()
+                txtNomReg.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -307,7 +319,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: Favor de introducir un nombre de usuario")
                 }
-                txtUsReg.text.clear()
+                txtUsReg.text!!.clear()
                 return false
             }
             // Extension minima de 8 caracteres
@@ -315,7 +327,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: El nombre de usuario debera tener una extension minima de 6 caracteres")
                 }
-                txtUsReg.text.clear()
+                txtUsReg.text!!.clear()
                 return false
             }
             // No se tiene al menos una mayuscula
@@ -323,7 +335,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: El nombre de usuario debera tener al menos una letra mayuscula")
                 }
-                txtUsReg.text.clear()
+                txtUsReg.text!!.clear()
                 return false
             }
             // No se tiene al menos un numero
@@ -331,7 +343,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: El nombre de usuario debera tener al menos un numero")
                 }
-                txtUsReg    .text.clear()
+                txtUsReg.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -348,7 +360,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: Favor de introducir un correo")
                 }
-                txtEmailReg.text.clear()
+                txtEmailReg.text!!.clear()
                 return false
             }
             // Si la validacion del correo no coincide con la evaluacion de Patterns.EMAIL_ADDRESS
@@ -356,7 +368,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: Favor de introducir un correo valido")
                 }
-                txtEmailReg.text.clear()
+                txtEmailReg.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -373,7 +385,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: Favor de introducir una contraseña")
                 }
-                txtPassReg.text.clear()
+                txtPassReg.text!!.clear()
                 return false
             }
             // Extension minima de 8 caracteres
@@ -381,7 +393,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: La contraseña debera tener una extension minima de 8 caracteres")
                 }
-                txtPassReg.text.clear()
+                txtPassReg.text!!.clear()
                 return false
             }
             // No se tiene al menos una mayuscula
@@ -389,7 +401,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: La contraseña debera tener al menos una letra mayuscula")
                 }
-                txtPassReg.text.clear()
+                txtPassReg.text!!.clear()
                 return false
             }
             // No se tiene al menos un numero
@@ -397,7 +409,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: La contraseña debera tener al menos un numero")
                 }
-                txtPassReg.text.clear()
+                txtPassReg.text!!.clear()
                 return false
             }
             // No se tiene al menos un caracter especial
@@ -405,7 +417,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: Favor de incluir al menos un caracter especial en su contraseña")
                 }
-                txtPassReg.text.clear()
+                txtPassReg.text!!.clear()
                 return false
             }
             else -> { return true }
@@ -454,7 +466,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: Favor de introducir un numero telefonico")
                 }
-                txtTel.text.clear()
+                txtTel.text!!.clear()
                 return false
             }
             // Si se encuentra algun caracter ademas de numeros
@@ -462,7 +474,7 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Error: El numero de telefono solo puede contener digitos")
                 }
-                txtTel.text.clear()
+                txtTel.text!!.clear()
                 return false
             }
             // Contemplando numeros fijos con lada y celulares; estos deberan ser de 10 caracteres
@@ -470,14 +482,14 @@ class RegisterActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Advertencia: Favor de introducir su número telefonico fijo con lada o su número celular")
                 }
-                txtTel.text.clear()
+                txtTel.text!!.clear()
                 return false
             }
             (numTelFil2.length > 10) -> {
                 lifecycleScope.launch(Dispatchers.Main) {
                     avisoReg("Advertencia: Por el momento solo se contemplan numeros telefonicos mexicanos, lamentamos las molestias")
                 }
-                txtTel.text.clear()
+                txtTel.text!!.clear()
                 return false
             }
             else -> return true
@@ -486,13 +498,12 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun buscarUsBD(){
         // Cuando se solicite el registro independientemente del metodo, primero se validara el user y luego se buscara en la BD
-        valiUser = validarUsuario(txtUsReg.text)
+        valiUser = validarUsuario(txtUsReg.text!!)
         // Preparando variables para la obtencion de valores de los campos
-        val usuario = txtUsReg.text.toString().trim()
+        val usuario = txtUsReg.text!!.toString().trim()
         var busUser = false
-
+        // Si el username fue validado correctamente, se procedera a buscar el usuario en la BD
         if(valiUser){
-            // Buscando al usuario en la BD
             ref = database.getReference("Usuarios")
             ref.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -511,21 +522,21 @@ class RegisterActivity : AppCompatActivity() {
                     }else{
                         // Si se encuentra, se lanzará un aviso de error y se limpiaran los campos
                         avisoReg("Error: El nombre de usuario que desea utilizar ya ha sido registrado, favor de ingresar otro")
-                        txtNomReg.text.clear()
-                        txtUsReg.text.clear()
+                        txtNomReg.text!!.clear()
+                        txtUsReg.text!!.clear()
                         rbSelRegEma.isChecked = false
                         rbSelRegGoo.isChecked = false
-                        txtEmailReg.text.clear()
-                        txtPassReg.text.clear()
+                        txtEmailReg.text!!.clear()
+                        txtPassReg.text!!.clear()
                         if(!linLayEmaReg.isGone) {
                             linLayEmaReg.isGone = true
                         }
                         spPregsSegur.setSelection(0)
-                        txtRespSeguri.text.clear()
+                        txtRespSeguri.text!!.clear()
                         spSisRel.setSelection(0)
                         rbSelAdmin.isChecked = false
                         rbSelCli.isChecked = false
-                        txtTel.text.clear()
+                        txtTel.text!!.clear()
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -537,11 +548,11 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun valiRegEma(){
         // Validacion individual de los campos
-        valiNam = validarNombre(txtNomReg.text)
-        valiCorr = validarCorreo(txtEmailReg.text)
-        valiPass = validarContra(txtPassReg.text)
+        valiNam = validarNombre(txtNomReg.text!!)
+        valiCorr = validarCorreo(txtEmailReg.text!!)
+        valiPass = validarContra(txtPassReg.text!!)
         valiPreg = validarSelPreg(spPregsSegur)
-        valiResp = validarResp(txtRespSeguri.text)
+        valiResp = validarResp(txtRespSeguri.text!!)
         valiTipUser = validarSelTipoUser(rbSelCli, rbSelAdmin)
         valiSis = validarSelSis(spSisRel)
         // Determinacion del tipo de usuario a registrar
@@ -558,7 +569,7 @@ class RegisterActivity : AppCompatActivity() {
                 avisoReg("Error: No se ha podido validar la informacion del cliente")
         }else if(valiTipUser && tipo=="Administrador"){
             // Verificacion de seleccion: Administrador
-            valiTel = validarTel(txtTel.text)
+            valiTel = validarTel(txtTel.text!!)
             if(valiNam && valiCorr && valiPass && valiPreg && valiResp && valiSis && valiTel)
                 registroEma(tipo)
             else
@@ -570,9 +581,9 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun valiRegGoo(){
         // Validacion individual de todos los campos
-        valiNam = validarNombre(txtNomReg.text)
+        valiNam = validarNombre(txtNomReg.text!!)
         valiPreg = validarSelPreg(spPregsSegur)
-        valiResp = validarResp(txtRespSeguri.text)
+        valiResp = validarResp(txtRespSeguri.text!!)
         valiTipUser = validarSelTipoUser(rbSelCli, rbSelAdmin)
         valiSis = validarSelSis(spSisRel)
         // Determinacion del tipo de usuario a registrar
@@ -591,7 +602,7 @@ class RegisterActivity : AppCompatActivity() {
                 avisoReg("Error: No se ha podido validar la informacion del cliente")
         }else if(valiTipUser && tipo=="Administrador"){
             // Verificacion de seleccion: Administrador
-            valiTel = validarTel(txtTel.text)
+            valiTel = validarTel(txtTel.text!!)
             if(valiNam && valiPreg && valiResp && valiSis && valiTel)
                 registroGoo()
             else
@@ -603,12 +614,12 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun registroEma(tipo: String){
         // Preparando variables para la obtencion de valores de los campos
-        val nombre = txtNomReg.text.toString()
-        val usuario = txtUsReg.text.toString().trim()
-        val emaLimp = txtEmailReg.text.toString().trim()
-        val pasLimp = txtPassReg.text.toString().trim()
+        val nombre = txtNomReg.text!!.toString()
+        val usuario = txtUsReg.text!!.toString().trim()
+        val emaLimp = txtEmailReg.text!!.toString().trim()
+        val pasLimp = txtPassReg.text!!.toString().trim()
         val pregunta = spPregsSegur.selectedItem.toString()
-        val respuesta = txtRespSeguri.text.toString()
+        val respuesta = txtRespSeguri.text!!.toString()
         val sistema = spSisRel.selectedItem.toString()
         // Creando el usuario con correo y contraseña en la autenticacion
         val crearUsuario = auth.createUserWithEmailAndPassword(emaLimp, pasLimp)
@@ -642,43 +653,55 @@ class RegisterActivity : AppCompatActivity() {
                             // Preparando el objeto del usuario para el registro en la BD
                             val nAcc = Acceso(correo = emaLimp, google = "")
                             if(tipo == "Cliente"){
-                                // Usuario cliente
-                                val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta)
-                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                                ref = database.getReference("Usuarios")
-                                val regCliente = ref.child(usuario).setValue(nUser)
-                                regCliente.addOnCompleteListener {
-                                    // Se procede a lanzar al usuario a la activity de dashboard
-                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                                        putExtra("username", usuario)
+                                // Token de notificaciones del dispositivo del usuario
+                                notifications.token.addOnCompleteListener { taskTokNoti ->
+                                    if(!taskTokNoti.isSuccessful){
+                                        Toast.makeText(this@RegisterActivity, "No se pudo obtener el token para las notificaciones de Ardu Security", Toast.LENGTH_SHORT).show()
                                     }
-                                    startActivity(intentDash)
-                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                }
-                                regCliente.addOnFailureListener {
-                                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                    // Registro de Usuario cliente
+                                    val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, tokenNotificaciones = taskTokNoti.result)
+                                    // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                    ref = database.getReference("Usuarios")
+                                    val regCliente = ref.child(usuario).setValue(nUser)
+                                    regCliente.addOnCompleteListener {
+                                        // Se procede a lanzar al usuario a la activity de dashboard
+                                        Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                        // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                        val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                            putExtra("username", usuario)
+                                        }
+                                        startActivity(intentDash)
+                                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                    }
+                                    regCliente.addOnFailureListener {
+                                        Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }else{
-                                // Usuario administrador
-                                val telefono = txtTel.text.toString().toLong()
-                                val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
-                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                                ref = database.getReference("Usuarios")
-                                val regAdmin = ref.child(usuario).setValue(nUser)
-                                regAdmin.addOnCompleteListener {
-                                    // Se procede a lanzar al usuario a la activity de dashboard
-                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                                        putExtra("username", usuario)
+                                // Token de notificaciones del dispositivo de usuario
+                                notifications.token.addOnCompleteListener { taskTokNoti ->
+                                    if(!taskTokNoti.isSuccessful){
+                                        Toast.makeText(this@RegisterActivity, "No se pudo obtener el token para las notificaciones de Ardu Security", Toast.LENGTH_SHORT).show()
                                     }
-                                    startActivity(intentDash)
-                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                }
-                                regAdmin.addOnFailureListener {
-                                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                    // Registro de Usuario administrador
+                                    val telefono = txtTel.text!!.toString().toLong()
+                                    val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono, tokenNotificaciones = taskTokNoti.result)
+                                    // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                    ref = database.getReference("Usuarios")
+                                    val regAdmin = ref.child(usuario).setValue(nUser)
+                                    regAdmin.addOnCompleteListener {
+                                        // Se procede a lanzar al usuario a la activity de dashboard
+                                        Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                        // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                        val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                            putExtra("username", usuario)
+                                        }
+                                        startActivity(intentDash)
+                                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                    }
+                                    regAdmin.addOnFailureListener {
+                                        Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         }
@@ -690,7 +713,10 @@ class RegisterActivity : AppCompatActivity() {
             })
         }
         crearUsuario.addOnFailureListener {
-            avisoReg("Ocurrio un error en el proceso de creacion del usuario, favor de intentarlo después")
+            val mensajeError = "El usuario no pudo ser creado debido a: \n" +
+                    "${it.message} \n" +
+                    "favor de intentarlo después"
+            avisoReg(mensajeError)
         }
     }
 
@@ -727,10 +753,10 @@ class RegisterActivity : AppCompatActivity() {
                 else -> ""
             }
             // Preparando variables para la obtencion de valores de los campos
-            val nombre = txtNomReg.text.toString()
-            val usuario = txtUsReg.text.toString().trim()
+            val nombre = txtNomReg.text!!.toString()
+            val usuario = txtUsReg.text!!.toString().trim()
             val pregunta = spPregsSegur.selectedItem.toString()
-            val respuesta = txtRespSeguri.text.toString()
+            val respuesta = txtRespSeguri.text!!.toString()
             val sistema = spSisRel.selectedItem.toString()
 
             try {
@@ -772,43 +798,55 @@ class RegisterActivity : AppCompatActivity() {
                                         // Preparando el objeto del usuario para el registro en la BD
                                         val nAcc = correo?.let { Acceso(correo = "", google = it) }
                                         if(tipo == "Cliente"){
-                                            // Usuario cliente
-                                            val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc!!, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta)
-                                            // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                                            ref = database.getReference("Usuarios")
-                                            val accGooClien = ref.child(usuario).setValue(nUser)
-                                            accGooClien.addOnSuccessListener {
-                                                // Se procede a lanzar al usuario a la activity de dashboard
-                                                Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                                                // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                                val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                                                    putExtra("username", usuario)
+                                            // Token de notificaciones del dispositivo del usuario
+                                            notifications.token.addOnCompleteListener { taskTokNoti ->
+                                                if(!taskTokNoti.isSuccessful){
+                                                    Toast.makeText(this@RegisterActivity, "No se pudo obtener el token para las notificaciones de Ardu Security", Toast.LENGTH_SHORT).show()
                                                 }
-                                                startActivity(intentDash)
-                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                            }
-                                            accGooClien.addOnFailureListener {
-                                                Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                                // Registro de Usuario cliente
+                                                val nUser = UserCliente(nombre = nombre, username = usuario, accesos = nAcc!!, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, tokenNotificaciones = taskTokNoti.result)
+                                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                                ref = database.getReference("Usuarios")
+                                                val accGooClien = ref.child(usuario).setValue(nUser)
+                                                accGooClien.addOnSuccessListener {
+                                                    // Se procede a lanzar al usuario a la activity de dashboard
+                                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                                        putExtra("username", usuario)
+                                                    }
+                                                    startActivity(intentDash)
+                                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                }
+                                                accGooClien.addOnFailureListener {
+                                                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                                }
                                             }
                                         }else{
-                                            // Usuario administrador
-                                            val telefono = txtTel.text.toString().toLong()
-                                            val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc!!, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono )
-                                            // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
-                                            ref = database.getReference("Usuarios")
-                                            val accGooAdmin = ref.child(usuario).setValue(nUser)
-                                            accGooAdmin.addOnCompleteListener{
-                                                // Se procede a lanzar al usuario a la activity de dashboard
-                                                Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
-                                                // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
-                                                val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
-                                                    putExtra("username", usuario)
+                                            // Token de notificaciones del dispositivo de usuario
+                                            notifications.token.addOnCompleteListener { taskTokNoti ->
+                                                if(!taskTokNoti.isSuccessful){
+                                                    Toast.makeText(this@RegisterActivity, "No se pudo obtener el token para las notificaciones de Ardu Security", Toast.LENGTH_SHORT).show()
                                                 }
-                                                startActivity(intentDash)
-                                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                            }
-                                            accGooAdmin.addOnFailureListener {
-                                                Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                                // Registro de Usuario administrador
+                                                val telefono = txtTel.text!!.toString().toLong()
+                                                val nUser = UserAdmin(nombre = nombre, username = usuario, accesos = nAcc!!, sistema_Rel = sisKey, tipo_Usuario = tipo, pregunta_Seg = "pregunta${spPregsSegur.selectedItemPosition}", resp_Seguri = respuesta, num_Tel = telefono, tokenNotificaciones = taskTokNoti.result)
+                                                // Establecer la referencia con la entidad Usuarios y agregar el nuevo objeto del usuario en la misma
+                                                ref = database.getReference("Usuarios")
+                                                val accGooAdmin = ref.child(usuario).setValue(nUser)
+                                                accGooAdmin.addOnCompleteListener{
+                                                    // Se procede a lanzar al usuario a la activity de dashboard
+                                                    Toast.makeText(this@RegisterActivity, "Bienvenido a Ardu Security $nombre", Toast.LENGTH_SHORT).show()
+                                                    // Una vez que se autentico y registro en firebase, lo unico que queda es lanzarlo hacia el dashboard enviando como extra usuario y contraseña
+                                                    val intentDash = Intent(this@RegisterActivity, DashboardActivity::class.java).apply {
+                                                        putExtra("username", usuario)
+                                                    }
+                                                    startActivity(intentDash)
+                                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                }
+                                                accGooAdmin.addOnFailureListener {
+                                                    Toast.makeText(this@RegisterActivity, "Error: No se pudo registrar el usuario en cuestion", Toast.LENGTH_SHORT).show()
+                                                }
                                             }
                                         }
                                     }
@@ -821,10 +859,26 @@ class RegisterActivity : AppCompatActivity() {
                     })
                 }
                 accGoo.addOnFailureListener {
-                    avisoReg("Ocurrio un error en el proceso de creacion del usuario, favor de intentarlo despues")
+                    val mensajeError = "El usuario no pudo ser creado debido a: \n" +
+                            "${it.message} \n" +
+                            "favor de intentarlo después"
+                    avisoReg(mensajeError)
                 }
             }catch (error: ApiException){
                 avisoReg("Error: No se pudo registrar al usuario con la informacion ingresada mediante el registro de google")
+            }
+        }
+    }
+
+    private fun preguntarPermisoNotificaciones(){
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this@RegisterActivity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                // FCM SDK (and your app) can post notifications.
+                Toast.makeText(this@RegisterActivity, "Su dispositivo podrá recibir notificaciones de la aplicación", Toast.LENGTH_SHORT).show()
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }

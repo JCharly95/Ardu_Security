@@ -461,16 +461,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="10dp" />
 
-                    <EditText
-                        android:id="@+id/txtConfRespEli"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:ems="10"
-                        android:inputType="text"
-                        android:autofillHints="text"
-                        android:textColor="@color/negro"
-                        android:hint="@string/txtRespuesta"
-                        android:textColorHint="@color/darkgray" />
+                        android:layout_height="wrap_content"
+                        app:boxBackgroundColor="@color/azulAlicia">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/txtConfRespEli"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:inputType="text"
+                            android:autofillHints="text"
+                            android:textColor="@color/negro"
+                            android:hint="@string/txtRespuesta"
+                            android:textColorHint="@color/darkgray" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <Space
                         android:layout_width="wrap_content"
@@ -485,39 +491,44 @@
                         android:visibility="gone"
                         tools:visibility="visible">
 
-                        <EditText
-                            android:id="@+id/txtConfEmailEli"
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:autofillHints="emailAddress"
-                            android:hint="@string/txtConfEma"
-                            android:inputType="textEmailAddress"
-                            android:textColor="@color/negro"
-                            android:textColorHint="@color/darkgray" />
+                            android:layout_height="wrap_content"
+                            app:boxBackgroundColor="@color/azulAlicia">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/txtConfEmailEli"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:autofillHints="emailAddress"
+                                android:hint="@string/txtConfEma"
+                                android:inputType="textEmailAddress"
+                                android:textColor="@color/negro"
+                                android:textColorHint="@color/darkgray" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <Space
                             android:layout_width="wrap_content"
                             android:layout_height="10dp" />
 
-                        <EditText
-                            android:id="@+id/txtConfPassEli"
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:autofillHints="password"
-                            android:ems="10"
-                            android:hint="@string/txtConfCamb"
-                            android:inputType="textPassword"
-                            android:textColor="@color/negro"
-                            android:textColorHint="@color/darkgray" />
-
-                        <CheckBox
-                            android:id="@+id/chbConfPassEli"
-                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="@string/chbPass"
-                            android:textSize="14sp"
-                            android:textColor="@color/negro" />
+                            app:boxBackgroundColor="@color/azulAlicia"
+                            app:passwordToggleTint="@color/negro"
+                            app:passwordToggleEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/txtConfPassEli"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:autofillHints="password"
+                                android:ems="10"
+                                android:hint="@string/txtConfCamb"
+                                android:inputType="textPassword"
+                                android:textColor="@color/negro"
+                                android:textColorHint="@color/darkgray" />
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
 
                     <Button

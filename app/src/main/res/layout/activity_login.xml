@@ -89,7 +89,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableStart="@android:drawable/sym_action_email"
-                        android:drawableEnd="@drawable/key"
                         android:text="@string/btnAccUsPass"
                         android:textColor="@color/negro" />
 
@@ -112,19 +111,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp"/>
 
-            <EditText
-                android:id="@+id/txtUserLogin"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:autofillHints="text"
-                android:drawableStart="@drawable/user"
-                android:drawableTint="@color/negro"
-                android:hint="@string/txtUsName"
-                android:inputType="textPersonName"
-                android:textColor="@color/negro"
-                android:textColorHint="@color/darkgray"
-                android:visibility="gone"
-                tools:visibility="visible" />
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/azulAlicia">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtUserLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="text"
+                    android:hint="@string/txtUsName"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/negro"
+                    android:textColorHint="@color/darkgray"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:id="@+id/LLLogEma"
@@ -135,49 +138,53 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <EditText
-                    android:id="@+id/txtEmail"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:autofillHints="emailAddress"
-                    android:drawableStart="@android:drawable/sym_action_email"
-                    android:drawableTint="@color/negro"
-                    android:hint="@string/txtEmail"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/negro"
-                    android:textColorHint="@color/darkgray" />
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundColor="@color/azulAlicia">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="emailAddress"
+                        android:hint="@string/txtEmail"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/negro"
+                        android:textColorHint="@color/darkgray" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="5dp" />
 
-                <EditText
-                    android:id="@+id/txtPass"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:autofillHints="password"
-                    android:drawableStart="@drawable/key"
-                    android:hint="@string/txtPass"
-                    android:inputType="textPassword"
-                    android:textColor="@color/negro"
-                    android:textColorHint="@color/darkgray" />
-
-                <CheckBox
-                    android:id="@+id/chbPass"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/chbPass"
-                    android:textColor="@color/negro"
-                    android:textSize="14sp" />
+                    app:boxBackgroundColor="@color/azulAlicia"
+                    app:passwordToggleTint="@color/negro"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtPass"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="password"
+                        android:hint="@string/txtPass"
+                        android:inputType="textPassword"
+                        android:textColor="@color/negro"
+                        android:textColorHint="@color/darkgray" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
 
                 <Button
                     android:id="@+id/btnLogEma"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/verde"
-                    android:drawableLeft="@android:drawable/sym_action_email"
-                    android:drawableRight="@android:drawable/ic_menu_send"
                     android:drawableTint="@color/blanco"
                     android:text="@string/btnLogEma"
                     android:textSize="16sp" />
@@ -189,13 +196,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/blanco"
-                android:drawableLeft="@drawable/common_google_signin_btn_icon_dark"
-                android:drawableRight="@android:drawable/ic_menu_send"
                 android:text="@string/btnLogGoo"
                 android:textColor="@color/negro"
                 android:textSize="16sp"
                 android:visibility="gone"
-                app:strokeColor="@color/negro"
+                app:strokeColor="@color/lightGray400"
                 app:strokeWidth="2dp"
                 tools:visibility="visible" />
 
@@ -203,8 +208,7 @@
                 android:id="@+id/btnRegistro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/naranja"
-                android:drawableLeft="?attr/actionModePasteDrawable"
+                android:backgroundTint="@color/teal_700"
                 android:text="@string/lblReg"
                 android:textSize="16sp"
                 android:visibility="visible" />
@@ -213,11 +217,11 @@
                 android:id="@+id/btnLstContra"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/holo_orange_light"
-                android:drawableLeft="@android:drawable/ic_menu_manage"
                 android:text="@string/btnLstCPass"
-                android:textSize="16sp"
-                android:visibility="visible" />
+                android:textColor="@color/lightBlue500"
+                android:textSize="14sp"
+                android:visibility="visible"
+                style="?android:attr/borderlessButtonStyle"/>
 
             <Space
                 android:layout_width="match_parent"

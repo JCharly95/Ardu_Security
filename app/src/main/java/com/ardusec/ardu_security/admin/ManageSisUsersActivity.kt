@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.ardusec.ardu_security.EditDataSpActivity
 import com.ardusec.ardu_security.R
 import com.ardusec.ardu_security.user.DashboardActivity
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -34,9 +35,9 @@ import kotlin.concurrent.schedule
 class ManageSisUsersActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
     private lateinit var spUsuarios: AppCompatSpinner
-    private lateinit var txtNombre: EditText
-    private lateinit var txtUsername: EditText
-    private lateinit var txtTipo: EditText
+    private lateinit var txtNombre: TextInputEditText
+    private lateinit var txtUsername: TextInputEditText
+    private lateinit var txtTipo: TextInputEditText
     private lateinit var btnEditTipUser: ImageButton
     private lateinit var btnDelUserSis: ImageButton
     // Elementos del bundle de usuario
