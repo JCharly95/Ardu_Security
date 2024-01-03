@@ -1,38 +1,30 @@
 package com.ardusec.ardu_security
 
+import android.content.Context
 import android.graphics.drawable.ColorDrawable
+import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
-import android.util.Log
+import android.os.ParcelFileDescriptor
+import android.provider.Telephony.Mms.Part.FILENAME
+import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.ahmer.pdfium.PdfDocument
-import com.ahmer.pdfviewer.PDFView
-import com.ahmer.pdfviewer.listener.OnLoadCompleteListener
-import com.ahmer.pdfviewer.listener.OnPageChangeListener
-import com.ahmer.pdfviewer.scroll.DefaultScrollHandle
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 
 
-class ManualUserActivity : AppCompatActivity(), OnPageChangeListener,OnLoadCompleteListener {
-    private val TAG = ManualUserActivity::class.java.simpleName
-    val SAMPLE_FILE = "pago.pdf"
-    var pdfView: PDFView? = null
-    var pageNumber = 0
-    var pdfFileName: String? = null
+class ManualUserActivity : AppCompatActivity() {
+    private lateinit var pdfReader: ImageView
+    private lateinit var barraCarga: ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manual_user)
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
 
         title = "Manual Digital de Usuario"
-
-        pdfView = findViewById(R.id.webManSis);
-        displayFromAsset(SAMPLE_FILE);
-
-        /*val webView = WebView(this@ManualUserActivity)
-        setContentView(webView);
-        webView.getSettings().setJavaScriptEnabled(true);
-        Toast.makeText(this,"....hello....", Toast.LENGTH_SHORT).show()
-        webView.loadUrl("https://profefily.com/wp-content/uploads/2019/10/F%C3%ADsica-conceptos-y-aplicaciones-Tippens.pdf");*/
 
         /*// Preparacion de WebView para lectura del manual PDF
         pdfReader = findViewById(R.id.webManSis)
@@ -62,38 +54,6 @@ class ManualUserActivity : AppCompatActivity(), OnPageChangeListener,OnLoadCompl
         page.close()
 // Close the `PdfRenderer` when you are done with it.
         pdfRenderer.close()*/
-    }
-
-    private fun displayFromAsset(assetFileName: String) {
-        pdfFileName = assetFileName
-        pdfView!!.fromAsset(SAMPLE_FILE)
-            .defaultPage(pageNumber)
-            .enableSwipe(true)
-            .swipeHorizontal(false)
-            .onPageChange(this)
-            .enableAnnotationRendering(true)
-            .onLoad(this)
-            .scrollHandle(DefaultScrollHandle(this))
-            .load()
-    }
-
-    override fun onPageChanged(page: Int, pageCount: Int) {
-        pageNumber = page
-        title = String.format("%s %s / %s", pdfFileName, page + 1, pageCount)
-    }
-
-    override fun loadComplete(nbPages: Int) {
-        val meta: PdfDocument.Meta? = pdfView!!.getDocumentMeta()
-        printBookmarksTree(pdfView!!.getTableOfContents(), "-")
-    }
-
-    fun printBookmarksTree(tree: List<PdfDocument.Bookmark?>, sep: String) {
-        for (b in tree) {
-            Log.e(TAG, java.lang.String.format("%s %s, p %d", sep, b!!.title, b.pageIdx))
-            if (b.hasChildren()) {
-                printBookmarksTree(b.children, "$sep-")
-            }
-        }
     }
 
     /*@Throws(IOException::class)
