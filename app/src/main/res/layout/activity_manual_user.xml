@@ -8,51 +8,88 @@
     android:layout_height="match_parent"
     tools:context=".ManualUserActivity">
 
-    <LinearLayout
+    <ScrollView
         android:id="@+id/ManUsView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="20dp"
-        android:orientation="vertical">
+        android:background="@color/azulAlicia">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/lblManSis"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lblHeadManual"
-                android:gravity="center"
-                android:textSize="34sp"
-                android:textColor="@color/negro"
-                android:visibility="visible"/>
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/lblManSis"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lblHeadManual"
+                    android:gravity="center"
+                    android:textSize="34sp"
+                    android:textColor="@color/negro"
+                    android:visibility="visible"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="450dp"
+                android:orientation="vertical"
+                android:layout_margin="10dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible"
+                    app:cardCornerRadius="4dp"
+                    app:strokeColor="@color/negro"
+                    app:strokeWidth="1dp">
+
+                    <com.github.barteksc.pdfviewer.PDFView
+                        android:id="@+id/webManSis"
+                        android:layout_margin="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnGetManu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/fireBrick"
+                    android:drawableLeft="@android:drawable/stat_sys_download"
+                    android:drawableTint="@color/blanco"
+                    android:text="@string/btnGetManu"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
+            </LinearLayout>
         </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp"/>
-
-        <ProgressBar
-            android:id="@+id/barChargeMan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp"/>
-
-        <ImageView
-            android:id="@+id/webManSis"
-            android:layout_width="match_parent"
-            android:layout_height="450dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp" />
-    </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

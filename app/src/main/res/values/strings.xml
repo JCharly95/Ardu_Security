@@ -204,5 +204,6 @@
     <string name="lblValRegistro">Valor (ppm)</string>
     <string name="lblHeadGrafRepo">Grafica del Sensor</string>
     <!-- Strings de la plantilla del manual-->
-    <string name="lblHeadManual">Manual del Usuario Digital</string>
+    <string name="lblHeadManual">Manual de Usuario</string>
+    <string name="btnGetManu">Descargar Manual</string>
 </resources>

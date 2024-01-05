@@ -3,6 +3,7 @@ package com.ardusec.ardu_security.user
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -49,8 +50,6 @@ class StationActivity : AppCompatActivity() {
     private lateinit var user: String
     private lateinit var estaKey: String
     private var nomEsta = ""
-    private var dirIP = ""
-    private var camURL = ""
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var ref: DatabaseReference
     private lateinit var database: FirebaseDatabase
@@ -97,33 +96,8 @@ class StationActivity : AppCompatActivity() {
         // Inicializando instancia hacia el nodo raiz de la BD
         database = Firebase.database
 
-        // Obteniendo los valores desde Firebase
-        lifecycleScope.launch(Dispatchers.IO){
-            val getVals = async {
-                ref = database.getReference("Estaciones")
-                ref.addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for (objEsta in dataSnapshot.children){
-                            if(objEsta.key.toString() == estaKey){
-                                // Titulo de la ventana
-                                nomEsta = objEsta.child("nombre").value.toString()
-                                title = nomEsta
-                                // Direccion IP para la camara
-                                dirIP = objEsta.child("dir_IP").value.toString()
-                                break
-                            }
-                        }
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@StationActivity, "Error: no se pudo obtener la informacion de la estacion", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
-            getVals.await()
-        }
-
         // Establecer la camara segun la estacion
-        setCamara()
+        setEstacion()
         // Establecer el sensor segun la estacion
         setSensor()
     }
@@ -153,31 +127,34 @@ class StationActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun setCamara(){
-        var puerto = ""
-        // Obtencion del puerto de la camara
+    private fun setEstacion(){
+        // Variables de trabajo para la camara
+        var dirIP: String
+        // Obteniendo los valores desde Firebase
         lifecycleScope.launch(Dispatchers.IO){
-            val getPort = async {
-                ref = database.getReference("Camaras")
+            val getVals = async {
+                ref = database.getReference("Estaciones")
                 ref.addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(objCam in dataSnapshot.children){
-                            if(objCam.child("estacion_Rel").value.toString() == estaKey){
-                                puerto = objCam.child("puerto").value.toString()
-                                camURL = "http://$dirIP:$puerto"
-                                establecerCamara(camURL)
+                        for (objEsta in dataSnapshot.children){
+                            if(objEsta.key.toString() == estaKey){
+                                // Titulo de la ventana
+                                nomEsta = objEsta.child("nombre").value.toString()
+                                title = nomEsta
+                                // Direccion IP para la camara
+                                dirIP = objEsta.child("dir_IP").value.toString()
+                                // Establecer la camara
+                                setCamara(dirIP)
                                 break
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        lifecycleScope.launch(Dispatchers.Main){
-                            avisoStation()
-                        }
+                        Toast.makeText(this@StationActivity, "Error: no se pudo obtener la informacion de la estacion", Toast.LENGTH_SHORT).show()
                     }
                 })
             }
-            getPort.await()
+            getVals.await()
         }
     }
 
@@ -225,13 +202,40 @@ class StationActivity : AppCompatActivity() {
         layGraf.setBackgroundColor(ContextCompat.getColor(this@StationActivity,R.color.blanco))
     }
 
-    private fun establecerCamara(dirUrl: String){
-        val videoURL = "$dirUrl/video_feed"
-        //val videoURL = "http://192.168.100.66:5000/video_feed"
-        //camara.settings.javaScriptEnabled = true
-        camara.settings.loadWithOverviewMode = true
-        camara.settings.useWideViewPort = true
-        camara.loadUrl(videoURL)
+    private fun setCamara(dirIP: String){
+        var puerto: String
+        var videoURL: String
+        lifecycleScope.launch(Dispatchers.IO){
+            val setCam = async {
+                // Obtencion del puerto de la camara
+                ref = database.getReference("Camaras")
+                ref.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for(objCam in dataSnapshot.children){
+                            if(objCam.child("estacion_Rel").value.toString() == estaKey){
+                                puerto = objCam.child("puerto").value.toString()
+                                videoURL = "http://$dirIP:$puerto/video_feed"
+
+                                //val videoURL = "http://192.168.100.66:5000/video_feed"
+                                //camara.settings.javaScriptEnabled = true
+                                camara.settings.loadWithOverviewMode = true
+                                camara.settings.useWideViewPort = true
+                                camara.loadUrl(videoURL)
+                                Toast.makeText(this@StationActivity, videoURL, Toast.LENGTH_LONG).show()
+                                Log.w("DireccionURLCamara", videoURL)
+                                break
+                            }
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        lifecycleScope.launch(Dispatchers.Main){
+                            avisoStation()
+                        }
+                    }
+                })
+            }
+            setCam.await()
+        }
     }
 
     private fun genGrafSenso(sensor: String){

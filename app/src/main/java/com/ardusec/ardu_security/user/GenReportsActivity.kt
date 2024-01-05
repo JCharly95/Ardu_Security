@@ -354,7 +354,7 @@ class GenReportsActivity : AppCompatActivity() {
                 // AlertDialog para ocultar el formulario de seleccion de elementos para el filtrado
                 avisoRepo()
 
-                // Dado que se almacenaá el reporte, se debera verificar si se conceden los permisos de guardado, previo al boton de generacion de reporte
+                // Dado que se almacenará el reporte, se debera verificar si se conceden los permisos de guardado, previo al boton de generacion de reporte
                 if(checarPermisos()){
                     // Si se autorizaron los permisos previamente, se mostrara un aviso, sino se solicitaran
                     Toast.makeText(this@GenReportsActivity, "Permiso de Almacenamiento Concedido...", Toast.LENGTH_SHORT).show()
@@ -532,8 +532,7 @@ class GenReportsActivity : AppCompatActivity() {
                                                 val nomSensoRepo = lblHeadRepo.text.toString() + objSen.child("nom_Sen").value.toString()
                                                 lblHeadRepo.text = nomSensoRepo
                                                 // Obtener el tipo del sensor de la estacion para generar grafica solo si es sensor de gases
-                                                val tipo = objSen.child("tipo").value.toString()
-                                                when(tipo){
+                                                when(objSen.child("tipo").value.toString()){
                                                     "Humo/Gas" -> {
                                                         // Establecer las caracteristicas de la grafica y el contador de las posiciones X de los datos
                                                         setGrafica()

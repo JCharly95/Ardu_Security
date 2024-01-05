@@ -1,59 +1,94 @@
 package com.ardusec.ardu_security
 
-import android.content.Context
 import android.graphics.drawable.ColorDrawable
-import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
-import android.os.ParcelFileDescriptor
-import android.provider.Telephony.Mms.Part.FILENAME
-import android.widget.ImageView
+import android.os.Environment
+import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import com.downloader.Error
+import com.downloader.OnDownloadListener
+import com.downloader.PRDownloader
+import com.github.barteksc.pdfviewer.PDFView
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
 
 
 class ManualUserActivity : AppCompatActivity() {
-    private lateinit var pdfReader: ImageView
-    private lateinit var barraCarga: ProgressBar
+    // Estableciendo los elementos de interaccion; Seccion Formulario de Seleccion
+    private lateinit var pdfViewer: PDFView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var btnDescarga: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manual_user)
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this@ManualUserActivity, R.color.teal_700)))
 
+        // Configurar el arranque de la interfaz
+        setUp()
+        // Agregar los listeners
+        addListeners()
+    }
+
+    private fun setUp(){
+        // Titulo de la pantalla
         title = "Manual Digital de Usuario"
+        // Relacionando los elementos con su objeto de la interfaz; Seccion Formulario de Seleccion
+        pdfViewer = findViewById(R.id.webManSis)
+        progressBar = findViewById(R.id.progressBar)
+        btnDescarga = findViewById(R.id.btnGetManu)
+        PRDownloader.initialize(this@ManualUserActivity)
 
-        /*// Preparacion de WebView para lectura del manual PDF
-        pdfReader = findViewById(R.id.webManSis)
-        barraCarga = findViewById(R.id.barChargeMan)
+        // Preparacion de WebView para lectura del manual PDF
+        progressBar.isGone = false
+        val pdfUrl = "https://observatoriocultural.udgvirtual.udg.mx/repositorio/bitstream/handle/123456789/432/6+Folleto.pdf"
+        val filename = "6+Folleto.pdf"
 
-        barraCarga.visibility = View.GONE
+        downloadPdfFromInternet(pdfUrl, getRootDirPath(), filename)
+    }
 
-        val input: InputStream = this@ManualUserActivity.assets.open("pago.pdf")
-        val file: File = File(this@ManualUserActivity.cacheDir, "pago.pdf")
-        val output: FileOutputStream = FileOutputStream(file) // where 'file' comes from :
+    private fun addListeners(){
 
+    }
 
-        // Create the page renderer for the PDF document.
-        val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-        val pdfRenderer = PdfRenderer(fileDescriptor)
+    private fun downloadPdfFromInternet(url: String, dirPath: String, fileName: String) {
+        PRDownloader.download(url,dirPath,fileName).build()
+            .start(object : OnDownloadListener {
+                override fun onDownloadComplete() {
+                    Toast.makeText(this@ManualUserActivity, "downloadComplete", Toast.LENGTH_LONG).show()
+                    val downloadedFile = File(dirPath, fileName)
+                    progressBar.isGone = true
+                    showPdfFromFile(downloadedFile)
+                }
+                override fun onError(error: Error?) {
+                    Toast.makeText(this@ManualUserActivity,"Error in downloading file: $error",Toast.LENGTH_LONG).show()
+                }
+            })
+    }
 
-// Open the page to be rendered.
-        val page = pdfRenderer.openPage(1)
+    private fun showPdfFromFile(file: File) {
+        pdfViewer.fromFile(file)
+            .password(null)
+            .defaultPage(0)
+            .enableSwipe(true)
+            .swipeHorizontal(false)
+            .enableDoubletap(true)
+            .onPageError { page, _ ->
+                Toast.makeText(this@ManualUserActivity,"Error at page: $page", Toast.LENGTH_LONG).show()
+            }
+            .load()
+    }
 
-// Render the page to the bitmap.
-        val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-// Use the rendered bitmap.
-        pdfReader.setImageBitmap(bitmap)
-
-// Close the page when you are done with it.
-        page.close()
-// Close the `PdfRenderer` when you are done with it.
-        pdfRenderer.close()*/
+    private fun getRootDirPath(): String {
+        return if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()) {
+            val file = ContextCompat.getExternalFilesDirs(this@ManualUserActivity,null)[0]
+            file.absolutePath
+        } else {
+            this@ManualUserActivity.filesDir.absolutePath
+        }
     }
 
     /*@Throws(IOException::class)
