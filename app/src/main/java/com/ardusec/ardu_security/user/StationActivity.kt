@@ -215,14 +215,11 @@ class StationActivity : AppCompatActivity() {
                             if(objCam.child("estacion_Rel").value.toString() == estaKey){
                                 puerto = objCam.child("puerto").value.toString()
                                 videoURL = "http://$dirIP:$puerto/video_feed"
-
                                 //val videoURL = "http://192.168.100.66:5000/video_feed"
                                 //camara.settings.javaScriptEnabled = true
                                 camara.settings.loadWithOverviewMode = true
                                 camara.settings.useWideViewPort = true
                                 camara.loadUrl(videoURL)
-                                Toast.makeText(this@StationActivity, videoURL, Toast.LENGTH_LONG).show()
-                                Log.w("DireccionURLCamara", videoURL)
                                 break
                             }
                         }
