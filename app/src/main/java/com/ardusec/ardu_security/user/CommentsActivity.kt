@@ -4,12 +4,12 @@ import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.ardusec.ardu_security.R
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -25,8 +25,8 @@ import kotlin.concurrent.schedule
 
 class CommentsActivity : AppCompatActivity() {
     // Estableciendo los elementos de interaccion
-    private lateinit var username: EditText
-    private lateinit var comment: EditText
+    private lateinit var username: TextInputEditText
+    private lateinit var comment: TextInputEditText
     private lateinit var btnComentario: Button
     // Instancias de Firebase; Database y ReferenciaDB
     private lateinit var ref: DatabaseReference
@@ -35,7 +35,7 @@ class CommentsActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var user: String
     // Dataclass para comentarios
-    data class comentario(val contenido: String, val usuario: String)
+    data class Comentario(val contenido: String, val usuario: String)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +71,8 @@ class CommentsActivity : AppCompatActivity() {
         database = Firebase.database
     }
 
-    private fun avisoComments(mensaje: String) {
+    private fun avisoComments() {
+        val mensaje = "Favor de ingresar su opinion antes de enviarla, gracias"
         val aviso = AlertDialog.Builder(this)
         aviso.setTitle("Aviso")
         aviso.setMessage(mensaje)
@@ -86,10 +87,10 @@ class CommentsActivity : AppCompatActivity() {
 
     private fun addListeners() {
         btnComentario.setOnClickListener {
-            if(comment.text.isNotBlank()){
+            if(comment.text!!.isNotBlank()){
                 lifecycleScope.launch(Dispatchers.IO) {
                     val setComm = async {
-                        val nComm = comentario(comment.text.toString(), user)
+                        val nComm = Comentario(comment.text.toString(), user)
                         ref = database.getReference("Comentarios")
                         val key = ref.push().key
                         ref.child(key.toString()).setValue(nComm)
@@ -119,7 +120,7 @@ class CommentsActivity : AppCompatActivity() {
                     setComm.await()
                 }
             }else {
-                avisoComments("Favor de ingresar su opinion antes de enviarla, gracias")
+                avisoComments()
             }
         }
     }

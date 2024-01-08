@@ -1,13 +1,9 @@
 package com.ardusec.ardu_security
 
 import android.content.Intent
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -17,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
@@ -112,24 +107,4 @@ class MainActivity : AppCompatActivity() {
             builder.dismiss()
         }
     }
-
-    /*private fun insertValues(){
-        ref = database.getReference("Sensores")
-        ref.addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for(objSensor in dataSnapshot.children){
-                    if(objSensor.key.toString() == "sensor4"){
-                        val clave = "12-09-2023 17:15 CST"
-                        objSensor.ref.child("registros").child(clave).child("co").setValue(0.005129816000472569)
-                        objSensor.ref.child("registros").child(clave).child("lpg").setValue(0.007848074619837792)
-                        objSensor.ref.child("registros").child(clave).child("propane").setValue(0.009505974291277681)
-                        objSensor.ref.child("registros").child(clave).child("smoke").setValue(0.020962801982828305)
-                    }
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@MainActivity, "No se armo carnal", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }*/
 }

@@ -542,6 +542,7 @@ class EditDataSpActivity : AppCompatActivity() {
     private fun actTipo(listTipo: Spinner){
         // Valor textual del nuevo tipo
         val tipoSel = listTipo.selectedItem.toString()
+        val userCurrent = auth.currentUser
         // Corrutina con las acciones a realizar en la BD
         lifecycleScope.launch(Dispatchers.IO) {
             val setTipo = async {
@@ -561,13 +562,21 @@ class EditDataSpActivity : AppCompatActivity() {
                                     }
                                     Timer().schedule(3000) {
                                         lifecycleScope.launch(Dispatchers.Main){
-                                            val setNTipoActi = Intent(this@EditDataSpActivity, DashboardActivity::class.java).apply {
-                                                putExtra("username", user)
-                                                putExtra("tipo", tipoSel)
+                                            userCurrent?.let {
+                                                val userEmail = userCurrent.email
+                                                for(objUser2 in dataSnapshot.children){
+                                                    if(objUser2.child("accesos").child("correo").value.toString() == userEmail || objUser2.child("accesos").child("google").value.toString() == userEmail){
+                                                        val setNTipoActi = Intent(this@EditDataSpActivity, DashboardActivity::class.java).apply {
+                                                            putExtra("username", objUser2.key.toString())
+                                                            putExtra("tipo", "Administrador")
+                                                        }
+                                                        startActivity(setNTipoActi)
+                                                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                                        finish()
+                                                        break
+                                                    }
+                                                }
                                             }
-                                            startActivity(setNTipoActi)
-                                            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                            finish()
                                         }
                                     }
                                 }

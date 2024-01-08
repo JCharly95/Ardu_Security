@@ -46,6 +46,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:backgroundTint="@color/teal_200"
+                    android:contentDescription="@string/btnHelp"
                     app:srcCompat="@android:drawable/ic_menu_help" />
 
             </LinearLayout>
@@ -57,7 +58,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia">
+                app:boxBackgroundColor="@color/cyan_600">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtNomReg"
@@ -79,7 +80,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia">
+                app:boxBackgroundColor="@color/cyan_600">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtUserReg"
@@ -159,7 +160,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/azulAlicia">
+                    app:boxBackgroundColor="@color/cyan_600">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtEmailReg"
@@ -179,7 +180,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/azulAlicia"
+                    app:boxBackgroundColor="@color/cyan_600"
                     app:passwordToggleTint="@color/negro"
                     app:passwordToggleEnabled="true">
 
@@ -224,7 +225,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia">
+                app:boxBackgroundColor="@color/cyan_600">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtRespSegur"
@@ -319,7 +320,7 @@
                 android:id="@+id/txtLayTel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia"
+                app:boxBackgroundColor="@color/cyan_600"
                 android:visibility="gone"
                 tools:visibility="visible">
 

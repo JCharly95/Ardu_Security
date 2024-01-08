@@ -38,5 +38,6 @@
     <color name="indianRed">#CD5C5C</color>
     <color name="mediumAquamarine">#66CDAA</color>
     <color name="lightSeaGreen">#20B2AA</color>
+    <color name="cyan_600">#00ACC1</color>
     <color name="salmon">#FA8072</color>
 </resources>

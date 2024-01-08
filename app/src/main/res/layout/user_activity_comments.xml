@@ -35,30 +35,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="10dp" />
 
-            <TextView
-                android:id="@+id/lblUsuario"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lblUser"
-                android:textColor="@color/negro"
-                android:textSize="20sp"
-                android:visibility="visible" />
-
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="5dp" />
 
-            <EditText
-                android:id="@+id/txtUserComm"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:ems="10"
-                android:inputType="text"
-                android:autofillHints="text"
-                android:textColor="@color/negro"
-                android:hint="@string/lblUser"
-                android:textColorHint="@color/darkgray"
-                android:enabled="false"/>
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/cyan_600">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtUserComm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:autofillHints="text"
+                    android:textColor="@color/negro"
+                    android:hint="@string/lblUser"
+                    android:textColorHint="@color/darkgray"
+                    android:enabled="false" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="wrap_content"
@@ -91,17 +88,23 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/txtComentario"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:inputType="textMultiLine"
-                    android:lines="8"
-                    android:hint="@string/lblOp"
-                    android:textColor="@color/negro"
-                    android:textSize="20sp"/>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxBackgroundColor="@color/blanco">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/txtComentario"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:lines="8"
+                            android:hint="@string/lblOp"
+                            android:gravity="start|top"
+                            android:inputType="textMultiLine"
+                            android:textSize="20sp"
+                            android:textColor="@color/negro" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -111,7 +114,7 @@
 
             <Button
                 android:id="@+id/btnConfGenOp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/btnSendComm"
                 android:textSize="20sp"/>

@@ -183,7 +183,7 @@
                 android:id="@+id/txtLayNewDatGen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia"
+                app:boxBackgroundColor="@color/cyan_600"
                 android:visibility="gone"
                 tools:visibility="visible" >
 
@@ -196,7 +196,7 @@
                     android:autofillHints="text"
                     android:textColor="@color/negro"
                     android:hint="@string/txtNuevoGen"
-                    android:textColorHint="@color/darkgray" />
+                    android:textColorHint="@color/negro" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Space
@@ -207,7 +207,7 @@
                 android:id="@+id/txtLayNewDatEma"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia"
+                app:boxBackgroundColor="@color/cyan_600"
                 android:visibility="gone"
                 tools:visibility="visible" >
 
@@ -230,7 +230,7 @@
                 android:id="@+id/txtLayNewDatNum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia"
+                app:boxBackgroundColor="@color/cyan_600"
                 android:visibility="gone"
                 tools:visibility="visible" >
 
@@ -254,7 +254,7 @@
                 android:id="@+id/txtLayNewDatPass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/azulAlicia"
+                app:boxBackgroundColor="@color/cyan_600"
                 app:passwordToggleTint="@color/negro"
                 app:passwordToggleEnabled="true"
                 android:visibility="gone"
@@ -325,7 +325,7 @@
                         android:id="@+id/txtLayConfResp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/azulAlicia"
+                        app:boxBackgroundColor="@color/cyan_600"
                         android:visibility="gone"
                         tools:visibility="visible" >
 
@@ -349,7 +349,7 @@
                         android:id="@+id/txtLayConfEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/azulAlicia"
+                        app:boxBackgroundColor="@color/cyan_600"
                         android:visibility="gone"
                         tools:visibility="visible" >
 
@@ -372,7 +372,7 @@
                         android:id="@+id/txtLayConfPass"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/azulAlicia"
+                        app:boxBackgroundColor="@color/cyan_600"
                         app:passwordToggleTint="@color/negro"
                         app:passwordToggleEnabled="true"
                         android:visibility="gone"

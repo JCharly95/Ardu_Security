@@ -3,7 +3,6 @@ package com.ardusec.ardu_security.user
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -15,7 +14,6 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.android.material.card.MaterialCardView
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -362,46 +360,4 @@ class StationActivity : AppCompatActivity() {
             getMagneSta.await()
         }
     }
-
-    /*private fun esteblecerGrafica(){
-        // Rellenar los arraylist con los valores de firebase
-        establecerDataSets()
-
-        Toast.makeText(this@StationActivity, arrCo.toString(), Toast.LENGTH_LONG).show()
-
-        val lineCoDataSet = LineDataSet(arrCo, "Sensor de CO")
-        lineCoDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.rojo)
-        lineCoDataSet.setDrawFilled(true)
-        lineCoDataSet.circleRadius = 10f
-        lineCoDataSet.valueTextSize = 15F
-        lineCoDataSet.mode = LineDataSet.Mode.LINEAR
-        val lineGLPDataSet = LineDataSet(arrGLP, "Sensor de Gas LP")
-        lineGLPDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.amarillo)
-        lineGLPDataSet.setDrawFilled(true)
-        lineGLPDataSet.circleRadius = 10f
-        lineGLPDataSet.valueTextSize = 15F
-        lineGLPDataSet.mode = LineDataSet.Mode.LINEAR
-        val linePropDataSet = LineDataSet(arrPropane, "Sensor de Propano")
-        linePropDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.darkgray)
-        linePropDataSet.setDrawFilled(true)
-        linePropDataSet.circleRadius = 10f
-        linePropDataSet.valueTextSize = 15F
-        linePropDataSet.mode = LineDataSet.Mode.LINEAR
-        val lineSmokeDataSet = LineDataSet(arrSmoke, "Sensor de Humo")
-        lineSmokeDataSet.color = ContextCompat.getColor(this@StationActivity,R.color.negro)
-        lineSmokeDataSet.setDrawFilled(true)
-        lineSmokeDataSet.circleRadius = 10f
-        lineSmokeDataSet.valueTextSize = 15F
-        lineSmokeDataSet.mode = LineDataSet.Mode.LINEAR
-        // Creando el linedata de la grafica (es como un dataset de lineas)
-        val datos = LineData()
-        datos.addDataSet(lineCoDataSet)
-        datos.addDataSet(lineGLPDataSet)
-        datos.addDataSet(linePropDataSet)
-        datos.addDataSet(lineSmokeDataSet)
-        layGraf.data = datos
-        layGraf.description.text = "Sensor de Gases: $nomEsta"
-        layGraf.description.textSize = 20f
-        layGraf.setBackgroundColor(ContextCompat.getColor(this@StationActivity,R.color.blanco))
-    }*/
 }
